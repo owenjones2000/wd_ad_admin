@@ -19,9 +19,9 @@
         </template>
       </el-table-column>
 
-      <el-table-column v-if="checkPermission(['manage permission'])" align="center" label="Actions" width="200">
+      <el-table-column v-if="checkPermission(['system.permission'])" align="center" label="Actions" width="200">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.name !== 'admin'" v-permission="['manage permission']" type="primary" size="small" icon="el-icon-edit" @click="handleEditPermissions(scope.row.id);">
+          <el-button v-if="scope.row.name !== 'admin'" v-permission="['system.permission']" type="primary" size="small" icon="el-icon-edit" @click="handleEditPermissions(scope.row.id);">
             {{ $t('permission.editPermission') }}
           </el-button>
         </template>
@@ -33,15 +33,8 @@
         <div class="permissions-container">
           <div class="block">
             <el-form :model="currentRole" label-width="80px" label-position="top">
-              <el-form-item label="Menus">
-                <el-tree ref="menuPermissions" :data="menuPermissions" :default-checked-keys="permissionKeys(roleMenuPermissions)" :props="permissionProps" show-checkbox node-key="id" class="permission-tree" />
-              </el-form-item>
-            </el-form>
-          </div>
-          <div class="block">
-            <el-form :model="currentRole" label-width="80px" label-position="top">
               <el-form-item label="Permissions">
-                <el-tree ref="otherPermissions" :data="otherPermissions" :default-checked-keys="permissionKeys(roleOtherPermissions)" :props="permissionProps" show-checkbox node-key="id" class="permission-tree" />
+                <el-tree ref="permissions" :data="permissions" :default-checked-keys="permissionKeys(rolePermissions)" :props="permissionProps" show-checkbox node-key="id" class="permission-tree" />
               </el-form-item>
             </el-form>
           </div>
@@ -81,11 +74,9 @@ export default {
       dialogLoading: false,
       dialogVisible: false,
       permissions: [],
-      menuPermissions: [],
-      otherPermissions: [],
       permissionProps: {
         children: 'children',
-        label: 'name',
+        label: 'display_name',
         disabled: 'disabled',
       },
     };
@@ -100,13 +91,7 @@ export default {
       return found;
     },
     rolePermissions() {
-      return this.classifyPermissions(this.currentRole.permissions).all;
-    },
-    roleMenuPermissions() {
-      return this.classifyPermissions(this.currentRole.permissions).menu;
-    },
-    roleOtherPermissions() {
-      return this.classifyPermissions(this.currentRole.permissions).other;
+      return this.currentRole.permissions;
     },
   },
   created() {
@@ -129,32 +114,11 @@ export default {
 
     async getPermissions() {
       const { data } = await permissionResource.list({});
-      const { all, menu, other } = this.classifyPermissions(data);
-      this.permissions = all;
-      this.menuPermissions = menu;
-      this.otherPermissions = other;
-    },
-
-    classifyPermissions(permissions) {
-      const all = []; const menu = []; const other = [];
-      permissions.forEach(permission => {
-        const permissionName = permission.name;
-        all.push(permission);
-        if (permissionName.startsWith('view menu')) {
-          menu.push(this.normalizeMenuPermission(permission));
-        } else {
-          other.push(this.normalizePermission(permission));
-        }
-      });
-      return { all, menu, other };
-    },
-
-    normalizeMenuPermission(permission) {
-      return { id: permission.id, name: this.$options.filters.uppercaseFirst(permission.name.substring(10)) };
+      this.permissions = data;
     },
 
     normalizePermission(permission) {
-      return { id: permission.id, name: this.$options.filters.uppercaseFirst(permission.name), disabled: permission.name === 'manage permission' };
+      return { id: permission.id, name: this.$options.filters.uppercaseFirst(permission.display_name), disabled: permission.name === 'manage permission' };
     },
 
     permissionKeys(permissions) {
@@ -165,15 +129,12 @@ export default {
       this.dialogVisible = true;
       this.currentRoleId = id;
       this.$nextTick(() => {
-        this.$refs.menuPermissions.setCheckedKeys(this.permissionKeys(this.roleMenuPermissions));
-        this.$refs.otherPermissions.setCheckedKeys(this.permissionKeys(this.roleOtherPermissions));
+        this.$refs.permissions.setCheckedKeys(this.permissionKeys(this.rolePermissions));
       });
     },
 
     confirmPermission() {
-      const checkedMenu = this.$refs.menuPermissions.getCheckedKeys();
-      const checkedOther = this.$refs.otherPermissions.getCheckedKeys();
-      const checkedPermissions = checkedMenu.concat(checkedOther);
+      const checkedPermissions = this.$refs.permissions.getCheckedKeys();
       this.dialogLoading = true;
 
       roleResource.update(this.currentRole.id, { permissions: checkedPermissions }).then(response => {

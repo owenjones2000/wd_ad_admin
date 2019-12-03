@@ -62,7 +62,6 @@ export const constantRoutes = [
   },
   {
     path: '/404',
-    redirect: { name: 'Page404' },
     component: () => import('@/views/error-page/404'),
     hidden: true,
   },
