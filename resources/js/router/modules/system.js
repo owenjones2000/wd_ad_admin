@@ -9,7 +9,7 @@ const systemRoutes = {
   meta: {
     title: 'system',
     icon: 'admin',
-    permissions: ['view menu administrator'],
+    permissions: ['system.manage'],
   },
   children: [
     /** User managements */
@@ -17,21 +17,21 @@ const systemRoutes = {
       path: 'users/edit/:id(\\d+)',
       component: () => import('@/views/users/Profile'),
       name: 'UserProfile',
-      meta: { title: 'userProfile', noCache: true, permissions: ['manage user'] },
+      meta: { title: 'userProfile', noCache: true, permissions: ['system.user.edit'] },
       hidden: true,
     },
     {
       path: 'users',
       component: () => import('@/views/users/List'),
       name: 'UserList',
-      meta: { title: 'users', icon: 'user', permissions: ['manage user'] },
+      meta: { title: 'users', icon: 'user', permissions: ['system.user'] },
     },
     /** Role and permission */
     {
       path: 'roles',
       component: () => import('@/views/role-permission/List'),
       name: 'RoleList',
-      meta: { title: 'rolePermission', icon: 'role', permissions: ['manage permission'] },
+      meta: { title: 'rolePermission', icon: 'role', permissions: ['system.user.permission'] },
     },
   ],
 };
