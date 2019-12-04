@@ -7,7 +7,7 @@ const basicRoutes = {
   redirect: '/basic/channel',
   name: 'Basic',
   meta: {
-    title: 'Basic',
+    title: 'basic',
     icon: 'admin',
     permissions: ['basic.manage'],
   },
@@ -17,14 +17,14 @@ const basicRoutes = {
       path: 'channel',
       component: () => import('@/views/channel/List'),
       name: 'Channel',
-      meta: { title: 'Channel', icon: 'user', permissions: ['basic.channel.list'] },
+      meta: { title: 'channel', icon: 'user', permissions: ['basic.channel.list'] },
     },
     /** Country managements */
     {
       path: 'channel',
       component: () => import('@/views/channel/List'),
       name: 'Country',
-      meta: { title: 'Country', icon: 'user', permissions: ['basic.channel.list'] },
+      meta: { title: 'country', icon: 'user', permissions: ['basic.channel.list'] },
     },
   ],
 };

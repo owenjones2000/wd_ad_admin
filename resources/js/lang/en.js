@@ -8,7 +8,10 @@ export default {
     system: 'System',
     users: 'Users',
     userProfile: 'User Profile',
+    rolePermission: 'Role Permission',
+    basic: 'Basic',
     channel: 'Channel',
+    country: 'Country',
   },
   navbar: {
     logOut: 'Log Out',
