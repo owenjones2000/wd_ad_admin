@@ -18,6 +18,7 @@ use Illuminate\Database\Query\Builder;
  */
 class Permission extends \Spatie\Permission\Models\Permission
 {
+    protected $connection = 'mysql_system';
     /**
      * To exclude permission management from the list
      *

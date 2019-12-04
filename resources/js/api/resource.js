@@ -34,6 +34,20 @@ class Resource {
       data: resource,
     });
   }
+
+  save(resource) {
+    var url;
+    if (resource.id) {
+      url = '/' + this.uri + '/' + resource.id;
+    } else {
+      url = '/' + this.uri;
+    }
+    return request({
+      url: url,
+      method: 'post',
+      data: resource,
+    });
+  }
   destroy(id) {
     return request({
       url: '/' + this.uri + '/' + id,

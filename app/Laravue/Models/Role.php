@@ -20,6 +20,7 @@ use Spatie\Permission\Models\Permission;
  */
 class Role extends \Spatie\Permission\Models\Role
 {
+    protected $connection = 'mysql_system';
     /**
      * Check whether current role is admin
      * @return bool

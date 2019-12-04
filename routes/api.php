@@ -1,9 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
-use \App\Laravue\Faker;
-use \App\Laravue\JsonResponse;
-
+use Illuminate\Support\Facades\Route;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -25,7 +23,6 @@ Route::group(['middleware' => 'api'], function () {
         Route::get('auth/user', 'AuthController@user');
         Route::post('auth/logout', 'AuthController@logout');
     });
-
     Route::apiResource('users', 'UserController')->middleware('permission:system.permission');
     Route::get('users/{user}/permissions', 'UserController@permissions')->middleware('permission:system.permission');
     Route::put('users/{user}/permissions', 'UserController@updatePermissions')->middleware('permission:system.permission');
@@ -33,39 +30,11 @@ Route::group(['middleware' => 'api'], function () {
     Route::get('roles/{role}/permissions', 'RoleController@permissions')->middleware('permission:system.permission');
     Route::apiResource('permissions', 'PermissionController')->middleware('permission:system.permission');
 
-    // Fake APIs
-    Route::get('/table/list', function () {
-        $rowsNumber = mt_rand(20, 30);
-        $data = [];
-        for ($rowIndex = 0; $rowIndex < $rowsNumber; $rowIndex++) {
-            $row = [
-                'author' => Faker::randomString(mt_rand(5, 10)),
-                'display_time' => Faker::randomDateTime()->format('Y-m-d H:i:s'),
-                'id' => mt_rand(100000, 100000000),
-                'pageviews' => mt_rand(100, 10000),
-                'status' => Faker::randomInArray(['deleted', 'published', 'draft']),
-                'title' => Faker::randomString(mt_rand(20, 50)),
-            ];
-
-            $data[] = $row;
-        }
-
-        return response()->json(new JsonResponse(['items' => $data]));
+    Route::group(['namespace' => 'Api'], function () {
+        Route::group(['prefix' => 'channel'], function () {
+            Route::get('', 'ChannelController@list')->name('channel.list');//->middleware('permission:basic.channel');
+            Route::post('{id?}', 'ChannelController@save')->name('channel.save');//->middleware('permission:basic.channel');
+        });
     });
 
-    Route::get('/orders', function () {
-        $rowsNumber = 8;
-        $data = [];
-        for ($rowIndex = 0; $rowIndex < $rowsNumber; $rowIndex++) {
-            $row = [
-                'order_no' => 'LARAVUE' . mt_rand(1000000, 9999999),
-                'price' => mt_rand(10000, 999999),
-                'status' => Faker::randomInArray(['success', 'pending']),
-            ];
-
-            $data[] = $row;
-        }
-
-        return response()->json(new JsonResponse(['items' => $data]));
-    });
 });

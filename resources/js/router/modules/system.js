@@ -6,9 +6,8 @@ const systemRoutes = {
   component: Layout,
   redirect: '/system/users',
   name: 'System',
-  alwaysShow: true,
   meta: {
-    title: 'System',
+    title: 'system',
     icon: 'admin',
     permissions: ['view menu administrator'],
   },
