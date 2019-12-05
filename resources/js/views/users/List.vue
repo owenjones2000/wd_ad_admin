@@ -8,7 +8,7 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         {{ $t('table.search') }}
       </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">
+      <el-button v-permission="['system.user.edit']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">
         {{ $t('table.add') }}
       </el-button>
       <el-button v-waves :loading="downloading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
@@ -35,11 +35,11 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Role" width="120">
-        <template slot-scope="scope">
-          <span>{{ scope.row.roles.join(', ') }}</span>
-        </template>
-      </el-table-column>
+      <!--<el-table-column align="center" label="Role" width="120">-->
+      <!--  <template slot-scope="scope">-->
+      <!--    <span>{{ scope.row.roles.join(', ') }}</span>-->
+      <!--  </template>-->
+      <!--</el-table-column>-->
 
       <el-table-column align="center" label="Actions" width="350">
         <template slot-scope="scope">
@@ -48,10 +48,10 @@
               Edit
             </el-button>
           </router-link>
-          <el-button v-if="!scope.row.roles.includes('admin')" v-permission="['system.user.permission']" type="warning" size="small" icon="el-icon-edit" @click="handleEditPermissions(scope.row.id);">
+          <el-button v-permission="['system.user.permission']" type="warning" size="small" icon="el-icon-edit" @click="handleEditPermissions(scope.row.id);">
             Permissions
           </el-button>
-          <el-button v-if="scope.row.roles.includes('visitor')" v-permission="['system.user']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">
+          <el-button v-permission="['system.user']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">
             Delete
           </el-button>
         </template>
@@ -65,15 +65,8 @@
         <div class="permissions-container">
           <div class="block">
             <el-form :model="currentUser" label-width="80px" label-position="top">
-              <el-form-item label="Menus">
-                <el-tree ref="menuPermissions" :data="normalizedMenuPermissions" :default-checked-keys="permissionKeys(userMenuPermissions)" :props="permissionProps" show-checkbox node-key="id" class="permission-tree" />
-              </el-form-item>
-            </el-form>
-          </div>
-          <div class="block">
-            <el-form :model="currentUser" label-width="80px" label-position="top">
               <el-form-item label="Permissions">
-                <el-tree ref="otherPermissions" :data="normalizedOtherPermissions" :default-checked-keys="permissionKeys(userOtherPermissions)" :props="permissionProps" show-checkbox node-key="id" class="permission-tree" />
+                <el-tree ref="permissions" :data="permissions" :default-checked-keys="permissionKeys(userPermissions)" :props="permissionProps" show-checkbox node-key="id" class="permission-tree" />
               </el-form-item>
             </el-form>
           </div>
@@ -183,81 +176,21 @@ export default {
       },
       permissionProps: {
         children: 'children',
-        label: 'name',
+        label: 'display_name',
         disabled: 'disabled',
       },
       permissions: [],
-      menuPermissions: [],
-      otherPermissions: [],
     };
   },
   computed: {
-    normalizedMenuPermissions() {
-      let tmp = [];
-      this.currentUser.permissions.role.forEach(permission => {
-        tmp.push({
-          id: permission.id,
-          name: permission.name,
-          disabled: true,
-        });
-      });
-      const rolePermissions = {
-        id: -1, // Just a faked ID
-        name: 'Inherited from role',
-        disabled: true,
-        children: this.classifyPermissions(tmp).menu,
-      };
-
-      tmp = this.menuPermissions.filter(permission => !this.currentUser.permissions.role.find(p => p.id === permission.id));
-      const userPermissions = {
-        id: 0, // Faked ID
-        name: 'Extra menus',
-        children: tmp,
-        disabled: tmp.length === 0,
-      };
-
-      return [rolePermissions, userPermissions];
-    },
-    normalizedOtherPermissions() {
-      let tmp = [];
-      this.currentUser.permissions.role.forEach(permission => {
-        tmp.push({
-          id: permission.id,
-          name: permission.name,
-          disabled: true,
-        });
-      });
-      const rolePermissions = {
-        id: -1,
-        name: 'Inherited from role',
-        disabled: true,
-        children: this.classifyPermissions(tmp).other,
-      };
-
-      tmp = this.otherPermissions.filter(permission => !this.currentUser.permissions.role.find(p => p.id === permission.id));
-      const userPermissions = {
-        id: 0,
-        name: 'Extra permissions',
-        children: tmp,
-        disabled: tmp.length === 0,
-      };
-
-      return [rolePermissions, userPermissions];
-    },
-    userMenuPermissions() {
-      return this.classifyPermissions(this.userPermissions).menu;
-    },
-    userOtherPermissions() {
-      return this.classifyPermissions(this.userPermissions).other;
-    },
     userPermissions() {
-      return this.currentUser.permissions.role.concat(this.currentUser.permissions.user);
+      return this.currentUser.permissions.user;
     },
   },
   created() {
     this.resetNewUser();
     this.getList();
-    if (checkPermission(['manage permission'])) {
+    if (checkPermission(['system.user.permission'])) {
       this.getPermissions();
     }
   },
@@ -265,10 +198,7 @@ export default {
     checkPermission,
     async getPermissions() {
       const { data } = await permissionResource.list({});
-      const { all, menu, other } = this.classifyPermissions(data);
-      this.permissions = all;
-      this.menuPermissions = menu;
-      this.otherPermissions = other;
+      this.permissions = data;
     },
 
     async getList() {
@@ -328,8 +258,7 @@ export default {
       };
       this.dialogPermissionLoading = false;
       this.$nextTick(() => {
-        this.$refs.menuPermissions.setCheckedKeys(this.permissionKeys(this.userMenuPermissions));
-        this.$refs.otherPermissions.setCheckedKeys(this.permissionKeys(this.userOtherPermissions));
+        this.$refs.permissions.setCheckedKeys(this.permissionKeys(this.userPermissions));
       });
     },
     createUser() {
@@ -388,35 +317,11 @@ export default {
       return jsonData.map(v => filterVal.map(j => v[j]));
     },
     permissionKeys(permissions) {
-      return permissions.map(permssion => permssion.id);
-    },
-    classifyPermissions(permissions) {
-      const all = []; const menu = []; const other = [];
-      permissions.forEach(permission => {
-        const permissionName = permission.name;
-        all.push(permission);
-        if (permissionName.startsWith('view menu')) {
-          menu.push(this.normalizeMenuPermission(permission));
-        } else {
-          other.push(this.normalizePermission(permission));
-        }
-      });
-      return { all, menu, other };
-    },
-
-    normalizeMenuPermission(permission) {
-      return { id: permission.id, name: this.$options.filters.uppercaseFirst(permission.name.substring(10)), disabled: permission.disabled || false };
-    },
-
-    normalizePermission(permission) {
-      const disabled = permission.disabled || permission.name === 'manage permission';
-      return { id: permission.id, name: this.$options.filters.uppercaseFirst(permission.name), disabled: disabled };
+      return permissions.map(permission => permission.id);
     },
 
     confirmPermission() {
-      const checkedMenu = this.$refs.menuPermissions.getCheckedKeys();
-      const checkedOther = this.$refs.otherPermissions.getCheckedKeys();
-      const checkedPermissions = checkedMenu.concat(checkedOther);
+      const checkedPermissions = this.$refs.permissions.getCheckedKeys();
       this.dialogPermissionLoading = true;
 
       userResource.updatePermission(this.currentUserId, { permissions: checkedPermissions }).then(response => {

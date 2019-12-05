@@ -17,7 +17,7 @@ const basicRoutes = {
       path: 'channel',
       component: () => import('@/views/channel/List'),
       name: 'Channel',
-      meta: { title: 'channel', icon: 'user', permissions: ['basic.channel.list'] },
+      meta: { title: 'channel', icon: 'user', permissions: ['basic.channel'] },
     },
     /** Country managements */
     {

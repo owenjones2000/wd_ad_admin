@@ -27,12 +27,12 @@ const systemRoutes = {
       meta: { title: 'users', icon: 'user', permissions: ['system.user'] },
     },
     /** Role and permission */
-    {
-      path: 'roles',
-      component: () => import('@/views/role-permission/List'),
-      name: 'RoleList',
-      meta: { title: 'rolePermission', icon: 'role', permissions: ['system.user.permission'] },
-    },
+    // {
+    //   path: 'roles',
+    //   component: () => import('@/views/role-permission/List'),
+    //   name: 'RoleList',
+    //   meta: { title: 'rolePermission', icon: 'role', permissions: ['system.user.permission'] },
+    // },
   ],
 };
 
