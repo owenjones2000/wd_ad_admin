@@ -118,6 +118,9 @@ class ChannelController extends Controller
             ])->firstOrFail();
         }
         $channel->fill($request->all());
+        if(empty($channel['name_hash'])){
+            $channel['name_hash'] = md5($channel['bundle_id'].$channel['name'].$channel['platform']);
+        }
         $channel->saveOrFail();
 
         return new ChannelResource($channel);
