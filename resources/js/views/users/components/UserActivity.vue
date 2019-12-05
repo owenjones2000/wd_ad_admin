@@ -2,25 +2,32 @@
   <el-card v-if="user.name">
     <el-tabs v-model="activeActivity" @tab-click="handleClick">
       <el-tab-pane v-loading="updating" label="Account" name="first">
-        <el-form-item label="Name">
-          <el-input v-model="user.name" :disabled="user.role === 'admin'" />
-        </el-form-item>
-        <el-form-item label="Email">
-          <el-input v-model="user.email" :disabled="user.role === 'admin'" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" :disabled="user.role === 'admin'" @click="onSubmit">
-            Update
-          </el-button>
-        </el-form-item>
+        <el-form ref="userForm" :rules="rules" :model="user">
+          <el-form-item label="Name">
+            <el-input v-model="user.name" :disabled="user.role === 'admin'" />
+          </el-form-item>
+          <el-form-item label="Email">
+            <el-input v-model="user.email" :disabled="user.role === 'admin'" />
+          </el-form-item>
+          <el-form-item :label="$t('user.password')" prop="password">
+            <el-input v-model="user.password" show-password />
+          </el-form-item>
+          <el-form-item :label="$t('user.confirmPassword')" prop="confirmPassword">
+            <el-input v-model="user.confirmPassword" show-password />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" :disabled="user.role === 'admin'" @click="onSubmit">
+              Update
+            </el-button>
+          </el-form-item>
+        </el-form>
       </el-tab-pane>
     </el-tabs>
   </el-card>
 </template>
 
 <script>
-import Resource from '@/api/resource';
-const userResource = new Resource('users');
+import { updateInfo } from '@/api/auth';
 
 export default {
   props: {
@@ -37,6 +44,13 @@ export default {
     },
   },
   data() {
+    var validateConfirmPassword = (rule, value, callback) => {
+      if (value !== this.user.password) {
+        callback(new Error('Password is mismatched!'));
+      } else {
+        callback();
+      }
+    };
     return {
       activeActivity: 'first',
       carouselImages: [
@@ -46,6 +60,15 @@ export default {
         'https://cdn.laravue.dev/photo4.jpg',
       ],
       updating: false,
+      rules: {
+        name: [{ required: true, message: 'Name is required', trigger: 'blur' }],
+        email: [
+          { required: true, message: 'Email is required', trigger: 'blur' },
+          { type: 'email', message: 'Please input correct email address', trigger: ['blur', 'change'] },
+        ],
+        password: [],
+        confirmPassword: [{ validator: validateConfirmPassword, trigger: 'blur' }],
+      },
     };
   },
   methods: {
@@ -53,21 +76,24 @@ export default {
       console.log('Switching tab ', tab, event);
     },
     onSubmit() {
-      this.updating = true;
-      userResource
-        .update(this.user.id, this.user)
-        .then(response => {
-          this.updating = false;
-          this.$message({
-            message: 'User information has been updated successfully',
-            type: 'success',
-            duration: 5 * 1000,
-          });
-        })
-        .catch(error => {
-          console.log(error);
-          this.updating = false;
-        });
+      this.$refs['userForm'].validate((valid) => {
+        if (valid) {
+          this.updating = true;
+          updateInfo(this.user)
+            .then(response => {
+              this.$message({
+                message: 'User information has been updated successfully',
+                type: 'success',
+                duration: 5 * 1000,
+              });
+            })
+            .catch(error => {
+              console.log(error);
+            }).finally(() => {
+              this.updating = false;
+            });
+        }
+      });
     },
   },
 };

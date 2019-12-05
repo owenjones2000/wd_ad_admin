@@ -56,8 +56,8 @@ export default {
       }
     };
     const validatePass = (rule, value, callback) => {
-      if (value.length < 4) {
-        callback(new Error('Password cannot be less than 4 digits'));
+      if (value.length < 2) {
+        callback(new Error('Password cannot be less than 2 digits'));
       } else {
         callback();
       }

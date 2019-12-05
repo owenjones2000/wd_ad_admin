@@ -21,6 +21,7 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('auth/login', 'AuthController@login');
     Route::group(['middleware' => 'auth:api'], function () {
         Route::get('auth/user', 'AuthController@user');
+        Route::post('auth/user', 'AuthController@update');
         Route::post('auth/logout', 'AuthController@logout');
     });
     Route::apiResource('users', 'UserController')->middleware('permission:system.user');

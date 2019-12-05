@@ -14,10 +14,10 @@ const systemRoutes = {
   children: [
     /** User managements */
     {
-      path: 'users/edit/:id(\\d+)',
+      path: 'auth/user',
       component: () => import('@/views/users/Profile'),
       name: 'UserProfile',
-      meta: { title: 'userProfile', noCache: true, permissions: ['system.user.edit'] },
+      meta: { title: 'userProfile', noCache: true },
       hidden: true,
     },
     {

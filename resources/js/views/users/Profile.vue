@@ -14,11 +14,10 @@
 </template>
 
 <script>
-import Resource from '@/api/resource';
+import { getInfo } from '@/api/auth';
 import UserCard from './components/UserCard';
 import UserActivity from './components/UserActivity';
 
-const userResource = new Resource('users');
 export default {
   name: 'EditUser',
   components: { UserCard, UserActivity },
@@ -31,12 +30,11 @@ export default {
     '$route': 'getUser',
   },
   created() {
-    const id = this.$route.params && this.$route.params.id;
-    this.getUser(id);
+    this.getUser();
   },
   methods: {
-    async getUser(id) {
-      const { data } = await userResource.get(id);
+    async getUser() {
+      const { data } = await getInfo();
       this.user = data;
     },
   },

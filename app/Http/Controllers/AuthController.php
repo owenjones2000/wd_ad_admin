@@ -9,10 +9,13 @@
 namespace App\Http\Controllers;
 
 use App\Laravue\JsonResponse;
+use App\Laravue\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 /**
  * Class AuthController
@@ -44,6 +47,49 @@ class AuthController extends Controller
     public function user()
     {
         return new UserResource(Auth::user());
+    }
+
+    public function update(Request $request){
+        /** @var User $user */
+        $user = Auth::user();
+        if ($user->isAdmin()) {
+            return response()->json(['error' => 'Admin can not be modified'], 403);
+        }
+
+        $validator = Validator::make($request->all(), $this->getValidationRules(false));
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 403);
+        } else {
+            $email = $request->get('email');
+            $found = User::where('email', $email)->first();
+            if ($found && $found->id !== $user->id) {
+                return response()->json(['error' => 'Email has been taken'], 403);
+            }
+
+            $user->name = $request->get('name');
+            $user->email = $email;
+            if(!empty($request->input('password'))){
+                $user['password'] = Hash::make($request->input('password'));
+            }
+            $user->save();
+            return new UserResource($user);
+        }
+    }
+
+    /**
+     * @param bool $isNew
+     * @return array
+     */
+    private function getValidationRules($isNew = true)
+    {
+        return [
+            'name' => 'required',
+            'email' => $isNew ? 'required|email|unique:users' : 'required|email',
+            'roles' => [
+                'required',
+                'array'
+            ],
+        ];
     }
 
     /**

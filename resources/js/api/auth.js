@@ -15,6 +15,14 @@ export function getInfo(token) {
   });
 }
 
+export function updateInfo(data) {
+  return request({
+    url: '/auth/user',
+    method: 'post',
+    data: data,
+  });
+}
+
 export function logout() {
   return request({
     url: '/auth/logout',
