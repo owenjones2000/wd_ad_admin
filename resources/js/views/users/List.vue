@@ -43,11 +43,9 @@
 
       <el-table-column align="center" label="Actions" width="350">
         <template slot-scope="scope">
-          <router-link v-if="!scope.row.roles.includes('admin')" :to="'/system/users/edit/'+scope.row.id">
-            <el-button v-permission="['system.user.edit']" type="primary" size="small" icon="el-icon-edit">
-              Edit
-            </el-button>
-          </router-link>
+          <el-button v-permission="['system.user.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">
+            Edit
+          </el-button>
           <el-button v-permission="['system.user.permission']" type="warning" size="small" icon="el-icon-edit" @click="handleEditPermissions(scope.row.id);">
             Permissions
           </el-button>
@@ -83,25 +81,25 @@
       </div>
     </el-dialog>
 
-    <el-dialog :title="'Create new user'" :visible.sync="dialogFormVisible">
+    <el-dialog :title="'Edit user'" :visible.sync="dialogFormVisible">
       <div v-loading="userCreating" class="form-container">
-        <el-form ref="userForm" :rules="rules" :model="newUser" label-position="left" label-width="150px" style="max-width: 500px;">
-          <el-form-item :label="$t('user.role')" prop="role">
-            <el-select v-model="newUser.role" class="filter-item" placeholder="Please select role">
-              <el-option v-for="item in nonAdminRoles" :key="item" :label="item | uppercaseFirst" :value="item" />
-            </el-select>
-          </el-form-item>
+        <el-form ref="userForm" :rules="rules" :model="user" label-position="left" label-width="150px" style="max-width: 500px;">
+          <!--<el-form-item :label="$t('user.role')" prop="role">-->
+          <!--  <el-select v-model="user.role" class="filter-item" placeholder="Please select role">-->
+          <!--    <el-option v-for="item in nonAdminRoles" :key="item" :label="item | uppercaseFirst" :value="item" />-->
+          <!--  </el-select>-->
+          <!--</el-form-item>-->
           <el-form-item :label="$t('user.name')" prop="name">
-            <el-input v-model="newUser.name" />
+            <el-input v-model="user.name" />
           </el-form-item>
           <el-form-item :label="$t('user.email')" prop="email">
-            <el-input v-model="newUser.email" />
+            <el-input v-model="user.email" />
           </el-form-item>
           <el-form-item :label="$t('user.password')" prop="password">
-            <el-input v-model="newUser.password" show-password />
+            <el-input v-model="user.password" show-password />
           </el-form-item>
           <el-form-item :label="$t('user.confirmPassword')" prop="confirmPassword">
-            <el-input v-model="newUser.confirmPassword" show-password />
+            <el-input v-model="user.confirmPassword" show-password />
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -134,7 +132,7 @@ export default {
   directives: { waves, permission },
   data() {
     var validateConfirmPassword = (rule, value, callback) => {
-      if (value !== this.newUser.password) {
+      if (this.user.password && value !== this.user.password) {
         callback(new Error('Password is mismatched!'));
       } else {
         callback();
@@ -154,7 +152,8 @@ export default {
       },
       roles: ['admin', 'manager', 'editor', 'user', 'visitor'],
       nonAdminRoles: ['editor', 'user', 'visitor'],
-      newUser: {},
+      user: {},
+      passwordRequired: true,
       dialogFormVisible: false,
       dialogPermissionVisible: false,
       dialogPermissionLoading: false,
@@ -171,7 +170,7 @@ export default {
           { required: true, message: 'Email is required', trigger: 'blur' },
           { type: 'email', message: 'Please input correct email address', trigger: ['blur', 'change'] },
         ],
-        password: [{ required: true, message: 'Password is required', trigger: 'blur' }],
+        password: [{ required: this.passwordRequired, message: 'Password is required', trigger: 'blur' }],
         confirmPassword: [{ validator: validateConfirmPassword, trigger: 'blur' }],
       },
       permissionProps: {
@@ -218,6 +217,15 @@ export default {
     },
     handleCreate() {
       this.resetNewUser();
+      this.passwordRequired = true;
+      this.dialogFormVisible = true;
+      this.$nextTick(() => {
+        this.$refs['userForm'].clearValidate();
+      });
+    },
+    handleEdit(user) {
+      this.user = user;
+      this.passwordRequired = false;
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['userForm'].clearValidate();
@@ -264,13 +272,13 @@ export default {
     createUser() {
       this.$refs['userForm'].validate((valid) => {
         if (valid) {
-          this.newUser.roles = [this.newUser.role];
+          this.user.roles = [this.user.role];
           this.userCreating = true;
           userResource
-            .store(this.newUser)
+            .save(this.user)
             .then(response => {
               this.$message({
-                message: 'New user ' + this.newUser.name + '(' + this.newUser.email + ') has been created successfully.',
+                message: 'User ' + this.user.name + '(' + this.user.email + ') has been saved successfully.',
                 type: 'success',
                 duration: 5 * 1000,
               });
@@ -291,7 +299,7 @@ export default {
       });
     },
     resetNewUser() {
-      this.newUser = {
+      this.user = {
         name: '',
         email: '',
         password: '',

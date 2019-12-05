@@ -69,7 +69,7 @@ class UserController extends Controller
             array_merge(
                 $this->getValidationRules(),
                 [
-                    'password' => ['required', 'min:6'],
+                    'password' => ['required', 'min:2'],
                     'confirmPassword' => 'same:password',
                 ]
             )
@@ -214,7 +214,7 @@ class UserController extends Controller
     {
         return [
             'name' => 'required',
-            'email' => $isNew ? 'required|email|unique:users' : 'required|email',
+            'email' => $isNew ? 'required|email|unique:mysql_system.admin_users' : 'required|email',
             'roles' => [
                 'required',
                 'array'
