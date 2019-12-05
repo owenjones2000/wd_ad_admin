@@ -8,5 +8,5 @@ class Channel extends Model
 {
     protected $table = 'a_target_apps';
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'bundle_id', 'platform'];
 }

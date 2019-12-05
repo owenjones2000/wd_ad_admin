@@ -140,7 +140,13 @@ export default {
       visitor: 'Visitor. Have access to static pages, should not have any writable permission',
     },
   },
+  platform: {
+    name: 'Platform',
+  },
+  app: {
+    bundle_id: 'Package',
+  },
   channel: {
-    'name': 'Name',
+    name: 'Name',
   },
 };
