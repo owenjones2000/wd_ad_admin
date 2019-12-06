@@ -131,13 +131,6 @@ export default {
   components: { Pagination },
   directives: { waves, permission },
   data() {
-    var validateConfirmPassword = (rule, value, callback) => {
-      if (this.user.password && value !== this.user.password) {
-        callback(new Error('Password is mismatched!'));
-      } else {
-        callback();
-      }
-    };
     return {
       list: null,
       total: 0,
@@ -163,16 +156,6 @@ export default {
         permissions: [],
         rolePermissions: [],
       },
-      rules: {
-        role: [{ required: true, message: 'Role is required', trigger: 'change' }],
-        name: [{ required: true, message: 'Name is required', trigger: 'blur' }],
-        email: [
-          { required: true, message: 'Email is required', trigger: 'blur' },
-          { type: 'email', message: 'Please input correct email address', trigger: ['blur', 'change'] },
-        ],
-        password: [{ required: this.passwordRequired, message: 'Password is required', trigger: 'blur' }],
-        confirmPassword: [{ validator: validateConfirmPassword, trigger: 'blur' }],
-      },
       permissionProps: {
         children: 'children',
         label: 'display_name',
@@ -182,6 +165,25 @@ export default {
     };
   },
   computed: {
+    rules(){
+      var validateConfirmPassword = (rule, value, callback) => {
+        if (this.user.password && value !== this.user.password) {
+          callback(new Error('Password is mismatched!'));
+        } else {
+          callback();
+        }
+      };
+      return {
+        role: [{ required: true, message: 'Role is required', trigger: 'change' }],
+        name: [{ required: true, message: 'Name is required', trigger: 'blur' }],
+        email: [
+          { required: true, message: 'Email is required', trigger: 'blur' },
+          { type: 'email', message: 'Please input correct email address', trigger: ['blur', 'change'] },
+        ],
+        password: [{ required: this.passwordRequired, message: 'Password is required', trigger: 'blur' }],
+        confirmPassword: [{ validator: validateConfirmPassword, trigger: 'blur' }],
+      };
+    },
     userPermissions() {
       return this.currentUser.permissions.user;
     },
