@@ -19,7 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 /**
  * Class UserController
@@ -60,7 +60,7 @@ class UserController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|UserResource
      */
     public function store(Request $request)
     {
@@ -123,7 +123,7 @@ class UserController extends Controller
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
             $email = $request->get('email');
-            $found = User::where('email', $email)->first();
+            $found = User::query()->where('email', $email)->first();
             if ($found && $found->id !== $user->id) {
                 return response()->json(['error' => 'Email has been taken'], 403);
             }

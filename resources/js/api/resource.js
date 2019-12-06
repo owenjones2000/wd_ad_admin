@@ -36,20 +36,17 @@ class Resource {
   }
 
   save(resource) {
-    var url, method;
+    var url = '/' + this.uri;
     if (resource.id) {
       url = '/' + this.uri + '/' + resource.id;
-      method = 'put';
-    } else {
-      url = '/' + this.uri;
-      method = 'post';
     }
     return request({
       url: url,
-      method: method,
+      method: 'post',
       data: resource,
     });
   }
+
   destroy(id) {
     return request({
       url: '/' + this.uri + '/' + id,

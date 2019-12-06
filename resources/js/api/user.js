@@ -6,10 +6,18 @@ class UserResource extends Resource {
     super('users');
   }
 
+  save(resource) {
+    if (resource.id) {
+      return this.update(resource.id, resource);
+    } else {
+      return this.store(resource);
+    }
+  }
+
   permissions(id) {
     return request({
       url: '/' + this.uri + '/' + id + '/permissions',
-      method: 'get',
+        method: 'get',
     });
   }
 

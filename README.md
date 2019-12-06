@@ -38,11 +38,11 @@ Documentation: [https://doc.laravue.dev](https://doc.laravue.dev)
 ### Installing
 ```bash
 # Clone the project and run composer
-composer create-project tuandm/laravue
-cd laravue
+# composer create-project tuandm/laravue
+# cd laravue
 
 # Migration and DB seeder (after changing your DB settings in .env)
-php artisan migrate --seed
+# php artisan migrate --seed
 
 # Generate JWT secret key
 php artisan jwt:secret
