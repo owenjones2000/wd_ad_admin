@@ -19,6 +19,7 @@ class ChannelResource extends JsonResource
             'name' => $this->name,
             'bundle_id' => $this->bundle_id,
             'platform' => $this->platform,
+            //'tokens' => $this->tokens,
         ];
     }
 }

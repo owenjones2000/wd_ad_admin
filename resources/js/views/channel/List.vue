@@ -43,6 +43,9 @@
           <el-button v-permission="['basic.channel.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">
             Edit
           </el-button>
+          <el-button v-permission="['basic.auth.token']" type="normal" size="small" icon="el-icon-key " @click="handleToken(scope.row)">
+            Token
+          </el-button>
           <el-button v-permission="['basic.channel.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">
             Delete
           </el-button>
@@ -78,17 +81,55 @@
         </div>
       </div>
     </el-dialog>
+
+    <el-dialog :title="dialogTokenFormName" :visible.sync="dialogTokenFormVisible">
+      <div v-loading="channelCreating" class="form-container">
+        <el-form ref="tokenForm" v-permission="['basic.auth.token.make']" :model="newToken" label-position="left" label-width="150px" style="max-width: 500px;">
+          <el-form-item :label="$t('token.expired_at')" prop="expired_at">
+            <el-date-picker v-model="newToken.expired_at" type="date" placeholder="no limit" />
+            <el-button type="primary" @click="makeToken()">
+              {{ $t('token.make') }}
+            </el-button>
+          </el-form-item>
+        </el-form>
+        <el-divider />
+        <div slot="footer" class="dialog-footer">
+          <el-table v-loading="loading" :data="currentChannelTokens" border fit highlight-current-row style="width: 100%">
+            <el-table-column align="center" label="Access Token" width="200" :show-overflow-tooltip="true">
+              <template slot-scope="scope">
+                <span>{{ scope.row.access_token }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column align="center" label="Expired Date">
+              <template slot-scope="scope">
+                <span>{{ scope.row.expired_at }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column align="center" label="Actions" width="100">
+              <template slot-scope="scope">
+                <el-button v-permission="['basic.auth.token.destroy']" type="danger" icon="el-icon-delete" circle @click="handleTokenDelete(scope.row);" />
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
 import ChannelResource from '@/api/channel';
+import TokenResource from '@/api/token';
 import waves from '@/directive/waves'; // Waves directive
 import permission from '@/directive/permission'; // Waves directive
 import checkPermission from '@/utils/permission'; // Permission checking
 
 const channelResource = new ChannelResource();
+const tokenResource = new TokenResource();
 
 export default {
   name: 'ChannelList',
@@ -112,11 +153,18 @@ export default {
       currentChannelId: 0,
       currentChannel: {
         name: '',
+        tokens: [],
       },
+      currentChannelTokens: [],
       rules: {
         name: [{ required: true, message: 'Name is required', trigger: 'blur' }],
         bundle_id: [{ required: true, message: 'Package name is required', trigger: 'blur' }],
         platform: [{ required: true, message: 'Platform is required', trigger: 'blur' }],
+      },
+      dialogTokenFormVisible: false,
+      dialogTokenFormName: 'Api token',
+      newToken: {
+        expired_at: null,
       },
     };
   },
@@ -157,6 +205,60 @@ export default {
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['channelForm'].clearValidate();
+      });
+    },
+    async getTokenList(){
+      this.currentChannelTokens = [];
+      const { data } = await tokenResource.list(this.currentChannel.bundle_id);
+      this.currentChannelTokens = data;
+    },
+    handleToken(channel) {
+      this.currentChannel = channel;
+      this.dialogTokenFormName = channel.name;
+      this.getTokenList();
+      this.dialogTokenFormVisible = true;
+    },
+    makeToken() {
+      this.$confirm('This will make a new token for channel ' + this.currentChannel.name + '. Continue?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }).then(() => {
+        tokenResource.makeToken(this.currentChannel.bundle_id, this.newToken.expired_at).then(response => {
+          this.$message({
+            type: 'success',
+            message: 'The new token : ' + response.api_token,
+          });
+        }).catch(error => {
+          console.log(error);
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: 'Make token canceled',
+        });
+      });
+    },
+    handleTokenDelete(token) {
+      this.$confirm('This will permanently delete token ' + token.access_token + '. Continue?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }).then(() => {
+        tokenResource.destroy(token.id).then(response => {
+          this.$message({
+            type: 'success',
+            message: 'Delete token completed',
+          });
+          this.getTokenList();
+        }).catch(error => {
+          console.log(error);
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: 'Delete token canceled',
+        });
       });
     },
     handleDelete(id, name) {

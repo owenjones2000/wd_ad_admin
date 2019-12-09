@@ -146,6 +146,10 @@ export default {
   app: {
     bundle_id: 'Package',
   },
+  token: {
+    expired_at: 'Expired Date',
+    make: 'New Token',
+  },
   channel: {
     name: 'Name',
   },

@@ -27,6 +27,13 @@ Route::group(['middleware' => 'api'], function () {
     Route::apiResource('permissions', 'PermissionController')->middleware('permission:system.permission');
 
     Route::group(['namespace' => 'Api'], function () {
+        // API
+        Route::group(['prefix' => 'auth'], function () {
+            Route::get('token', 'AuthController@tokenList')->name('auth.token')->middleware('permission:basic.auth.token');
+            Route::post('token', 'AuthController@makeToken')->name('auth.token.make')->middleware('permission:basic.auth.token.make');
+            Route::delete('token/{id}', 'AuthController@destroy')->name('auth.token.destroy')->middleware('permission:basic.auth.token.destroy');
+        });
+        // 渠道
         Route::group(['prefix' => 'channel'], function () {
             Route::get('', 'ChannelController@list')->name('channel.list')->middleware('permission:basic.channel');
             Route::post('{id?}', 'ChannelController@save')->name('channel.save')->middleware('permission:basic.channel.edit');

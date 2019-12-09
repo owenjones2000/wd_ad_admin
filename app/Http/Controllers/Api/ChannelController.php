@@ -17,6 +17,7 @@ use App\Laravue\Models\Permission;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
 use App\Models\Channel;
+use App\Models\ApiToken;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Arr;
@@ -145,6 +146,17 @@ class ChannelController extends Controller
         }
 
         return response()->json(null, 204);
+    }
+
+    public function tokenList($id){
+        $channel = Channel::findOrFail($id);
+        return ApiToken::query()->where(['bundle_id' => $channel['bundle_id']])->get();
+    }
+
+    public function makeToken($id){
+        $channel = Channel::findOrFail($id);
+        $api_token = ApiToken::Make($channel['bundle_id']);
+        return ['api_token' => $api_token['access_token']];
     }
 
     /**
