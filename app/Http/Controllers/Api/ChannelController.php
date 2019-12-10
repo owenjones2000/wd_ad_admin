@@ -12,8 +12,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ChannelResource;
 use App\Http\Resources\UserResource;
-use App\Laravue\JsonResponse;
-use App\Laravue\Models\Permission;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
 use App\Models\Channel;
