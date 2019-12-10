@@ -92,30 +92,29 @@
             </el-button>
           </el-form-item>
         </el-form>
-        <el-divider />
-        <div slot="footer" class="dialog-footer">
-          <el-table v-loading="loading" :data="currentChannelTokens" border fit highlight-current-row style="width: 100%">
-            <el-table-column align="center" label="Access Token" width="200" :show-overflow-tooltip="true">
-              <template slot-scope="scope">
-                <span>{{ scope.row.access_token }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column align="center" label="Expired Date">
-              <template slot-scope="scope">
-                <span>{{ scope.row.expired_at }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column align="center" label="Actions" width="100">
-              <template slot-scope="scope">
-                <el-link v-clipboard:copy="scope.row.access_token" v-clipboard:success="clipboardSuccess" type="primary" icon="el-icon-document" />
-                <el-link v-permission="['basic.auth.token.destroy']" type="danger" icon="el-icon-delete" @click="handleTokenDelete(scope.row);" />
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
       </div>
+      <el-divider />
+      <el-table v-loading="loading" :data="currentChannelTokens" border fit highlight-current-row style="width: 100%">
+        <el-table-column align="center" label="Access Token" width="200" :show-overflow-tooltip="true">
+          <template slot-scope="scope">
+            <el-link v-clipboard:copy="scope.row.access_token" v-clipboard:success="clipboardSuccess" type="primary" icon="el-icon-document" />
+
+            <span>{{ scope.row.access_token }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column align="center" label="Expired Date">
+          <template slot-scope="scope">
+            <span>{{ scope.row.expired_at }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column align="center" label="Actions" width="100">
+          <template slot-scope="scope">
+            <el-link v-permission="['basic.auth.token.destroy']" type="danger" icon="el-icon-delete" @click="handleTokenDelete(scope.row);" />
+          </template>
+        </el-table-column>
+      </el-table>
     </el-dialog>
 
   </div>
