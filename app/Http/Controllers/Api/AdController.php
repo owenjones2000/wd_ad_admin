@@ -21,7 +21,7 @@ class AdController extends Controller
         $start_date = date('Ymd', strtotime($range_date[0]??'now'));
         $end_date = date('Ymd', strtotime($range_date[1]??'now'));
         $ad_base_query = Ad::query()->where('campaign_id', $campaign_id);
-        if(!empty($request->get('name'))){
+        if(!empty($request->get('keyword'))){
             $ad_base_query->where('name', 'like', '%'.$request->get('name').'%');
         }
         $ad_id_query = clone $ad_base_query;
