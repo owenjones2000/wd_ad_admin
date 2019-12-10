@@ -86,7 +86,7 @@
       <div v-loading="channelCreating" class="form-container">
         <el-form ref="tokenForm" v-permission="['basic.auth.token.make']" :model="newToken" label-position="left" label-width="150px" style="max-width: 500px;">
           <el-form-item :label="$t('token.expired_at')" prop="expired_at">
-            <el-date-picker v-model="newToken.expired_at" type="date" placeholder="no limit" />
+            <el-date-picker v-model="newToken.expired_at" type="date" value-format="yyyy-MM-dd" placeholder="no limit" />
             <el-button type="primary" @click="makeToken()">
               {{ $t('token.make') }}
             </el-button>
@@ -230,6 +230,7 @@ export default {
             type: 'success',
             message: 'The new token : ' + response.api_token,
           });
+          this.getTokenList();
         }).catch(error => {
           console.log(error);
         });

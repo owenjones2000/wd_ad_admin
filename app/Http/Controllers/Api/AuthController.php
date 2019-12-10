@@ -36,7 +36,10 @@ class AuthController extends Controller
     }
 
     public function makeToken(Request $request){
-        $api_token = ApiToken::Make($request->input('bundle_id'));
+        $api_token = ApiToken::Make(
+            $request->input('bundle_id'),
+            date('Y-m-d', strtotime($request->input('expired_at', '2100-11-11')))
+        );
         return ['api_token' => $api_token['access_token']];
     }
 
