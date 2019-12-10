@@ -26,15 +26,17 @@
     </div>
 
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="ID" width="80">
-        <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
-        </template>
-      </el-table-column>
+      <!--<el-table-column align="center" label="ID" width="80">-->
+      <!--  <template slot-scope="scope">-->
+      <!--    <span>{{ scope.row.id }}</span>-->
+      <!--  </template>-->
+      <!--</el-table-column>-->
 
-      <el-table-column align="center" label="Name">
+      <el-table-column align="center" label="Name" width="200px">
         <template slot-scope="scope">
-          <span>{{ scope.row.name }}</span>
+          <router-link class="link-type" :to="'/acquisition/campaign/'+scope.row.id+'/ad'">
+            {{ scope.row.name }}
+          </router-link>
         </template>
       </el-table-column>
 
@@ -62,37 +64,37 @@
           <span>{{ scope.row.kpi&&scope.row.kpi.clicks ? scope.row.kpi.clicks : 0 }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="installs">
+      <el-table-column align="center" label="Installs">
         <template slot-scope="scope">
           <span>{{ scope.row.kpi&&scope.row.kpi.installs ? scope.row.kpi.installs : 0 }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="ctr">
+      <el-table-column align="center" label="CTR">
         <template slot-scope="scope">
           <span>{{ scope.row.kpi&&scope.row.kpi.ctr ? scope.row.kpi.ctr : '0.00' }}%</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="cvr">
+      <el-table-column align="center" label="CVR">
         <template slot-scope="scope">
           <span>{{ scope.row.kpi&&scope.row.kpi.cvr ? scope.row.kpi.cvr : '0.00' }}%</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="ir">
+      <el-table-column align="center" label="IR">
         <template slot-scope="scope">
           <span>{{ scope.row.kpi&&scope.row.kpi.ir ? scope.row.kpi.ir : '0.00' }}%</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="spend">
+      <el-table-column align="center" label="Spend">
         <template slot-scope="scope">
           <span>${{ scope.row.kpi&&scope.row.kpi.spend ? scope.row.kpi.spend : '0.00' }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="ecpi">
+      <el-table-column align="center" label="eCpi">
         <template slot-scope="scope">
           <span>${{ scope.row.kpi&&scope.row.kpi.ecpi ? scope.row.kpi.ecpi : '0.00' }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="ecpm">
+      <el-table-column align="center" label="eCpm">
         <template slot-scope="scope">
           <span>${{ scope.row.kpi&&scope.row.kpi.ecpm ? scope.row.kpi.ecpm : '0.00' }}</span>
         </template>
