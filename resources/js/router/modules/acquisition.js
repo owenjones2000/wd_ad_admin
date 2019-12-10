@@ -9,7 +9,7 @@ const basicRoutes = {
   meta: {
     title: 'acquisition',
     icon: 'admin',
-    permissions: ['acquisition.manage'],
+    permissions: ['advertise.manage'],
   },
   children: [
     /** Campaign managements */
@@ -17,14 +17,14 @@ const basicRoutes = {
       path: 'campaign',
       component: () => import('@/views/campaign/List'),
       name: 'Campaign',
-      meta: { title: 'campaign', icon: 'user', permissions: ['basic.campaign'] },
+      meta: { title: 'campaign', icon: 'user', permissions: ['advertise.campaign'] },
     },
-    /** Country managements */
+    /** Ad managements */
     {
-      path: 'campaign',
-      component: () => import('@/views/campaign/List'),
-      name: 'Country',
-      meta: { title: 'country', icon: 'user', permissions: ['basic.campaign.list'] },
+      path: 'campaign/ad',
+      component: () => import('@/views/campaign/ad/List'),
+      name: 'Ad',
+      meta: { title: 'ad', icon: 'user', permissions: ['advertise.campaign.ad.list'] },
     },
   ],
 };

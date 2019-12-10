@@ -2,6 +2,18 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-date-picker
+        v-model="query.daterange"
+        type="daterange"
+        class="filter-item"
+        align="right"
+        unlink-panels
+        range-separator=" ~ "
+        start-placeholder="start date"
+        end-placeholder="end date"
+        value-format="yyyy-MM-dd"
+        :picker-options="pickerOptions"
+      />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         {{ $t('table.search') }}
       </el-button>
@@ -26,27 +38,72 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Package">
+      <el-table-column align="center" label="Budget">
         <template slot-scope="scope">
-          <span>{{ scope.row.bundle_id }}</span>
+          <span>${{ scope.row.default_budget }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Platform">
+      <el-table-column
+        prop="created_at"
+        :formatter="dateFormat"
+        label="Created"
+        align="center"
+        width="100"
+      />
+
+      <el-table-column align="center" label="Impressions">
         <template slot-scope="scope">
-          <span>{{ scope.row.platform }}</span>
+          <span>{{ scope.row.kpi&&scope.row.kpi.impressions ? scope.row.kpi.impressions : 0 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Clicks">
+        <template slot-scope="scope">
+          <span>{{ scope.row.kpi&&scope.row.kpi.clicks ? scope.row.kpi.clicks : 0 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="installs">
+        <template slot-scope="scope">
+          <span>{{ scope.row.kpi&&scope.row.kpi.installs ? scope.row.kpi.installs : 0 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="ctr">
+        <template slot-scope="scope">
+          <span>{{ scope.row.kpi&&scope.row.kpi.ctr ? scope.row.kpi.ctr : '0.00' }}%</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="cvr">
+        <template slot-scope="scope">
+          <span>{{ scope.row.kpi&&scope.row.kpi.cvr ? scope.row.kpi.cvr : '0.00' }}%</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="ir">
+        <template slot-scope="scope">
+          <span>{{ scope.row.kpi&&scope.row.kpi.ir ? scope.row.kpi.ir : '0.00' }}%</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="spend">
+        <template slot-scope="scope">
+          <span>${{ scope.row.kpi&&scope.row.kpi.spend ? scope.row.kpi.spend : '0.00' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="ecpi">
+        <template slot-scope="scope">
+          <span>${{ scope.row.kpi&&scope.row.kpi.ecpi ? scope.row.kpi.ecpi : '0.00' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="ecpm">
+        <template slot-scope="scope">
+          <span>${{ scope.row.kpi&&scope.row.kpi.ecpm ? scope.row.kpi.ecpm : '0.00' }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Actions" width="350">
+      <el-table-column align="center" label="Actions" width="100">
         <template slot-scope="scope">
           <el-button v-permission="['basic.campaign.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">
             Edit
           </el-button>
-          <el-button v-permission="['basic.auth.token']" type="normal" size="small" icon="el-icon-key " @click="handleToken(scope.row)">
-            Token
-          </el-button>
-          <el-button v-permission="['basic.campaign.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">
+          <el-button v-permission="['basic.campaign.destroy']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">
             Delete
           </el-button>
         </template>
@@ -81,61 +138,22 @@
         </div>
       </div>
     </el-dialog>
-
-    <el-dialog :title="dialogTokenFormName" :visible.sync="dialogTokenFormVisible">
-      <div v-loading="campaignCreating" class="form-container">
-        <el-form ref="tokenForm" v-permission="['basic.auth.token.make']" :model="newToken" label-position="left" label-width="150px" style="max-width: 500px;">
-          <el-form-item :label="$t('token.expired_at')" prop="expired_at">
-            <el-date-picker v-model="newToken.expired_at" type="date" value-format="yyyy-MM-dd" placeholder="no limit" />
-            <el-button type="primary" @click="makeToken()">
-              {{ $t('token.make') }}
-            </el-button>
-          </el-form-item>
-        </el-form>
-      </div>
-      <el-divider />
-      <el-table v-loading="loading" :data="currentCampaignTokens" border fit highlight-current-row style="width: 100%">
-        <el-table-column align="center" label="Access Token" width="200" :show-overflow-tooltip="true">
-          <template slot-scope="scope">
-            <el-link v-clipboard:copy="scope.row.access_token" v-clipboard:success="clipboardSuccess" type="primary" icon="el-icon-document" />
-
-            <span>{{ scope.row.access_token }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column align="center" label="Expired Date">
-          <template slot-scope="scope">
-            <span>{{ scope.row.expired_at }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column align="center" label="Actions" width="100">
-          <template slot-scope="scope">
-            <el-link v-permission="['basic.auth.token.destroy']" type="danger" icon="el-icon-delete" @click="handleTokenDelete(scope.row);" />
-          </template>
-        </el-table-column>
-      </el-table>
-    </el-dialog>
-
   </div>
 </template>
 
 <script>
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
 import CampaignResource from '@/api/campaign';
-import TokenResource from '@/api/token';
 import waves from '@/directive/waves'; // Waves directive
 import permission from '@/directive/permission'; // Waves directive
 import checkPermission from '@/utils/permission'; // Permission checking
-import clipboard from '@/directive/clipboard/index.js'; // use clipboard by v-directive
 
 const campaignResource = new CampaignResource();
-const tokenResource = new TokenResource();
 
 export default {
   name: 'CampaignList',
   components: { Pagination },
-  directives: { waves, permission, clipboard },
+  directives: { waves, permission },
   data() {
     return {
       list: null,
@@ -147,7 +165,7 @@ export default {
         page: 1,
         limit: 15,
         keyword: '',
-        role: '',
+        daterange: [new Date(), new Date()],
       },
       newCampaign: {},
       dialogFormVisible: false,
@@ -156,16 +174,61 @@ export default {
         name: '',
         tokens: [],
       },
-      currentCampaignTokens: [],
       rules: {
         name: [{ required: true, message: 'Name is required', trigger: 'blur' }],
         bundle_id: [{ required: true, message: 'Package name is required', trigger: 'blur' }],
         platform: [{ required: true, message: 'Platform is required', trigger: 'blur' }],
       },
-      dialogTokenFormVisible: false,
-      dialogTokenFormName: 'Api token',
-      newToken: {
-        expired_at: null,
+      defaultPickerValue: [
+        new Date(),
+        new Date(),
+      ],
+      pickerOptions: {
+        shortcuts: [{
+          text: 'Today',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            picker.$emit('pick', [start, end]);
+          },
+        }, {
+          text: 'Yesterday',
+          onClick(picker) {
+            const end = new Date(new Date().setDate(new Date().getDate() - 1));
+            const start = new Date(new Date().setDate(new Date().getDate() - 1));
+            picker.$emit('pick', [start, end]);
+          },
+        }, {
+          text: 'Last 7 days',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+            picker.$emit('pick', [start, end]);
+          },
+        }, {
+          text: 'Month to date',
+          onClick(picker) {
+            const end = new Date(new Date(new Date().setMonth(new Date().getMonth() + 1)).setDate(0));
+            const start = new Date(new Date().setDate(1));
+            picker.$emit('pick', [start, end]);
+          },
+        }, {
+          text: 'The previous Month',
+          onClick(picker) {
+            const end = new Date(new Date().setDate(0));
+            const start = new Date(new Date(new Date().setMonth(new Date().getMonth() - 1)).setDate(1));
+            picker.$emit('pick', [start, end]);
+          },
+        }, {
+          text: 'Year to date',
+          onClick(picker) {
+            const end = new Date(new Date(new Date().setFullYear(new Date().getFullYear() + 1)).setDate(0));
+            const start = new Date(new Date(new Date().setMonth(0)).setDate(1));
+            picker.$emit('pick', [start, end]);
+          },
+        },
+        ],
       },
     };
   },
@@ -206,61 +269,6 @@ export default {
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['campaignForm'].clearValidate();
-      });
-    },
-    async getTokenList(){
-      this.currentCampaignTokens = [];
-      const { data } = await tokenResource.list(this.currentCampaign.bundle_id);
-      this.currentCampaignTokens = data;
-    },
-    handleToken(campaign) {
-      this.currentCampaign = campaign;
-      this.dialogTokenFormName = campaign.name;
-      this.getTokenList();
-      this.dialogTokenFormVisible = true;
-    },
-    makeToken() {
-      this.$confirm('This will make a new token for campaign ' + this.currentCampaign.name + '. Continue?', 'Warning', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-      }).then(() => {
-        tokenResource.makeToken(this.currentCampaign.bundle_id, this.newToken.expired_at).then(response => {
-          this.$message({
-            type: 'success',
-            message: 'The new token : ' + response.api_token,
-          });
-          this.getTokenList();
-        }).catch(error => {
-          console.log(error);
-        });
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: 'Make token canceled',
-        });
-      });
-    },
-    handleTokenDelete(token) {
-      this.$confirm('This will permanently delete token ' + token.access_token + '. Continue?', 'Warning', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-      }).then(() => {
-        tokenResource.destroy(token.id).then(response => {
-          this.$message({
-            type: 'success',
-            message: 'Delete token completed',
-          });
-          this.getTokenList();
-        }).catch(error => {
-          console.log(error);
-        });
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: 'Delete token canceled',
-        });
       });
     },
     handleDelete(id, name) {
@@ -335,12 +343,9 @@ export default {
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => v[j]));
     },
-    clipboardSuccess() {
-      this.$message({
-        message: 'Copy token successfully',
-        type: 'success',
-        duration: 1500,
-      });
+    dateFormat(row, column, cellValue, index){
+      var date = row[column.property];
+      return date.substr(0, 10);
     },
   },
 };

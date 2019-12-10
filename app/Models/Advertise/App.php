@@ -73,16 +73,4 @@ class App extends Model
     public function getTrackAttribute(){
         return TrackPlatform::get($this['track_platform_id']);
     }
-
-    /**
-     *  模型的 「启动」 方法.
-     *
-     * @return void
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::addGlobalScope(new TenantScope(Auth::user()->getMainId()));
-    }
 }

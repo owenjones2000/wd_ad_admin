@@ -13,7 +13,7 @@ class Ad extends Model
     protected $fillable = ['name', 'type_id', 'campaign_id'];
 
     protected $appends = ['type', 'is_upload_completed'];
-
+    
     /**
      * 启用
      * @throws \Throwable

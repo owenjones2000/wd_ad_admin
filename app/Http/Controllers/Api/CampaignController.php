@@ -1,40 +1,27 @@
 <?php
 
-namespace App\Http\Controllers\Advertise;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Advertise\AdvertiseKpi;
-use App\Models\Advertise\App;
 use App\Models\Advertise\Campaign;
-use App\Models\Advertise\Region;
 use App\Rules\AdvertiseName;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class CampaignController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function list()
+    public function list(Request $request)
     {
-        return view('advertise.campaign.list');
-    }
-
-    public function data(Request $request)
-    {
-        if(!empty($request->get('rangedate'))){
-            $range_date = explode(' ~ ',$request->get('rangedate'));
-        }
+        $range_date = $request->get('daterange');
         $start_date = date('Ymd', strtotime($range_date[0]??'now'));
         $end_date = date('Ymd', strtotime($range_date[1]??'now'));
         $campaign_base_query = Campaign::query();
 
-        if(!empty($request->get('name'))){
-            $campaign_base_query->where('name', 'like', '%'.$request->get('name').'%');
+        if(!empty($request->get('keyword'))){
+            $campaign_base_query->where('name', 'like', '%'.$request->get('keyword').'%');
         }
 
         $campaign_id_query = clone $campaign_base_query;
@@ -71,54 +58,14 @@ class CampaignController extends Controller
             $campaign_query->orderByRaw(DB::raw("FIELD(id,{$order_by_ids}) desc"));
         }
         $campaign_list = $campaign_query->orderBy($request->get('field','status'),$request->get('order','desc'))
-            ->paginate($request->get('limit',30))
-            ->toArray();
+            ->paginate($request->get('limit',30));
 
-        foreach($campaign_list['data'] as &$campaign){
+        foreach($campaign_list as &$campaign){
             if(isset($advertise_kpi_list[$campaign['id']])){
-                $campaign = array_merge($campaign, $advertise_kpi_list[$campaign['id']]);
+                $campaign->kpi = $advertise_kpi_list[$campaign['id']];
             }
         }
-        $data = [
-            'code' => 0,
-            'msg'   => '正在请求中...',
-            'count' => $campaign_list['total'],
-            'data'  => $campaign_list['data']
-        ];
-        return response()->json($data);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id = null)
-    {
-        if(empty($id)){
-            $campaign = new Campaign();
-        }else{
-            /** @var Campaign $campaign */
-            $campaign = Campaign::findOrFail($id);
-        }
-
-        $apps = App::query()
-            ->where('main_user_id', Auth::user()->getMainId())
-            ->get();
-        $regions = Region::query()->orderBy('sort', 'desc')->get();
-        return view('advertise.campaign.edit',compact('campaign', 'apps', 'regions'));
+        return JsonResource::collection($campaign_list);
     }
 
     /**

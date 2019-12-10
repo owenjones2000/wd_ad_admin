@@ -40,25 +40,23 @@ Route::group(['middleware' => 'api'], function () {
         });
 
         // 应用管理
-        Route::group(['prefix'=>'app', 'middleware' => 'permission:app'], function () {
-            Route::get('data', 'AppController@data')->name('app.data');
-            Route::get('list', 'AppController@index')->name('app');
-            //编辑
-            Route::get('{id?}', 'AppController@edit')->name('app.edit')->middleware('permission:app.edit');
-            Route::post('{id?}', 'AppController@save')->name('app.save')->middleware('permission:app.edit');
-            Route::post('{id}/enable', 'AppController@enable')->name('app.enable')->middleware('permission:app.edit');
-            Route::post('{id}/disable', 'AppController@disable')->name('app.disable')->middleware('permission:app.edit');
-
-            //删除
-//        Route::delete('destroy', 'AppController@destroy')->name('app.destroy')->middleware('permission:app.destroy');
-        });
+//        Route::group(['prefix'=>'app', 'middleware' => 'permission:app'], function () {
+//            Route::get('data', 'AppController@data')->name('app.data');
+//            Route::get('list', 'AppController@index')->name('app');
+//            //编辑
+//            Route::get('{id?}', 'AppController@edit')->name('app.edit')->middleware('permission:app.edit');
+//            Route::post('{id?}', 'AppController@save')->name('app.save')->middleware('permission:app.edit');
+//            Route::post('{id}/enable', 'AppController@enable')->name('app.enable')->middleware('permission:app.edit');
+//            Route::post('{id}/disable', 'AppController@disable')->name('app.disable')->middleware('permission:app.edit');
+//
+//            //删除
+////        Route::delete('destroy', 'AppController@destroy')->name('app.destroy')->middleware('permission:app.destroy');
+//        });
 
         // 活动管理
-        Route::group(['prefix'=>'campaign', 'middleware' => 'permission:campaign'], function () {
-            Route::get('data', 'CampaignController@data')->name('campaign.data');
-            Route::get('list', 'CampaignController@list')->name('campaign');
+        Route::group(['prefix'=>'campaign'], function () {
+            Route::get('', 'CampaignController@list')->name('advertise.campaign');
             //编辑
-            Route::get('{id?}', 'CampaignController@edit')->name('campaign.edit')->middleware('permission:campaign.edit');
             Route::post('{id?}', 'CampaignController@save')->name('campaign.save')->middleware('permission:campaign.edit');
             Route::post('{id}/enable', 'CampaignController@enable')->name('campaign.enable')->middleware('permission:campaign.edit');
             Route::post('{id}/disable', 'CampaignController@disable')->name('campaign.disable')->middleware('permission:campaign.edit');
@@ -66,30 +64,24 @@ Route::group(['middleware' => 'api'], function () {
 //        Route::delete('destroy', 'CampaignController@destroy')->name('campaign.destroy')->middleware('permission:campaign.destroy');
 
             // 广告
-            Route::group(['prefix'=>'{campaign_id}/ad', 'middleware' => 'permission:campaign.ad'], function () {
-                Route::get('data', 'AdController@data')->name('campaign.ad.data');
-                Route::get('list', 'AdController@list')->name('campaign.ad');
-                //编辑
-                Route::get('{id?}', 'AdController@edit')->name('campaign.ad.edit')->middleware('permission:campaign.ad.edit');
-                Route::post('{id?}', 'AdController@save')->name('campaign.ad.save')->middleware('permission:campaign.ad.edit');
-                Route::post('{id}/enable', 'AdController@enable')->name('ad.enable')->middleware('permission:campaign.ad.edit');
-                Route::post('{id}/disable', 'AdController@disable')->name('ad.disable')->middleware('permission:campaign.ad.edit');
-                //删除
-//            Route::delete('destroy', 'AdController@destroy')->name('campaign.ad.destroy')->middleware('permission:campaign.ad.destroy');
-            });
-
-            // 子渠道
-            Route::group(['prefix'=>'{campaign_id}/channel', 'middleware' => 'permission:campaign'], function () {
-                Route::get('data', 'ChannelController@data')->name('campaign.channel.data');
-                Route::get('list', 'ChannelController@list')->name('campaign.channel');
-            });
-
-            // 区域
-            Route::group(['prefix'=>'{campaign_id}/region', 'middleware' => 'permission:campaign'], function () {
-                Route::get('data', 'RegionController@data')->name('campaign.region.data');
-                Route::get('list', 'RegionController@list')->name('campaign.region');
-            });
+//            Route::group(['prefix'=>'{campaign_id}/ad', 'middleware' => 'permission:campaign.ad'], function () {
+//                Route::get('data', 'AdController@data')->name('campaign.ad.data');
+//                Route::get('list', 'AdController@list')->name('campaign.ad');
+//                //编辑
+//                Route::get('{id?}', 'AdController@edit')->name('campaign.ad.edit')->middleware('permission:campaign.ad.edit');
+//                Route::post('{id?}', 'AdController@save')->name('campaign.ad.save')->middleware('permission:campaign.ad.edit');
+//                Route::post('{id}/enable', 'AdController@enable')->name('ad.enable')->middleware('permission:campaign.ad.edit');
+//                Route::post('{id}/disable', 'AdController@disable')->name('ad.disable')->middleware('permission:campaign.ad.edit');
+//                //删除
+////            Route::delete('destroy', 'AdController@destroy')->name('campaign.ad.destroy')->middleware('permission:campaign.ad.destroy');
+//            });
         });
+
+        // 区域
+//        Route::group(['prefix'=>'{campaign_id}/region', 'middleware' => 'permission:campaign'], function () {
+//            Route::get('data', 'RegionController@data')->name('campaign.region.data');
+//            Route::get('list', 'RegionController@list')->name('campaign.region');
+//        });
 
         //文件
         Route::post('Asset', 'AssetController@processMediaFiles')->name('asset.process');

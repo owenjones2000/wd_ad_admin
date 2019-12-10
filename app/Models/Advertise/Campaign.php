@@ -247,16 +247,4 @@ class Campaign extends Model
     public function bids(){
         return $this->hasMany(CampaignBid::class, 'campaign_id', 'id');
     }
-
-    /**
-     *  模型的 「启动」 方法.
-     *
-     * @return void
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::addGlobalScope(new TenantScope(Auth::user()->getMainId()));
-    }
 }
