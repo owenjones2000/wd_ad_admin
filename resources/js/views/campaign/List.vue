@@ -225,7 +225,7 @@ export default {
         }, {
           text: 'Year to date',
           onClick(picker) {
-            const end = new Date(new Date(new Date().setFullYear(new Date().getFullYear() + 1)).setDate(0));
+            const end = new Date(new Date(new Date().setMonth(12)).setDate(0));
             const start = new Date(new Date(new Date().setMonth(0)).setDate(1));
             picker.$emit('pick', [start, end]);
           },
