@@ -7,7 +7,7 @@ const basicRoutes = {
   redirect: '/acquisition/campaign',
   name: 'Acquisition',
   meta: {
-    title: 'acquisition',
+    title: 'Acquisition',
     icon: 'admin',
     permissions: ['advertise.manage'],
   },
@@ -17,14 +17,14 @@ const basicRoutes = {
       path: 'campaign',
       component: () => import('@/views/campaign/List'),
       name: 'Campaign',
-      meta: { title: 'campaign', icon: 'user', permissions: ['advertise.campaign'] },
+      meta: { title: 'Campaign', icon: 'user', permissions: ['advertise.campaign'] },
     },
     /** Ad managements */
     {
       path: 'campaign/ad',
       component: () => import('@/views/campaign/ad/List'),
       name: 'Ad',
-      meta: { title: 'ad', icon: 'user', permissions: ['advertise.campaign.ad.list'] },
+      meta: { title: 'Ad', icon: 'user', permissions: ['advertise.campaign.ad'] },
     },
   ],
 };
