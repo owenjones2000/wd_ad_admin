@@ -21,7 +21,7 @@ const basicRoutes = {
     },
     /** Ad managements */
     {
-      path: 'campaign/:id(\\d+)/ad',
+      path: 'campaign/:campaign_id(\\d+)/ad',
       component: () => import('@/views/campaign/ad/List'),
       name: 'Ad',
       meta: { title: 'Ad', icon: 'user', permissions: ['advertise.campaign.ad'] },

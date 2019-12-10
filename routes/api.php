@@ -64,17 +64,16 @@ Route::group(['middleware' => 'api'], function () {
 //        Route::delete('destroy', 'CampaignController@destroy')->name('campaign.destroy')->middleware('permission:campaign.destroy');
 
             // 广告
-//            Route::group(['prefix'=>'{campaign_id}/ad', 'middleware' => 'permission:campaign.ad'], function () {
-//                Route::get('data', 'AdController@data')->name('campaign.ad.data');
-//                Route::get('list', 'AdController@list')->name('campaign.ad');
-//                //编辑
-//                Route::get('{id?}', 'AdController@edit')->name('campaign.ad.edit')->middleware('permission:campaign.ad.edit');
-//                Route::post('{id?}', 'AdController@save')->name('campaign.ad.save')->middleware('permission:campaign.ad.edit');
-//                Route::post('{id}/enable', 'AdController@enable')->name('ad.enable')->middleware('permission:campaign.ad.edit');
-//                Route::post('{id}/disable', 'AdController@disable')->name('ad.disable')->middleware('permission:campaign.ad.edit');
-//                //删除
-////            Route::delete('destroy', 'AdController@destroy')->name('campaign.ad.destroy')->middleware('permission:campaign.ad.destroy');
-//            });
+            Route::group(['prefix'=>'{campaign_id}/ad', 'middleware' => 'permission:advertise.campaign'], function () {
+                Route::get('', 'AdController@list')->name('campaign.ad');
+                //编辑
+                Route::get('{id?}', 'AdController@edit')->name('campaign.ad.edit')->middleware('permission:campaign.ad.edit');
+                Route::post('{id?}', 'AdController@save')->name('campaign.ad.save')->middleware('permission:campaign.ad.edit');
+                Route::post('{id}/enable', 'AdController@enable')->name('ad.enable')->middleware('permission:campaign.ad.edit');
+                Route::post('{id}/disable', 'AdController@disable')->name('ad.disable')->middleware('permission:campaign.ad.edit');
+                //删除
+//            Route::delete('destroy', 'AdController@destroy')->name('campaign.ad.destroy')->middleware('permission:campaign.ad.destroy');
+            });
         });
 
         // 区域

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Advertise;
+namespace App\Http\Controllers\Api;
 
 use App\Models\Advertise\AdvertiseKpi;
 use App\Models\Advertise\App;
@@ -9,28 +9,15 @@ use App\Models\Advertise\Campaign;
 use App\Rules\AdvertiseName;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AdController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function list(Request $request, $campaign_id)
     {
-        $rangedate = $request->input('rangedate', date('Y-m-d ~ Y-m-d'));
-        $campaign = Campaign::findOrFail($campaign_id);
-        return view('advertise.campaign.ad.list', compact('campaign', 'rangedate'));
-    }
-
-    public function data(Request $request, $campaign_id)
-    {
-        if(!empty($request->get('rangedate'))){
-            $range_date = explode(' ~ ',$request->get('rangedate'));
-        }
+        $range_date = $request->get('daterange');
         $start_date = date('Ymd', strtotime($range_date[0]??'now'));
         $end_date = date('Ymd', strtotime($range_date[1]??'now'));
         $ad_base_query = Ad::query()->where('campaign_id', $campaign_id);
@@ -71,21 +58,15 @@ class AdController extends Controller
         }
         $ad_list = $ad_base_query->with('assets')
             ->orderBy($request->get('field','status'),$request->get('order','desc'))
-            ->paginate($request->get('limit',30))
-            ->toArray();
+            ->paginate($request->get('limit',30));
 
-        foreach($ad_list['data'] as &$ad){
+        foreach($ad_list as &$ad){
             if(isset($advertise_kpi_list[$ad['id']])){
-                $ad = array_merge($ad, $advertise_kpi_list[$ad['id']]);
+                $ad['kpi'] = $advertise_kpi_list[$ad['id']];
             }
         }
-        $data = [
-            'code' => 0,
-            'msg'   => '正在请求中...',
-            'count' => $ad_list['total'],
-            'data'  => $ad_list['data']
-        ];
-        return response()->json($data);
+
+        return JsonResource::collection($ad_list);
     }
 
     /**

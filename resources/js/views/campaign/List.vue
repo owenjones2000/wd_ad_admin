@@ -32,7 +32,7 @@
       <!--  </template>-->
       <!--</el-table-column>-->
 
-      <el-table-column align="center" label="Name" width="200px">
+      <el-table-column label="Campaign" width="300px">
         <template slot-scope="scope">
           <router-link class="link-type" :to="'/acquisition/campaign/'+scope.row.id+'/ad'">
             {{ scope.row.name }}
