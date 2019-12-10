@@ -109,7 +109,8 @@
 
             <el-table-column align="center" label="Actions" width="100">
               <template slot-scope="scope">
-                <el-button v-permission="['basic.auth.token.destroy']" type="danger" icon="el-icon-delete" circle @click="handleTokenDelete(scope.row);" />
+                <el-link v-clipboard:copy="scope.row.access_token" v-clipboard:success="clipboardSuccess" type="primary" icon="el-icon-document" />
+                <el-link v-permission="['basic.auth.token.destroy']" type="danger" icon="el-icon-delete" @click="handleTokenDelete(scope.row);" />
               </template>
             </el-table-column>
           </el-table>
@@ -127,6 +128,7 @@ import TokenResource from '@/api/token';
 import waves from '@/directive/waves'; // Waves directive
 import permission from '@/directive/permission'; // Waves directive
 import checkPermission from '@/utils/permission'; // Permission checking
+import clipboard from '@/directive/clipboard/index.js'; // use clipboard by v-directive
 
 const channelResource = new ChannelResource();
 const tokenResource = new TokenResource();
@@ -134,7 +136,7 @@ const tokenResource = new TokenResource();
 export default {
   name: 'ChannelList',
   components: { Pagination },
-  directives: { waves, permission },
+  directives: { waves, permission, clipboard },
   data() {
     return {
       list: null,
@@ -332,6 +334,13 @@ export default {
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => v[j]));
+    },
+    clipboardSuccess() {
+      this.$message({
+        message: 'Copy token successfully',
+        type: 'success',
+        duration: 1500,
+      });
     },
   },
 };
