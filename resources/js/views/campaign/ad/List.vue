@@ -91,11 +91,16 @@
           <span>${{ scope.row.kpi&&scope.row.kpi.ecpm ? scope.row.kpi.ecpm : '0.00' }}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="Status">
+        <template slot-scope="scope">
+          <el-icon :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}" size="small" :name="scope.row.status ? 'video-play' : 'video-pause'" />
+        </template>
+      </el-table-column>
 
       <el-table-column align="center" label="Actions" width="100">
         <template slot-scope="scope">
           <!--<el-link v-permission="['advertise.campaign.ad.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />-->
-          <el-link v-permission="['advertise.campaign.ad.edit']" :type="scope.row.status ? 'success' : 'danger'" size="small" icon="el-icon-switch-button" @click="handleStatus(scope.row)" />
+          <el-link v-permission="['advertise.campaign.ad.edit']" :type="scope.row.is_admin_disable ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleStatus(scope.row)" />
           <!--<el-link v-permission="['advertise.campaign.ad.destroy']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
         </template>
       </el-table-column>
@@ -278,28 +283,28 @@ export default {
       });
     },
     handleStatus(ad) {
-      this.$confirm('This will ' + (ad.status ? 'disable' : 'enable') + ' ad ' + ad.name + '. Continue?', 'Warning', {
+      this.$confirm('This will ' + (ad.is_admin_disable ? 'release control for' : 'disable') + ' ad ' + ad.name + '. Continue?', 'Warning', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Cancel',
         type: 'warning',
       }).then(() => {
-        if (ad.status) {
+        if (ad.is_admin_disable) {
+          campaignResource.enableAd(ad.campaign_id, ad.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'Ad ' + ad.name + ' released',
+            });
+            this.getList();
+          }).catch(error => {
+            console.log(error);
+          });
+        } else {
           campaignResource.disableAd(ad.campaign_id, ad.id).then(response => {
             this.$message({
               type: 'success',
               message: 'Ad ' + ad.name + ' disabled',
             });
-            ad.status = false;
-          }).catch(error => {
-            console.log(error);
-          });
-        } else {
-          campaignResource.enableAd(ad.campaign_id, ad.id).then(response => {
-            this.$message({
-              type: 'success',
-              message: 'Ad ' + ad.name + ' enabled',
-            });
-            ad.status = true;
+            this.getList();
           }).catch(error => {
             console.log(error);
           });
