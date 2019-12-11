@@ -142,15 +142,10 @@ class AdController extends Controller
      */
     public function enable($campaign_id, $id)
     {
-        try{
-            /** @var Ad $ad */
-            $ad = Ad::query()->where(['id' => $id, 'campaign_id' => $campaign_id])->firstOrFail();
-            $ad->enable();
-            return response()->json(['code'=>0,'msg'=>'Enabled']);
-        } catch (\Exception $ex) {
-            return response()->json(['code'=>-1,'msg'=>$ex->getMessage()]);
-        }
-
+        /** @var Ad $ad */
+        $ad = Ad::query()->where(['id' => $id, 'campaign_id' => $campaign_id])->firstOrFail();
+        $ad->enable();
+        return response()->json(['code'=>0,'msg'=>'Enabled']);
     }
 
     /**
