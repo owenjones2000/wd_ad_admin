@@ -1,7 +1,7 @@
 /** When your routing table is too long, you can split it into small modules**/
 import Layout from '@/layout';
 
-const basicRoutes = {
+const acquisitionRoutes = {
   path: '/acquisition',
   component: Layout,
   redirect: '/acquisition/campaign',
@@ -19,7 +19,6 @@ const basicRoutes = {
       name: 'Campaign',
       meta: { title: 'Campaign', icon: 'user', permissions: ['advertise.campaign'] },
     },
-    /** Ad managements */
     {
       path: 'campaign/:campaign_id(\\d+)/ad',
       component: () => import('@/views/campaign/ad/List'),
@@ -30,4 +29,4 @@ const basicRoutes = {
   ],
 };
 
-export default basicRoutes;
+export default acquisitionRoutes;

@@ -91,15 +91,17 @@
           <span>${{ scope.row.kpi&&scope.row.kpi.ecpm ? scope.row.kpi.ecpm : '0.00' }}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="Status">
+        <template slot-scope="scope">
+          <el-icon :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}" size="small" :name="scope.row.status ? 'video-play' : 'video-pause'" />
+        </template>
+      </el-table-column>
 
       <el-table-column align="center" label="Actions" width="100">
         <template slot-scope="scope">
-          <el-button v-permission="['basic.campaign.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">
-            Edit
-          </el-button>
-          <el-button v-permission="['basic.campaign.destroy']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">
-            Delete
-          </el-button>
+          <!--<el-link v-permission="['advertise.campaign.ad.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />-->
+          <el-link v-permission="['advertise.campaign.ad.edit']" :type="scope.row.is_admin_disable ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleStatus(scope.row)" />
+          <!--<el-link v-permission="['advertise.campaign.ad.destroy']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
         </template>
       </el-table-column>
     </el-table>
@@ -109,17 +111,8 @@
     <el-dialog :title="'Create new campaign'" :visible.sync="dialogFormVisible">
       <div v-loading="campaignCreating" class="form-container">
         <el-form ref="campaignForm" :rules="rules" :model="currentCampaign" label-position="left" label-width="150px" style="max-width: 500px;">
-          <el-form-item :label="$t('campaign.name')" prop="name">
+          <el-form-item :label="$t('ad.name')" prop="name">
             <el-input v-model="currentCampaign.name" />
-          </el-form-item>
-          <el-form-item :label="$t('app.bundle_id')" prop="bundle_id">
-            <el-input v-model="currentCampaign.bundle_id" />
-          </el-form-item>
-          <el-form-item :label="$t('platform.name')" prop="platform">
-            <el-select v-model="currentCampaign.platform" placeholder="please select platform">
-              <el-option label="iOS" value="ios" />
-              <el-option label="Android" value="android" />
-            </el-select>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -287,6 +280,37 @@ export default {
           type: 'info',
           message: 'Delete canceled',
         });
+      });
+    },
+    handleStatus(ad) {
+      this.$confirm('This will ' + (ad.is_admin_disable ? 'release control for' : 'disable') + ' ad ' + ad.name + '. Continue?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }).then(() => {
+        if (ad.is_admin_disable) {
+          campaignResource.enableAd(ad.campaign_id, ad.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'Ad ' + ad.name + ' released',
+            });
+            this.getList();
+          }).catch(error => {
+            console.log(error);
+          });
+        } else {
+          campaignResource.disableAd(ad.campaign_id, ad.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'Ad ' + ad.name + ' disabled',
+            });
+            this.getList();
+          }).catch(error => {
+            console.log(error);
+          });
+        }
+      }).catch(error => {
+        console.log(error);
       });
     },
     saveCampaign() {

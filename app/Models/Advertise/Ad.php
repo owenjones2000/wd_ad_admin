@@ -15,27 +15,30 @@ class Ad extends Model
     protected $appends = ['type', 'is_upload_completed'];
     
     /**
-     * 启用
+     * 管理员释放控制
      * @throws \Throwable
      */
     public function enable(){
-        if(!$this->status){
-            if($this->is_upload_completed){
-                $this->status = true;
-                $this->saveOrFail();
-            } else {
-                throw new \Exception('Lack of assets.');
-            }
+        if($this->is_admin_disable){
+            $this->is_admin_disable = false;
+            $this->saveOrFail();
+//            if($this->is_upload_completed){
+//                $this->status = true;
+//                $this->saveOrFail();
+//            } else {
+//                throw new \Exception('Lack of assets.');
+//            }
         }
     }
 
     /**
-     * 停用
+     * 管理员封禁
      * @throws \Throwable
      */
     public function disable(){
-        if($this->status){
+        if(!$this->is_admin_disable){
             $this->status = false;
+            $this->is_admin_disable = true;
             $this->saveOrFail();
         }
     }
