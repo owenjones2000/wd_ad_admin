@@ -119,7 +119,7 @@ class Campaign extends Model
      * @throws \Throwable
      */
     public function enable(){
-        if(!$this->status){
+        if($this->is_admin_disable){
             // $this->status = true;  // 仅解除管理员封禁，不自动启用；
             $this->is_admin_disable = false;
             $this->saveOrFail();
@@ -131,11 +131,9 @@ class Campaign extends Model
      * @throws \Throwable
      */
     public function disable(){
-        if($this->status){
-            $this->status = false;
-            $this->is_admin_disable = true;
-            $this->saveOrFail();
-        }
+        $this->status = false;
+        $this->is_admin_disable = true;
+        $this->saveOrFail();
     }
 
     /**

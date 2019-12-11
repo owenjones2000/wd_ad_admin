@@ -289,26 +289,26 @@ export default {
       });
     },
     handleStatus(campaign) {
-      this.$confirm('This will ' + (campaign.status ? 'disable' : 'release control for') + ' campaign ' + campaign.name + '. Continue?', 'Warning', {
+      this.$confirm('This will ' + (campaign.is_admin_disable ? 'release control for' : 'disable') + ' campaign ' + campaign.name + '. Continue?', 'Warning', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Cancel',
         type: 'warning',
       }).then(() => {
-        if (campaign.status) {
-          campaignResource.disable(campaign.id).then(response => {
+        if (campaign.is_admin_disable) {
+          campaignResource.enable(campaign.id).then(response => {
             this.$message({
               type: 'success',
-              message: 'Campaign ' + campaign.name + ' disabled',
+              message: 'Campaign ' + campaign.name + ' released',
             });
             this.getList();
           }).catch(error => {
             console.log(error);
           });
         } else {
-          campaignResource.enable(campaign.id).then(response => {
+          campaignResource.disable(campaign.id).then(response => {
             this.$message({
               type: 'success',
-              message: 'Campaign ' + campaign.name + ' enabled',
+              message: 'Campaign ' + campaign.name + ' disabled',
             });
             this.getList();
           }).catch(error => {
