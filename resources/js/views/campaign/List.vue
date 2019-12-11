@@ -102,12 +102,9 @@
 
       <el-table-column align="center" label="Actions" width="100">
         <template slot-scope="scope">
-          <el-button v-permission="['basic.campaign.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">
-            Edit
-          </el-button>
-          <el-button v-permission="['basic.campaign.destroy']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">
-            Delete
-          </el-button>
+          <!--<el-link v-permission="['advertise.campaign.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />-->
+          <el-link v-permission="['advertise.campaign.edit']" :type="scope.row.status ? 'success' : 'danger'" size="small" icon="el-icon-switch-button" @click="handleStatus(scope.row)" />
+          <!--<el-link v-permission="['advertise.campaign.destroy']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
         </template>
       </el-table-column>
     </el-table>
@@ -119,15 +116,6 @@
         <el-form ref="campaignForm" :rules="rules" :model="currentCampaign" label-position="left" label-width="150px" style="max-width: 500px;">
           <el-form-item :label="$t('campaign.name')" prop="name">
             <el-input v-model="currentCampaign.name" />
-          </el-form-item>
-          <el-form-item :label="$t('app.bundle_id')" prop="bundle_id">
-            <el-input v-model="currentCampaign.bundle_id" />
-          </el-form-item>
-          <el-form-item :label="$t('platform.name')" prop="platform">
-            <el-select v-model="currentCampaign.platform" placeholder="please select platform">
-              <el-option label="iOS" value="ios" />
-              <el-option label="Android" value="android" />
-            </el-select>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -293,6 +281,37 @@ export default {
           type: 'info',
           message: 'Delete canceled',
         });
+      });
+    },
+    handleStatus(campaign) {
+      this.$confirm('This will ' + (campaign.status ? 'disable' : 'enable') + ' campaign ' + campaign.name + '. Continue?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }).then(() => {
+        if (campaign.status) {
+          campaignResource.disable(campaign.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'Campaign ' + campaign.name + ' disabled',
+            });
+            campaign.status = false;
+          }).catch(error => {
+            console.log(error);
+          });
+        } else {
+          campaignResource.enable(campaign.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'Campaign ' + campaign.name + ' enabled',
+            });
+            campaign.status = true;
+          }).catch(error => {
+            console.log(error);
+          });
+        }
+      }).catch(error => {
+        console.log(error);
       });
     },
     saveCampaign() {

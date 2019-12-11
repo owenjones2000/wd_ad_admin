@@ -57,9 +57,9 @@ Route::group(['middleware' => 'api'], function () {
         Route::group(['prefix'=>'campaign'], function () {
             Route::get('', 'CampaignController@list')->name('advertise.campaign');
             //编辑
-            Route::post('{id?}', 'CampaignController@save')->name('campaign.save')->middleware('permission:campaign.edit');
-            Route::post('{id}/enable', 'CampaignController@enable')->name('campaign.enable')->middleware('permission:campaign.edit');
-            Route::post('{id}/disable', 'CampaignController@disable')->name('campaign.disable')->middleware('permission:campaign.edit');
+            Route::post('{id?}', 'CampaignController@save')->name('campaign.save')->middleware('permission:campaign.advertise.edit');
+            Route::post('{id}/enable', 'CampaignController@enable')->name('campaign.enable')->middleware('permission:advertise.campaign.edit');
+            Route::post('{id}/disable', 'CampaignController@disable')->name('campaign.disable')->middleware('permission:advertise.campaign.edit');
             //删除
 //        Route::delete('destroy', 'CampaignController@destroy')->name('campaign.destroy')->middleware('permission:campaign.destroy');
 
