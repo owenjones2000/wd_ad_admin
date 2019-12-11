@@ -99,11 +99,16 @@
           <span>${{ scope.row.kpi&&scope.row.kpi.ecpm ? scope.row.kpi.ecpm : '0.00' }}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="Status">
+        <template slot-scope="scope">
+          <el-icon :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}" size="small" :name="scope.row.status ? 'video-play' : 'video-pause'" />
+        </template>
+      </el-table-column>
 
       <el-table-column align="center" label="Actions" width="100">
         <template slot-scope="scope">
           <!--<el-link v-permission="['advertise.campaign.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />-->
-          <el-link v-permission="['advertise.campaign.edit']" :type="scope.row.status ? 'success' : 'danger'" size="small" icon="el-icon-switch-button" @click="handleStatus(scope.row)" />
+          <el-link v-permission="['advertise.campaign.edit']" :type="scope.row.is_admin_disable ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleStatus(scope.row)" />
           <!--<el-link v-permission="['advertise.campaign.destroy']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
         </template>
       </el-table-column>
@@ -284,7 +289,7 @@ export default {
       });
     },
     handleStatus(campaign) {
-      this.$confirm('This will ' + (campaign.status ? 'disable' : 'enable') + ' campaign ' + campaign.name + '. Continue?', 'Warning', {
+      this.$confirm('This will ' + (campaign.status ? 'disable' : 'release control for') + ' campaign ' + campaign.name + '. Continue?', 'Warning', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Cancel',
         type: 'warning',
@@ -295,7 +300,7 @@ export default {
               type: 'success',
               message: 'Campaign ' + campaign.name + ' disabled',
             });
-            campaign.status = false;
+            this.getList();
           }).catch(error => {
             console.log(error);
           });
@@ -305,7 +310,7 @@ export default {
               type: 'success',
               message: 'Campaign ' + campaign.name + ' enabled',
             });
-            campaign.status = true;
+            this.getList();
           }).catch(error => {
             console.log(error);
           });

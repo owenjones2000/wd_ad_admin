@@ -115,23 +115,25 @@ class Campaign extends Model
     }
 
     /**
-     * 启用
+     * 管理员解除状态控制
      * @throws \Throwable
      */
     public function enable(){
         if(!$this->status){
-            $this->status = true;
+            // $this->status = true;  // 仅解除管理员封禁，不自动启用；
+            $this->is_admin_disable = false;
             $this->saveOrFail();
         }
     }
 
     /**
-     * 停用
+     * 管理员停用
      * @throws \Throwable
      */
     public function disable(){
         if($this->status){
             $this->status = false;
+            $this->is_admin_disable = true;
             $this->saveOrFail();
         }
     }
