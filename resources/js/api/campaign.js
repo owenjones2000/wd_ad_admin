@@ -27,6 +27,20 @@ class CampaignResource extends Resource {
       params: query,
     });
   }
+
+  enableAd(campaign_id, ad_id){
+    return request({
+      url: '/' + this.uri + '/' + campaign_id + '/ad/' + ad_id + '/enable',
+      method: 'post',
+    });
+  }
+
+  disableAd(campaign_id, ad_id){
+    return request({
+      url: '/' + this.uri + '/' + campaign_id + '/ad/' + ad_id + '/disable',
+      method: 'post',
+    });
+  }
 }
 
 export { CampaignResource as default };
