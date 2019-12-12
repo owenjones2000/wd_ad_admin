@@ -32,6 +32,12 @@
         </template>
       </el-table-column>
 
+      <el-table-column align="center" label="Status">
+        <template slot-scope="scope">
+          <el-icon :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}" size="small" name="lollipop" />
+        </template>
+      </el-table-column>
+
       <el-table-column align="center" label="Actions" width="200">
         <template slot-scope="scope">
           <el-button v-permission="['advertise.account.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">
