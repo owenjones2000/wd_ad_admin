@@ -90,17 +90,18 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Actions" width="350">
+      <el-table-column align="center" label="Status">
         <template slot-scope="scope">
-          <el-button v-permission="['basic.app.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">
-            Edit
-          </el-button>
-          <el-button v-permission="['basic.auth.token']" type="normal" size="small" icon="el-icon-key " @click="handleToken(scope.row)">
-            Token
-          </el-button>
-          <el-button v-permission="['basic.app.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">
-            Delete
-          </el-button>
+          <el-icon :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}" size="small" :name="scope.row.status ? 'video-play' : 'video-pause'" />
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="Actions" width="200">
+        <template slot-scope="scope">
+          <el-link v-permission="['advertise.app.edit']" type="primary" size="small" icon="el-icon-edit" :underline="false" @click="handleEdit(scope.row)" />
+          <el-link v-permission="['advertise.auth.token']" type="normal" size="small" icon="el-icon-key " :underline="false" @click="handleToken(scope.row)" />
+          <el-link v-permission="['advertise.app.edit']" :type="scope.row.is_admin_disable ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleStatus(scope.row)" />
+          <el-link v-permission="['advertise.app.remove']" type="danger" size="small" icon="el-icon-delete" :underline="false" @click="handleDelete(scope.row.id, scope.row.name);" />
         </template>
       </el-table-column>
     </el-table>
@@ -279,6 +280,37 @@ export default {
           type: 'info',
           message: 'Delete canceled',
         });
+      });
+    },
+    handleStatus(app) {
+      this.$confirm('This will ' + (app.is_admin_disable ? 'release control for' : 'disable') + ' app ' + app.name + '. Continue?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }).then(() => {
+        if (app.is_admin_disable) {
+          appResource.enable(app.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'App ' + app.name + ' released',
+            });
+            this.getList();
+          }).catch(error => {
+            console.log(error);
+          });
+        } else {
+          appResource.disable(app.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'App ' + app.name + ' disabled',
+            });
+            this.getList();
+          }).catch(error => {
+            console.log(error);
+          });
+        }
+      }).catch(error => {
+        console.log(error);
       });
     },
     saveApp() {

@@ -46,25 +46,24 @@ class App extends Model
 //    }
 
     /**
-     * 启用
+     * 管理员解除状态控制
      * @throws \Throwable
      */
     public function enable(){
-        if(!$this->status){
-            $this->status = true;
+        if($this->is_admin_disable){
+            $this->is_admin_disable = false;
             $this->saveOrFail();
         }
     }
 
     /**
-     * 停用
+     * 管理员停用
      * @throws \Throwable
      */
     public function disable(){
-        if($this->status){
-            $this->status = false;
-            $this->saveOrFail();
-        }
+        $this->is_admin_disable = true;
+        $this->status = false;
+        $this->saveOrFail();
     }
     
     public function getTrackAttribute(){

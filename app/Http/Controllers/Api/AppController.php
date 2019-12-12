@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Exceptions\BizException;
 use App\Models\Advertise\AdvertiseKpi;
 use App\Models\Advertise\App;
 use Illuminate\Http\Request;
@@ -80,23 +79,6 @@ class AppController extends Controller
     public function show($id)
     {
         //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id = null)
-    {
-        if(empty($id)){
-            $apps = new App();
-        }else{
-            /** @var App $apps */
-            $apps = App::findOrFail($id);
-        }
-        return view('advertise.app.edit',compact('apps'));
     }
 
     /**
