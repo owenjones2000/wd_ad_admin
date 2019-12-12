@@ -2,6 +2,18 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-date-picker
+        v-model="query.daterange"
+        type="daterange"
+        class="filter-item"
+        align="right"
+        unlink-panels
+        range-separator=" ~ "
+        start-placeholder="start date"
+        end-placeholder="end date"
+        value-format="yyyy-MM-dd"
+        :picker-options="pickerOptions"
+      />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         {{ $t('table.search') }}
       </el-button>
@@ -38,7 +50,53 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Actions" width="350">
+      <el-table-column align="center" label="Impressions">
+        <template slot-scope="scope">
+          <span>{{ scope.row.kpi&&scope.row.kpi.impressions ? scope.row.kpi.impressions : 0 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Clicks">
+        <template slot-scope="scope">
+          <span>{{ scope.row.kpi&&scope.row.kpi.clicks ? scope.row.kpi.clicks : 0 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Installs">
+        <template slot-scope="scope">
+          <span>{{ scope.row.kpi&&scope.row.kpi.installs ? scope.row.kpi.installs : 0 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="CTR">
+        <template slot-scope="scope">
+          <span>{{ scope.row.kpi&&scope.row.kpi.ctr ? scope.row.kpi.ctr : '0.00' }}%</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="CVR">
+        <template slot-scope="scope">
+          <span>{{ scope.row.kpi&&scope.row.kpi.cvr ? scope.row.kpi.cvr : '0.00' }}%</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="IR">
+        <template slot-scope="scope">
+          <span>{{ scope.row.kpi&&scope.row.kpi.ir ? scope.row.kpi.ir : '0.00' }}%</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Spend">
+        <template slot-scope="scope">
+          <span>${{ scope.row.kpi&&scope.row.kpi.spend ? scope.row.kpi.spend : '0.00' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="eCpi">
+        <template slot-scope="scope">
+          <span>${{ scope.row.kpi&&scope.row.kpi.ecpi ? scope.row.kpi.ecpi : '0.00' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="eCpm">
+        <template slot-scope="scope">
+          <span>${{ scope.row.kpi&&scope.row.kpi.ecpm ? scope.row.kpi.ecpm : '0.00' }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="Actions" width="200">
         <template slot-scope="scope">
           <el-button v-permission="['advertise.channel.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">
             Edit
@@ -46,9 +104,9 @@
           <el-button v-permission="['basic.auth.token']" type="normal" size="small" icon="el-icon-key " @click="handleToken(scope.row)">
             Token
           </el-button>
-          <el-button v-permission="['advertise.channel.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">
-            Delete
-          </el-button>
+          <!--<el-button v-permission="['advertise.channel.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">-->
+          <!--  Delete-->
+          <!--</el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -128,6 +186,7 @@ import waves from '@/directive/waves'; // Waves directive
 import permission from '@/directive/permission'; // Waves directive
 import checkPermission from '@/utils/permission'; // Permission checking
 import clipboard from '@/directive/clipboard/index.js'; // use clipboard by v-directive
+import defaultDatePickerOptions from '@/utils/datepicker';
 
 const channelResource = new ChannelResource();
 const tokenResource = new TokenResource();
@@ -147,7 +206,7 @@ export default {
         page: 1,
         limit: 15,
         keyword: '',
-        role: '',
+        daterange: [new Date(), new Date()],
       },
       newChannel: {},
       dialogFormVisible: false,
@@ -167,6 +226,7 @@ export default {
       newToken: {
         expired_at: null,
       },
+      pickerOptions: defaultDatePickerOptions,
     };
   },
   computed: {

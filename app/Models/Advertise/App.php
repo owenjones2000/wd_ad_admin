@@ -2,11 +2,8 @@
 namespace App\Models\Advertise;
 
 use App\Exceptions\BizException;
-use App\Scopes\TenantScope;
-use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class App extends Model
@@ -24,29 +21,29 @@ class App extends Model
      * @param $params
      * @return mixed
      */
-    public static function Make($user, $params){
-        $apps = DB::transaction(function () use($user, $params) {
-            $main_user_id = $user->getMainId();
-            if (empty($params['id'])) {
-                $apps = new self();
-                $apps->main_user_id = $main_user_id;
-                $apps['status'] = true;
-            } else {
-                $apps = self::query()->where([
-                    'id' => $params['id'],
-                    'main_user_id' => $main_user_id
-                ])->firstOrFail();
-            }
-            if($params['track_platform_id'] == TrackPlatform::Adjust && empty($params['track_code'])){
-                throw new BizException('Track code required.');
-            }
-            $apps->fill($params);
-            $apps->saveOrFail();
-
-            return $apps;
-        }, 3);
-        return $apps;
-    }
+//    public static function Make($user, $params){
+//        $apps = DB::transaction(function () use($user, $params) {
+//            $main_user_id = $user->getMainId();
+//            if (empty($params['id'])) {
+//                $apps = new self();
+//                $apps->main_user_id = $main_user_id;
+//                $apps['status'] = true;
+//            } else {
+//                $apps = self::query()->where([
+//                    'id' => $params['id'],
+//                    'main_user_id' => $main_user_id
+//                ])->firstOrFail();
+//            }
+//            if($params['track_platform_id'] == TrackPlatform::Adjust && empty($params['track_code'])){
+//                throw new BizException('Track code required.');
+//            }
+//            $apps->fill($params);
+//            $apps->saveOrFail();
+//
+//            return $apps;
+//        }, 3);
+//        return $apps;
+//    }
 
     /**
      * 启用

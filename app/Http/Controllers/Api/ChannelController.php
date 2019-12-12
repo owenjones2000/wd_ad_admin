@@ -14,11 +14,14 @@ use App\Http\Resources\ChannelResource;
 use App\Http\Resources\UserResource;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
+use App\Models\Advertise\AdvertiseKpi;
 use App\Models\Advertise\ApiToken;
 use App\Models\Advertise\Channel;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Validator;
 
@@ -39,16 +42,60 @@ class ChannelController extends Controller
      */
     public function list(Request $request)
     {
-        $searchParams = $request->all();
-        $channelQuery = Channel::query();
-        $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
-        $keyword = Arr::get($searchParams, 'keyword', '');
-
-        if (!empty($keyword)) {
-            $channelQuery->where('name', 'LIKE', '%' . $keyword . '%');
+        if(!empty($request->get('rangedate'))){
+            $range_date = explode(' ~ ',$request->get('rangedate'));
         }
+        $start_date = date('Ymd', strtotime($range_date[0]??'now'));
+        $end_date = date('Ymd', strtotime($range_date[1]??'now'));
+        $channel_base_query = Channel::query();
+        if(!empty($request->get('keyword'))){
+            $channel_base_query->where('name', 'like', '%'.$request->get('name').'%');
+        }
+        $channel_id_query = clone $channel_base_query;
+        $channel_id_query->select('id');
+        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function($query) use($start_date, $end_date, $channel_id_query){
+            $query->whereBetween('date', [$start_date, $end_date])
+                ->whereIn('target_app_id', $channel_id_query)
+                ->select(['impressions', 'clicks', 'installations', 'spend',
+                    'target_app_id',
+                    ])
+            ;
+            return $query;
+        }, $start_date, $end_date);
 
-        return ChannelResource::collection($channelQuery->paginate($limit));
+        $advertise_kpi_query->select([
+            DB::raw('sum(impressions) as impressions'),
+            DB::raw('sum(clicks) as clicks'),
+            DB::raw('sum(installations) as installs'),
+            DB::raw('round(sum(clicks) * 100 / sum(impressions), 2) as ctr'),
+            DB::raw('round(sum(installations) * 100 / sum(clicks), 2) as cvr'),
+            DB::raw('round(sum(installations) * 100 / sum(impressions), 2) as ir'),
+            DB::raw('round(sum(spend), 2) as spend'),
+            DB::raw('round(sum(spend) / sum(installations), 2) as ecpi'),
+            DB::raw('round(sum(spend) * 1000 / sum(impressions), 2) as ecpm'),
+            'target_app_id',
+        ]);
+        $advertise_kpi_query->groupBy('target_app_id');
+
+        $advertise_kpi_list = $advertise_kpi_query
+            ->orderBy('spend','desc')
+            ->get()
+            ->keyBy('target_app_id')
+            ->toArray();
+        $order_by_ids = implode(',', array_reverse(array_keys($advertise_kpi_list)));
+        $channel_query = clone $channel_base_query;
+        if(!empty($order_by_ids)){
+            $channel_query->orderByRaw(DB::raw("FIELD(id,{$order_by_ids}) desc"));
+        }
+        $channel_list = $channel_query->orderBy($request->get('field','name'),$request->get('order','desc'))
+            ->paginate($request->get('limit',30));
+
+        foreach($channel_list as &$channel){
+            if(isset($advertise_kpi_list[$channel['id']])){
+                $channel->kpi = $advertise_kpi_list[$channel['id']];
+            }
+        }
+        return JsonResource::collection($channel_list);
     }
 
     /**

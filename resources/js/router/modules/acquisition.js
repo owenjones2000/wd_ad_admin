@@ -12,6 +12,13 @@ const acquisitionRoutes = {
     permissions: ['advertise.manage'],
   },
   children: [
+    /** App managements */
+    {
+      path: 'app',
+      component: () => import('@/views/app/List'),
+      name: 'App',
+      meta: { title: 'App', icon: 'user', permissions: ['advertise.app'] },
+    },
     /** Campaign managements */
     {
       path: 'campaign',
@@ -31,7 +38,7 @@ const acquisitionRoutes = {
       path: 'channel',
       component: () => import('@/views/channel/List'),
       name: 'Channel',
-      meta: { title: 'channel', icon: 'user', permissions: ['advertise.channel'] },
+      meta: { title: 'Channel', icon: 'user', permissions: ['advertise.channel'] },
     },
   ],
 };
