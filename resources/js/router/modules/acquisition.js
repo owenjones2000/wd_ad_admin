@@ -26,6 +26,13 @@ const acquisitionRoutes = {
       meta: { title: 'Ad', icon: 'user', permissions: ['advertise.campaign.ad'] },
       hidden: true,
     },
+    /** Channel managements */
+    {
+      path: 'channel',
+      component: () => import('@/views/channel/List'),
+      name: 'Channel',
+      meta: { title: 'channel', icon: 'user', permissions: ['advertise.channel'] },
+    },
   ],
 };
 

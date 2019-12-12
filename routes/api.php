@@ -35,8 +35,8 @@ Route::group(['middleware' => 'api'], function () {
         });
         // 渠道
         Route::group(['prefix' => 'channel'], function () {
-            Route::get('', 'ChannelController@list')->name('channel.list')->middleware('permission:basic.channel');
-            Route::post('{id?}', 'ChannelController@save')->name('channel.save')->middleware('permission:basic.channel.edit');
+            Route::get('', 'ChannelController@list')->name('channel.list')->middleware('permission:advertise.channel');
+            Route::post('{id?}', 'ChannelController@save')->name('channel.save')->middleware('permission:advertise.channel.edit');
         });
 
         // 应用管理
