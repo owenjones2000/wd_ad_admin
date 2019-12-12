@@ -2,11 +2,8 @@
 namespace App\Models\Advertise;
 
 use App\Exceptions\BizException;
-use App\Scopes\TenantScope;
-use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class App extends Model
@@ -24,50 +21,49 @@ class App extends Model
      * @param $params
      * @return mixed
      */
-    public static function Make($user, $params){
-        $apps = DB::transaction(function () use($user, $params) {
-            $main_user_id = $user->getMainId();
-            if (empty($params['id'])) {
-                $apps = new self();
-                $apps->main_user_id = $main_user_id;
-                $apps['status'] = true;
-            } else {
-                $apps = self::query()->where([
-                    'id' => $params['id'],
-                    'main_user_id' => $main_user_id
-                ])->firstOrFail();
-            }
-            if($params['track_platform_id'] == TrackPlatform::Adjust && empty($params['track_code'])){
-                throw new BizException('Track code required.');
-            }
-            $apps->fill($params);
-            $apps->saveOrFail();
-
-            return $apps;
-        }, 3);
-        return $apps;
-    }
+//    public static function Make($user, $params){
+//        $apps = DB::transaction(function () use($user, $params) {
+//            $main_user_id = $user->getMainId();
+//            if (empty($params['id'])) {
+//                $apps = new self();
+//                $apps->main_user_id = $main_user_id;
+//                $apps['status'] = true;
+//            } else {
+//                $apps = self::query()->where([
+//                    'id' => $params['id'],
+//                    'main_user_id' => $main_user_id
+//                ])->firstOrFail();
+//            }
+//            if($params['track_platform_id'] == TrackPlatform::Adjust && empty($params['track_code'])){
+//                throw new BizException('Track code required.');
+//            }
+//            $apps->fill($params);
+//            $apps->saveOrFail();
+//
+//            return $apps;
+//        }, 3);
+//        return $apps;
+//    }
 
     /**
-     * 启用
+     * 管理员解除状态控制
      * @throws \Throwable
      */
     public function enable(){
-        if(!$this->status){
-            $this->status = true;
+        if($this->is_admin_disable){
+            $this->is_admin_disable = false;
             $this->saveOrFail();
         }
     }
 
     /**
-     * 停用
+     * 管理员停用
      * @throws \Throwable
      */
     public function disable(){
-        if($this->status){
-            $this->status = false;
-            $this->saveOrFail();
-        }
+        $this->is_admin_disable = true;
+        $this->status = false;
+        $this->saveOrFail();
     }
     
     public function getTrackAttribute(){

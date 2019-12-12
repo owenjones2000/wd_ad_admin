@@ -17,9 +17,9 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         {{ $t('table.search') }}
       </el-button>
-      <el-button v-permission="['advertise.channel.edit']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">
-        {{ $t('table.add') }}
-      </el-button>
+      <!--<el-button v-permission="['advertise.app.edit']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">-->
+      <!--  {{ $t('table.add') }}-->
+      <!--</el-button>-->
       <el-button v-waves :loading="downloading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
         {{ $t('table.export') }}
       </el-button>
@@ -41,12 +41,6 @@
       <el-table-column align="center" label="Package">
         <template slot-scope="scope">
           <span>{{ scope.row.bundle_id }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Platform">
-        <template slot-scope="scope">
-          <span>{{ scope.row.platform }}</span>
         </template>
       </el-table-column>
 
@@ -96,34 +90,35 @@
         </template>
       </el-table-column>
 
+      <el-table-column align="center" label="Status">
+        <template slot-scope="scope">
+          <el-icon :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}" size="small" :name="scope.row.status ? 'video-play' : 'video-pause'" />
+        </template>
+      </el-table-column>
+
       <el-table-column align="center" label="Actions" width="200">
         <template slot-scope="scope">
-          <el-button v-permission="['advertise.channel.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">
-            Edit
-          </el-button>
-          <el-button v-permission="['basic.auth.token']" type="normal" size="small" icon="el-icon-key " @click="handleToken(scope.row)">
-            Token
-          </el-button>
-          <!--<el-button v-permission="['advertise.channel.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">-->
-          <!--  Delete-->
-          <!--</el-button>-->
+          <!--<el-button v-permission="['advertise.app.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />-->
+          <!--<el-button v-permission="['advertise.auth.token']" type="normal" size="small" icon="el-icon-key " @click="handleToken(scope.row)" />-->
+          <el-button v-permission="['advertise.app.edit']" :type="scope.row.is_admin_disable ? 'danger' : 'info'" size="small" icon="el-icon-remove" @click="handleStatus(scope.row)" />
+          <!--<el-button v-permission="['advertise.app.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
         </template>
       </el-table-column>
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
-    <el-dialog :title="'Create new channel'" :visible.sync="dialogFormVisible">
-      <div v-loading="channelCreating" class="form-container">
-        <el-form ref="channelForm" :rules="rules" :model="currentChannel" label-position="left" label-width="150px" style="max-width: 500px;">
-          <el-form-item :label="$t('channel.name')" prop="name">
-            <el-input v-model="currentChannel.name" />
+    <el-dialog :title="'Create new app'" :visible.sync="dialogFormVisible">
+      <div v-loading="appCreating" class="form-container">
+        <el-form ref="appForm" :rules="rules" :model="currentApp" label-position="left" label-width="150px" style="max-width: 500px;">
+          <el-form-item :label="$t('name')" prop="name">
+            <el-input v-model="currentApp.name" />
           </el-form-item>
           <el-form-item :label="$t('app.bundle_id')" prop="bundle_id">
-            <el-input v-model="currentChannel.bundle_id" />
+            <el-input v-model="currentApp.bundle_id" />
           </el-form-item>
           <el-form-item :label="$t('platform.name')" prop="platform">
-            <el-select v-model="currentChannel.platform" placeholder="please select platform">
+            <el-select v-model="currentApp.os" placeholder="please select platform">
               <el-option label="iOS" value="ios" />
               <el-option label="Android" value="android" />
             </el-select>
@@ -133,7 +128,7 @@
           <el-button @click="dialogFormVisible = false">
             {{ $t('table.cancel') }}
           </el-button>
-          <el-button type="primary" @click="saveChannel()">
+          <el-button type="primary" @click="saveApp()">
             {{ $t('table.confirm') }}
           </el-button>
         </div>
@@ -141,7 +136,7 @@
     </el-dialog>
 
     <el-dialog :title="dialogTokenFormName" :visible.sync="dialogTokenFormVisible">
-      <div v-loading="channelCreating" class="form-container">
+      <div v-loading="appCreating" class="form-container">
         <el-form ref="tokenForm" v-permission="['basic.auth.token.make']" :model="newToken" label-position="left" label-width="150px" style="max-width: 500px;">
           <el-form-item :label="$t('token.expired_at')" prop="expired_at">
             <el-date-picker v-model="newToken.expired_at" type="date" value-format="yyyy-MM-dd" placeholder="no limit" />
@@ -152,7 +147,7 @@
         </el-form>
       </div>
       <el-divider />
-      <el-table v-loading="loading" :data="currentChannelTokens" border fit highlight-current-row style="width: 100%">
+      <el-table v-loading="loading" :data="currentAppTokens" border fit highlight-current-row style="width: 100%">
         <el-table-column align="center" label="Access Token" width="200" :show-overflow-tooltip="true">
           <template slot-scope="scope">
             <el-link v-clipboard:copy="scope.row.access_token" v-clipboard:success="clipboardSuccess" type="primary" icon="el-icon-document" />
@@ -180,46 +175,43 @@
 
 <script>
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
-import ChannelResource from '@/api/channel';
-import TokenResource from '@/api/token';
+import AppResource from '@/api/app';
 import waves from '@/directive/waves'; // Waves directive
 import permission from '@/directive/permission'; // Waves directive
 import checkPermission from '@/utils/permission'; // Permission checking
-import clipboard from '@/directive/clipboard/index.js'; // use clipboard by v-directive
 import defaultDatePickerOptions from '@/utils/datepicker';
 
-const channelResource = new ChannelResource();
-const tokenResource = new TokenResource();
+const appResource = new AppResource();
 
 export default {
-  name: 'ChannelList',
+  name: 'AppList',
   components: { Pagination },
-  directives: { waves, permission, clipboard },
+  directives: { waves, permission },
   data() {
     return {
       list: null,
       total: 0,
       loading: true,
       downloading: false,
-      channelCreating: false,
+      appCreating: false,
       query: {
         page: 1,
         limit: 15,
         keyword: '',
         daterange: [new Date(), new Date()],
       },
-      newChannel: {},
+      newApp: {},
       dialogFormVisible: false,
-      currentChannelId: 0,
-      currentChannel: {
+      currentAppId: 0,
+      currentApp: {
         name: '',
         tokens: [],
       },
-      currentChannelTokens: [],
+      currentAppTokens: [],
       rules: {
         name: [{ required: true, message: 'Name is required', trigger: 'blur' }],
         bundle_id: [{ required: true, message: 'Package name is required', trigger: 'blur' }],
-        platform: [{ required: true, message: 'Platform is required', trigger: 'blur' }],
+        os: [{ required: true, message: 'Platform is required', trigger: 'blur' }],
       },
       dialogTokenFormVisible: false,
       dialogTokenFormName: 'Api token',
@@ -232,7 +224,7 @@ export default {
   computed: {
   },
   created() {
-    this.resetNewChannel();
+    this.resetNewApp();
     this.getList();
   },
   methods: {
@@ -241,7 +233,7 @@ export default {
     async getList() {
       const { limit, page } = this.query;
       this.loading = true;
-      const { data, meta } = await channelResource.list(this.query);
+      const { data, meta } = await appResource.list(this.query);
       this.list = data;
       this.list.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
@@ -254,82 +246,27 @@ export default {
       this.getList();
     },
     handleCreate() {
-      this.resetNewChannel();
-      this.currentChannel = this.newChannel;
+      this.resetNewApp();
+      this.currentApp = this.newApp;
       this.dialogFormVisible = true;
       this.$nextTick(() => {
-        this.$refs['channelForm'].clearValidate();
+        this.$refs['appForm'].clearValidate();
       });
     },
-    handleEdit(channel) {
-      this.currentChannel = channel;
+    handleEdit(app) {
+      this.currentApp = app;
       this.dialogFormVisible = true;
       this.$nextTick(() => {
-        this.$refs['channelForm'].clearValidate();
-      });
-    },
-    async getTokenList(){
-      this.currentChannelTokens = [];
-      const { data } = await tokenResource.list(this.currentChannel.bundle_id);
-      this.currentChannelTokens = data;
-    },
-    handleToken(channel) {
-      this.currentChannel = channel;
-      this.dialogTokenFormName = channel.name;
-      this.getTokenList();
-      this.dialogTokenFormVisible = true;
-    },
-    makeToken() {
-      this.$confirm('This will make a new token for channel ' + this.currentChannel.name + '. Continue?', 'Warning', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-      }).then(() => {
-        tokenResource.makeToken(this.currentChannel.bundle_id, this.newToken.expired_at).then(response => {
-          this.$message({
-            type: 'success',
-            message: 'The new token : ' + response.api_token,
-          });
-          this.getTokenList();
-        }).catch(error => {
-          console.log(error);
-        });
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: 'Make token canceled',
-        });
-      });
-    },
-    handleTokenDelete(token) {
-      this.$confirm('This will permanently delete token ' + token.access_token + '. Continue?', 'Warning', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-      }).then(() => {
-        tokenResource.destroy(token.id).then(response => {
-          this.$message({
-            type: 'success',
-            message: 'Delete token completed',
-          });
-          this.getTokenList();
-        }).catch(error => {
-          console.log(error);
-        });
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: 'Delete token canceled',
-        });
+        this.$refs['appForm'].clearValidate();
       });
     },
     handleDelete(id, name) {
-      this.$confirm('This will permanently delete channel ' + name + '. Continue?', 'Warning', {
+      this.$confirm('This will permanently delete app ' + name + '. Continue?', 'Warning', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Cancel',
         type: 'warning',
       }).then(() => {
-        channelResource.destroy(id).then(response => {
+        appResource.destroy(id).then(response => {
           this.$message({
             type: 'success',
             message: 'Delete completed',
@@ -345,19 +282,50 @@ export default {
         });
       });
     },
-    saveChannel() {
-      this.$refs['channelForm'].validate((valid) => {
+    handleStatus(app) {
+      this.$confirm('This will ' + (app.is_admin_disable ? 'release control for' : 'disable') + ' app ' + app.name + '. Continue?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }).then(() => {
+        if (app.is_admin_disable) {
+          appResource.enable(app.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'App ' + app.name + ' released',
+            });
+            this.getList();
+          }).catch(error => {
+            console.log(error);
+          });
+        } else {
+          appResource.disable(app.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'App ' + app.name + ' disabled',
+            });
+            this.getList();
+          }).catch(error => {
+            console.log(error);
+          });
+        }
+      }).catch(error => {
+        console.log(error);
+      });
+    },
+    saveApp() {
+      this.$refs['appForm'].validate((valid) => {
         if (valid) {
-          this.channelCreating = true;
-          channelResource
-            .save(this.currentChannel)
+          this.appCreating = true;
+          appResource
+            .save(this.currentApp)
             .then(response => {
               this.$message({
-                message: 'Channel ' + this.currentChannel.name + ' has been saved successfully.',
+                message: 'App ' + this.currentApp.name + ' has been saved successfully.',
                 type: 'success',
                 duration: 5 * 1000,
               });
-              this.resetNewChannel();
+              this.resetNewApp();
               this.dialogFormVisible = false;
               this.handleFilter();
             })
@@ -365,7 +333,7 @@ export default {
               console.log(error);
             })
             .finally(() => {
-              this.channelCreating = false;
+              this.appCreating = false;
             });
         } else {
           console.log('error submit!!');
@@ -373,21 +341,21 @@ export default {
         }
       });
     },
-    resetNewChannel() {
-      this.newChannel = {
+    resetNewApp() {
+      this.newApp = {
         name: '',
       };
     },
     handleDownload() {
       this.downloading = true;
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['id', 'channel_id', 'name'];
+        const tHeader = ['id', 'app_id', 'name'];
         const filterVal = ['index', 'id', 'name'];
         const data = this.formatJson(filterVal, this.list);
         excel.export_json_to_excel({
           header: tHeader,
           data,
-          filename: 'channel-list',
+          filename: 'app-list',
         });
         this.downloading = false;
       });

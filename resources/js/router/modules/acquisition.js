@@ -12,6 +12,20 @@ const acquisitionRoutes = {
     permissions: ['advertise.manage'],
   },
   children: [
+    /** Account managements */
+    {
+      path: 'account',
+      component: () => import('@/views/account/List'),
+      name: 'Account',
+      meta: { title: 'Account', icon: 'user', permissions: ['advertise.account'] },
+    },
+    /** App managements */
+    {
+      path: 'app',
+      component: () => import('@/views/app/List'),
+      name: 'App',
+      meta: { title: 'App', icon: 'user', permissions: ['advertise.app'] },
+    },
     /** Campaign managements */
     {
       path: 'campaign',
@@ -25,6 +39,13 @@ const acquisitionRoutes = {
       name: 'Ad',
       meta: { title: 'Ad', icon: 'user', permissions: ['advertise.campaign.ad'] },
       hidden: true,
+    },
+    /** Channel managements */
+    {
+      path: 'channel',
+      component: () => import('@/views/channel/List'),
+      name: 'Channel',
+      meta: { title: 'Channel', icon: 'user', permissions: ['advertise.channel'] },
     },
   ],
 };

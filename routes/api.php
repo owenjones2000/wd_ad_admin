@@ -27,6 +27,15 @@ Route::group(['middleware' => 'api'], function () {
     Route::apiResource('permissions', 'PermissionController')->middleware('permission:system.permission');
 
     Route::group(['namespace' => 'Api'], function () {
+        // Account
+        Route::group(['prefix' => 'account'],function (){
+            Route::get('','AccountController@list')->name('account')->middleware('permission:advertise.account');
+            //编辑
+            Route::post('{id?}','AccountController@save')->name('account.save')->middleware('permission:advertise.account.edit');
+            //删除
+//            Route::delete('account/destroy','AccountController@destroy')->name('account.destroy')->middleware('permission:advertise.account.destroy');
+        });
+        
         // API
         Route::group(['prefix' => 'auth'], function () {
             Route::get('token', 'AuthController@tokenList')->name('auth.token')->middleware('permission:basic.auth.token');
@@ -35,23 +44,21 @@ Route::group(['middleware' => 'api'], function () {
         });
         // 渠道
         Route::group(['prefix' => 'channel'], function () {
-            Route::get('', 'ChannelController@list')->name('channel.list')->middleware('permission:basic.channel');
-            Route::post('{id?}', 'ChannelController@save')->name('channel.save')->middleware('permission:basic.channel.edit');
+            Route::get('', 'ChannelController@list')->name('channel.list')->middleware('permission:advertise.channel');
+            Route::post('{id?}', 'ChannelController@save')->name('channel.save')->middleware('permission:advertise.channel.edit');
         });
 
         // 应用管理
-//        Route::group(['prefix'=>'app', 'middleware' => 'permission:app'], function () {
-//            Route::get('data', 'AppController@data')->name('app.data');
-//            Route::get('list', 'AppController@index')->name('app');
-//            //编辑
-//            Route::get('{id?}', 'AppController@edit')->name('app.edit')->middleware('permission:app.edit');
-//            Route::post('{id?}', 'AppController@save')->name('app.save')->middleware('permission:app.edit');
-//            Route::post('{id}/enable', 'AppController@enable')->name('app.enable')->middleware('permission:app.edit');
-//            Route::post('{id}/disable', 'AppController@disable')->name('app.disable')->middleware('permission:app.edit');
-//
-//            //删除
-////        Route::delete('destroy', 'AppController@destroy')->name('app.destroy')->middleware('permission:app.destroy');
-//        });
+        Route::group(['prefix'=>'app', 'middleware' => 'permission:advertise.app'], function () {
+            Route::get('', 'AppController@list')->name('app');
+            //编辑
+//            Route::post('{id?}', 'AppController@save')->name('app.save')->middleware('permission:advertise.app.edit');
+            Route::post('{id}/enable', 'AppController@enable')->name('app.enable')->middleware('permission:advertise.app.edit');
+            Route::post('{id}/disable', 'AppController@disable')->name('app.disable')->middleware('permission:advertise.app.edit');
+
+            //删除
+//        Route::delete('destroy', 'AppController@destroy')->name('app.destroy')->middleware('permission:app.destroy');
+        });
 
         // 活动管理
         Route::group(['prefix'=>'campaign'], function () {
