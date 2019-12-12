@@ -17,9 +17,9 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         {{ $t('table.search') }}
       </el-button>
-      <el-button v-permission="['basic.app.edit']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">
-        {{ $t('table.add') }}
-      </el-button>
+      <!--<el-button v-permission="['advertise.app.edit']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">-->
+      <!--  {{ $t('table.add') }}-->
+      <!--</el-button>-->
       <el-button v-waves :loading="downloading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
         {{ $t('table.export') }}
       </el-button>
@@ -98,10 +98,10 @@
 
       <el-table-column align="center" label="Actions" width="200">
         <template slot-scope="scope">
-          <el-button v-permission="['advertise.app.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />
-          <el-button v-permission="['advertise.auth.token']" type="normal" size="small" icon="el-icon-key " @click="handleToken(scope.row)" />
+          <!--<el-button v-permission="['advertise.app.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />-->
+          <!--<el-button v-permission="['advertise.auth.token']" type="normal" size="small" icon="el-icon-key " @click="handleToken(scope.row)" />-->
           <el-button v-permission="['advertise.app.edit']" :type="scope.row.is_admin_disable ? 'danger' : 'info'" size="small" icon="el-icon-remove" @click="handleStatus(scope.row)" />
-          <el-button v-permission="['advertise.app.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />
+          <!--<el-button v-permission="['advertise.app.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
         </template>
       </el-table-column>
     </el-table>
@@ -111,14 +111,14 @@
     <el-dialog :title="'Create new app'" :visible.sync="dialogFormVisible">
       <div v-loading="appCreating" class="form-container">
         <el-form ref="appForm" :rules="rules" :model="currentApp" label-position="left" label-width="150px" style="max-width: 500px;">
-          <el-form-item :label="$t('app.name')" prop="name">
+          <el-form-item :label="$t('name')" prop="name">
             <el-input v-model="currentApp.name" />
           </el-form-item>
           <el-form-item :label="$t('app.bundle_id')" prop="bundle_id">
             <el-input v-model="currentApp.bundle_id" />
           </el-form-item>
           <el-form-item :label="$t('platform.name')" prop="platform">
-            <el-select v-model="currentApp.platform" placeholder="please select platform">
+            <el-select v-model="currentApp.os" placeholder="please select platform">
               <el-option label="iOS" value="ios" />
               <el-option label="Android" value="android" />
             </el-select>
@@ -211,7 +211,7 @@ export default {
       rules: {
         name: [{ required: true, message: 'Name is required', trigger: 'blur' }],
         bundle_id: [{ required: true, message: 'Package name is required', trigger: 'blur' }],
-        platform: [{ required: true, message: 'Platform is required', trigger: 'blur' }],
+        os: [{ required: true, message: 'Platform is required', trigger: 'blur' }],
       },
       dialogTokenFormVisible: false,
       dialogTokenFormName: 'Api token',

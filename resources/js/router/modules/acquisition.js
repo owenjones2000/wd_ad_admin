@@ -12,6 +12,13 @@ const acquisitionRoutes = {
     permissions: ['advertise.manage'],
   },
   children: [
+    /** Account managements */
+    {
+      path: 'account',
+      component: () => import('@/views/account/List'),
+      name: 'Account',
+      meta: { title: 'Account', icon: 'user', permissions: ['advertise.account'] },
+    },
     /** App managements */
     {
       path: 'app',

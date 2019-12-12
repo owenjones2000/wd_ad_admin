@@ -27,6 +27,15 @@ Route::group(['middleware' => 'api'], function () {
     Route::apiResource('permissions', 'PermissionController')->middleware('permission:system.permission');
 
     Route::group(['namespace' => 'Api'], function () {
+        // Account
+        Route::group(['prefix' => 'account'],function (){
+            Route::get('','AccountController@list')->name('account')->middleware('permission:advertise.account');
+            //编辑
+            Route::post('{id?}','AccountController@save')->name('account.save')->middleware('permission:advertise.account.edit');
+            //删除
+//            Route::delete('account/destroy','AccountController@destroy')->name('account.destroy')->middleware('permission:advertise.account.destroy');
+        });
+        
         // API
         Route::group(['prefix' => 'auth'], function () {
             Route::get('token', 'AuthController@tokenList')->name('auth.token')->middleware('permission:basic.auth.token');
@@ -43,7 +52,7 @@ Route::group(['middleware' => 'api'], function () {
         Route::group(['prefix'=>'app', 'middleware' => 'permission:advertise.app'], function () {
             Route::get('', 'AppController@list')->name('app');
             //编辑
-            Route::post('{id?}', 'AppController@save')->name('app.save')->middleware('permission:advertise.app.edit');
+//            Route::post('{id?}', 'AppController@save')->name('app.save')->middleware('permission:advertise.app.edit');
             Route::post('{id}/enable', 'AppController@enable')->name('app.enable')->middleware('permission:advertise.app.edit');
             Route::post('{id}/disable', 'AppController@disable')->name('app.disable')->middleware('permission:advertise.app.edit');
 

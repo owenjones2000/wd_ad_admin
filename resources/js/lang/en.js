@@ -140,6 +140,11 @@ export default {
       visitor: 'Visitor. Have access to static pages, should not have any writable permission',
     },
   },
+  name: 'Name',
+  email: 'Email',
+  account: {
+    realname: 'Real Name',
+  },
   platform: {
     name: 'Platform',
   },

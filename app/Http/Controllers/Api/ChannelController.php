@@ -99,41 +99,6 @@ class ChannelController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $validator = Validator::make(
-            $request->all(),
-            array_merge(
-                $this->getValidationRules(),
-                [
-                    'password' => ['required', 'min:6'],
-                    'confirmPassword' => 'same:password',
-                ]
-            )
-        );
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 403);
-        } else {
-            $params = $request->all();
-            $user = User::create([
-                'name' => $params['name'],
-                'email' => $params['email'],
-                'password' => Hash::make($params['password']),
-            ]);
-            $role = Role::findByName($params['role']);
-            $user->syncRoles($role);
-
-            return new UserResource($user);
-        }
-    }
-
-    /**
      * Display the specified resource.
      *
      * @return ChannelResource|\Illuminate\Http\JsonResponse
@@ -178,20 +143,20 @@ class ChannelController extends Controller
      * @param  User $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
-    {
-        if ($user->isAdmin()) {
-            response()->json(['error' => 'Ehhh! Can not delete admin user'], 403);
-        }
-
-        try {
-            $user->delete();
-        } catch (\Exception $ex) {
-            response()->json(['error' => $ex->getMessage()], 403);
-        }
-
-        return response()->json(null, 204);
-    }
+//    public function destroy(User $user)
+//    {
+//        if ($user->isAdmin()) {
+//            response()->json(['error' => 'Ehhh! Can not delete admin user'], 403);
+//        }
+//
+//        try {
+//            $user->delete();
+//        } catch (\Exception $ex) {
+//            response()->json(['error' => $ex->getMessage()], 403);
+//        }
+//
+//        return response()->json(null, 204);
+//    }
 
     public function tokenList($id){
         $channel = Channel::findOrFail($id);
