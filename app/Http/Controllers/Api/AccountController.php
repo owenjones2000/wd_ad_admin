@@ -22,7 +22,7 @@ class AccountController extends Controller
     public function list(Request $request)
     {
         $searchParams = $request->all();
-        $accountQuery = Account::query();
+        $accountQuery = Account::query()->where('main_user_id', 0);
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
         $keyword = Arr::get($searchParams, 'keyword', '');
 
