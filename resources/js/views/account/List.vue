@@ -20,12 +20,6 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Name">
-        <template slot-scope="scope">
-          <span>{{ scope.row.username }}</span>
-        </template>
-      </el-table-column>
-
       <el-table-column align="center" label="Email">
         <template slot-scope="scope">
           <span>{{ scope.row.email }}</span>
@@ -55,9 +49,6 @@
     <el-dialog :title="'Edit account'" :visible.sync="dialogFormVisible">
       <div v-loading="accountCreating" class="form-container">
         <el-form ref="accountForm" :rules="rules" :model="currentAccount" label-position="left" label-width="150px" style="max-width: 500px;">
-          <el-form-item :label="$t('name')" prop="username">
-            <el-input v-model="currentAccount.username" />
-          </el-form-item>
           <el-form-item :label="$t('email')" prop="email">
             <el-input v-model="currentAccount.email" />
           </el-form-item>
@@ -116,7 +107,7 @@ export default {
       passwordRequired: true,
       currentAccountId: 0,
       currentAccount: {
-        username: '',
+        email: '',
       },
 
     };
@@ -131,7 +122,6 @@ export default {
         }
       };
       return {
-        username: [{ required: true, message: 'Name is required', trigger: 'blur' }],
         email: [
           { required: true, message: 'Email is required', trigger: 'blur' },
           { type: 'email', message: 'Please input correct email address', trigger: ['blur', 'change'] },
@@ -211,7 +201,7 @@ export default {
             .save(this.currentAccount)
             .then(response => {
               this.$message({
-                message: 'Account ' + this.currentAccount.username + ' has been saved successfully.',
+                message: 'Account ' + this.currentAccount.email + ' has been saved successfully.',
                 type: 'success',
                 duration: 5 * 1000,
               });
@@ -233,7 +223,6 @@ export default {
     },
     resetNewAccount() {
       this.newAccount = {
-        username: '',
         email: '',
         realname: '',
         password: '',

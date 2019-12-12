@@ -70,7 +70,6 @@ class Account extends Model
     {
         return [
             'email' => 'required|email|unique:a_users,email,'.($request_params['id']??''),
-            'username' => 'required|string|alpha_dash|min:2|max:14',
             'password' => empty($request_params['id']) ?
                 'required|min:2|max:14' : 'min:2|max:14'
         ];
