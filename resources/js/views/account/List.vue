@@ -13,7 +13,16 @@
       </el-button>
     </div>
 
-    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
+    <el-table
+      v-loading="loading"
+      :data="list"
+      row-key="id"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%"
+      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+    >
       <el-table-column align="center" label="ID" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
@@ -34,7 +43,7 @@
 
       <el-table-column align="center" label="Status">
         <template slot-scope="scope">
-          <el-icon :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}" size="small" name="lollipop" />
+          <el-link v-permission="['advertise.account.edit']" :type="scope.row.status ? 'success' : 'info'" size="small" icon="el-icon-s-custom" :underline="false" @click="handleStatus(scope.row)" />
         </template>
       </el-table-column>
 
@@ -97,7 +106,7 @@ export default {
   directives: { waves, permission },
   data() {
     return {
-      list: null,
+      list: [],
       total: 0,
       loading: true,
       downloading: false,
@@ -197,6 +206,38 @@ export default {
           type: 'info',
           message: 'Delete canceled',
         });
+      });
+    },
+    handleStatus(account) {
+      var displayName = account.realname + '(' + account.email + ')';
+      this.$confirm('This will ' + (account.status ? 'disable' : 'enable') + ' account ' + displayName + '. Continue?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }).then(() => {
+        if (account.status) {
+          accountResource.disable(account.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'Account ' + displayName + ' disabled',
+            });
+            account.status = false;
+          }).catch(error => {
+            console.log(error);
+          });
+        } else {
+          accountResource.enable(account.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'Account ' + displayName + ' enabled',
+            });
+            account.status = true;
+          }).catch(error => {
+            console.log(error);
+          });
+        }
+      }).catch(error => {
+        console.log(error);
       });
     },
     saveAccount() {

@@ -31,9 +31,11 @@ Route::group(['middleware' => 'api'], function () {
         Route::group(['prefix' => 'account'],function (){
             Route::get('','AccountController@list')->name('account')->middleware('permission:advertise.account');
             // 子账号
-            Route::get('{main_user_id?}/subs','AccountController@list')->name('account')->middleware('permission:advertise.account');
+            //Route::get('{main_user_id?}/subs','AccountController@list')->name('account')->middleware('permission:advertise.account');
             //编辑
             Route::post('{id?}','AccountController@save')->name('account.save')->middleware('permission:advertise.account.edit');
+            Route::post('{id}/enable', 'AccountController@enable')->name('account.enable')->middleware('permission:advertise.account.edit');
+            Route::post('{id}/disable', 'AccountController@disable')->name('account.disable')->middleware('permission:advertise.account.edit');
             //删除
 //            Route::delete('account/destroy','AccountController@destroy')->name('account.destroy')->middleware('permission:advertise.account.destroy');
         });

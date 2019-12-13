@@ -25,12 +25,12 @@ class Account extends Model
             if (empty($params['id'])) {
                 $account = new Account();
                 $account['status'] = true;
+                $account['main_user_id'] = 0; // 主账号
             } else {
                 $account = Account::query()->where([
                     'id' => $params['id'],
                 ])->firstOrFail();
             }
-            $account['main_user_id'] = 0; // 主账号
 
             if (!empty($params['password'])){
                 $data['password_hash'] = Hash::make($params['password']);
@@ -46,24 +46,29 @@ class Account extends Model
     }
 
     /**
-     * 管理员解除状态控制
+     * 启用
      * @throws \Throwable
      */
     public function enable(){
-        if($this->is_admin_disable){
-            $this->is_admin_disable = false;
+        if(!$this->status){
+            $this->status = true;
             $this->saveOrFail();
         }
     }
 
     /**
-     * 管理员停用
+     * 停用
      * @throws \Throwable
      */
     public function disable(){
-        $this->is_admin_disable = true;
-        $this->status = false;
-        $this->saveOrFail();
+        if($this->status){
+            $this->status = false;
+            $this->saveOrFail();
+        }
+    }
+
+    public function children(){
+        return $this->hasMany(Account::class, 'main_user_id', 'id');
     }
     
     public static function rules($request_params = [])

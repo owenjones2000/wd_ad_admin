@@ -22,7 +22,7 @@ class AccountController extends Controller
     public function list(Request $request, $main_user_id = 0)
     {
         $searchParams = $request->all();
-        $accountQuery = Account::query()->where('main_user_id', $main_user_id);
+        $accountQuery = Account::query()->with('children')->where('main_user_id', $main_user_id);
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
         $keyword = Arr::get($searchParams, 'keyword', '');
 
@@ -47,6 +47,34 @@ class AccountController extends Controller
         $params['id'] = $id;
         $account = Account::Make($params);
         return new AccountResource($account);
+    }
+
+    /**
+     * 启用
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
+    public function enable($id)
+    {
+        /** @var Account $account */
+        $account = Account::findOrFail($id);
+        $account->enable();
+        return response()->json(['code'=>0,'msg'=>'Enabled']);
+    }
+
+    /**
+     * 禁用
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
+    public function disable($id)
+    {
+        /** @var Account $account */
+        $account = Account::findOrFail($id);
+        $account->disable();
+        return response()->json(['code'=>0,'msg'=>'Disabled']);
     }
 
     /**
