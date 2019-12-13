@@ -119,7 +119,7 @@
     <el-dialog :title="'Create new campaign'" :visible.sync="dialogFormVisible">
       <div v-loading="campaignCreating" class="form-container">
         <el-form ref="campaignForm" :rules="rules" :model="currentCampaign" label-position="left" label-width="150px" style="max-width: 500px;">
-          <el-form-item :label="$t('campaign.name')" prop="name">
+          <el-form-item :label="$t('name')" prop="name">
             <el-input v-model="currentCampaign.name" />
           </el-form-item>
         </el-form>
