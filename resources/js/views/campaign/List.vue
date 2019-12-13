@@ -116,7 +116,7 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
-    <el-dialog :title="'Create new campaign'" :visible.sync="dialogFormVisible">
+    <el-dialog :title="'Edit campaign'" :visible.sync="dialogFormVisible">
       <div v-loading="campaignCreating" class="form-container">
         <el-form ref="campaignForm" :rules="rules" :model="currentCampaign" label-position="left" label-width="150px" style="max-width: 500px;">
           <el-form-item :label="$t('name')" prop="name">
