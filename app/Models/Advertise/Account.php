@@ -12,6 +12,7 @@ class Account extends Model
 
     protected $table = 'a_users';
 
+    protected $hidden = ['password_hash', 'remember_token', 'username'];
     protected $fillable = ['username', 'email', 'realname'];
 
     /**
@@ -33,7 +34,7 @@ class Account extends Model
             }
 
             if (!empty($params['password'])){
-                $data['password_hash'] = Hash::make($params['password']);
+                $account['password_hash'] = Hash::make($params['password']);
             }
 
             $account->fill($params);
