@@ -30,6 +30,8 @@ Route::group(['middleware' => 'api'], function () {
         // Account
         Route::group(['prefix' => 'account'],function (){
             Route::get('','AccountController@list')->name('account')->middleware('permission:advertise.account');
+            // 子账号
+            Route::get('{main_user_id?}/subs','AccountController@list')->name('account')->middleware('permission:advertise.account');
             //编辑
             Route::post('{id?}','AccountController@save')->name('account.save')->middleware('permission:advertise.account.edit');
             //删除

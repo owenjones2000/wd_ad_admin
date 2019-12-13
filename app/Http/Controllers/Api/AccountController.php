@@ -19,15 +19,15 @@ class AccountController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return 
      */
-    public function list(Request $request)
+    public function list(Request $request, $main_user_id = 0)
     {
         $searchParams = $request->all();
-        $accountQuery = Account::query()->where('main_user_id', 0);
+        $accountQuery = Account::query()->where('main_user_id', $main_user_id);
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
         $keyword = Arr::get($searchParams, 'keyword', '');
 
         if (!empty($keyword)) {
-            $accountQuery->where('name', 'LIKE', '%' . $keyword . '%');
+            $accountQuery->where('realname', 'LIKE', '%' . $keyword . '%');
             $accountQuery->where('email', 'LIKE', '%' . $keyword . '%');
         }
 
