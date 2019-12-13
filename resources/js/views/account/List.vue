@@ -23,13 +23,7 @@
       style="width: 100%"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
-      <el-table-column align="center" label="ID" width="80">
-        <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Email">
+      <el-table-column align="left" label="Email">
         <template slot-scope="scope">
           <span>{{ scope.row.email }}</span>
         </template>

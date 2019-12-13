@@ -7,7 +7,6 @@ use App\Models\Advertise\App;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AppController extends Controller
@@ -88,21 +87,21 @@ class AppController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function save(Request $request, $id = null)
-    {
-        $this->validate($request,[
-            'name'  => 'required|string|unique:a_app,name,'.$id,
-            'bundle_id'  => 'required|unique:a_app,bundle_id,'.$id,
-        ]);
-        try{
-            $params = $request->all();
-            $params['id'] = $id;
-            App::Make(Auth::user(), $params);
-            return redirect(route('advertise.app.edit', [$id]))->with(['status'=>'更新成功']);
-        } catch(BizException $ex){
-            return redirect(route('advertise.app.edit', [$id]))->withErrors(['status'=>$ex->getMessage()]);
-        }
-    }
+//    public function save(Request $request, $id = null)
+//    {
+//        $this->validate($request,[
+//            'name'  => 'required|string|unique:a_app,name,'.$id,
+//            'bundle_id'  => 'required|unique:a_app,bundle_id,'.$id,
+//        ]);
+//        try{
+//            $params = $request->all();
+//            $params['id'] = $id;
+//            App::Make(Auth::user(), $params);
+//            return redirect(route('advertise.app.edit', [$id]))->with(['status'=>'更新成功']);
+//        } catch(BizException $ex){
+//            return redirect(route('advertise.app.edit', [$id]))->withErrors(['status'=>$ex->getMessage()]);
+//        }
+//    }
 
     /**
      * 启动
