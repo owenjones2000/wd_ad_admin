@@ -33,6 +33,7 @@ class CampaignController extends Controller
         }, $start_date, $end_date);
 
         $advertise_kpi_query->select([
+            DB::raw('sum(requests) as requests'),
             DB::raw('sum(impressions) as impressions'),
             DB::raw('sum(clicks) as clicks'),
             DB::raw('sum(installations) as installs'),

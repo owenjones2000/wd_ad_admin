@@ -27,7 +27,7 @@ class AppController extends Controller
         $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function($query) use($start_date, $end_date, $app_id_query){
             $query->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('app_id', $app_id_query)
-                ->select(['impressions', 'clicks', 'installations', 'spend',
+                ->select(['requests', 'impressions', 'clicks', 'installations', 'spend',
                     'app_id',
                 ])
             ;
@@ -35,6 +35,7 @@ class AppController extends Controller
         }, $start_date, $end_date);
 
         $advertise_kpi_query->select([
+            DB::raw('sum(requests) as requests'),
             DB::raw('sum(impressions) as impressions'),
             DB::raw('sum(clicks) as clicks'),
             DB::raw('sum(installations) as installs'),
