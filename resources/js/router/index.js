@@ -16,6 +16,7 @@ import Layout from '@/layout';
 import systemRoutes from './modules/system';
 import basicRoutes from './modules/basic';
 import acquisitionRoutes from './modules/acquisition';
+import statisRoutes from './modules/statis';
 
 /**
  * Sub-menu only appear when children.length>=1
@@ -117,6 +118,7 @@ export const asyncRoutes = [
   systemRoutes,
   basicRoutes,
   acquisitionRoutes,
+  statisRoutes,
   { path: '*', redirect: '/404', hidden: true },
 ];
 

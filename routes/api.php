@@ -92,6 +92,11 @@ Route::group(['middleware' => 'api'], function () {
 //            Route::get('list', 'RegionController@list')->name('campaign.region');
 //        });
 
+        // 统计
+        Route::group(['prefix'=>'statis', 'middleware' => 'permission:advertise.statis'], function () {
+            Route::get('total', 'StatisController@total')->name('statis.total');
+        });
+
         //文件
         Route::post('Asset', 'AssetController@processMediaFiles')->name('asset.process');
     });
