@@ -54,6 +54,11 @@
         width="100"
       />
 
+      <el-table-column align="center" label="Requests">
+        <template slot-scope="scope">
+          <span>{{ scope.row.kpi&&scope.row.kpi.requests ? scope.row.kpi.requests : 0 }}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="Impressions">
         <template slot-scope="scope">
           <span>{{ scope.row.kpi&&scope.row.kpi.impressions ? scope.row.kpi.impressions : 0 }}</span>
@@ -116,7 +121,7 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
-    <el-dialog :title="'Create new campaign'" :visible.sync="dialogFormVisible">
+    <el-dialog :title="'Edit campaign'" :visible.sync="dialogFormVisible">
       <div v-loading="campaignCreating" class="form-container">
         <el-form ref="campaignForm" :rules="rules" :model="currentCampaign" label-position="left" label-width="150px" style="max-width: 500px;">
           <el-form-item :label="$t('name')" prop="name">

@@ -56,7 +56,7 @@ class ChannelController extends Controller
         $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function($query) use($start_date, $end_date, $channel_id_query){
             $query->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('target_app_id', $channel_id_query)
-                ->select(['impressions', 'clicks', 'installations', 'spend',
+                ->select(['requests', 'impressions', 'clicks', 'installations', 'spend',
                     'target_app_id',
                     ])
             ;
@@ -64,6 +64,7 @@ class ChannelController extends Controller
         }, $start_date, $end_date);
 
         $advertise_kpi_query->select([
+            DB::raw('sum(requests) as requests'),
             DB::raw('sum(impressions) as impressions'),
             DB::raw('sum(clicks) as clicks'),
             DB::raw('sum(installations) as installs'),

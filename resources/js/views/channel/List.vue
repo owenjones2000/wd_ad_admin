@@ -50,6 +50,11 @@
         </template>
       </el-table-column>
 
+      <el-table-column align="center" label="Requests">
+        <template slot-scope="scope">
+          <span>{{ scope.row.kpi&&scope.row.kpi.requests ? scope.row.kpi.requests : 0 }}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="Impressions">
         <template slot-scope="scope">
           <span>{{ scope.row.kpi&&scope.row.kpi.impressions ? scope.row.kpi.impressions : 0 }}</span>
