@@ -13,11 +13,10 @@ class AppController extends Controller
 {
     public function list(Request $request)
     {
-        if(!empty($request->get('rangedate'))){
-            $range_date = explode(' ~ ',$request->get('rangedate'));
-        }
+        $range_date = $request->get('daterange');
         $start_date = date('Ymd', strtotime($range_date[0]??'now'));
         $end_date = date('Ymd', strtotime($range_date[1]??'now'));
+        
         $app_base_query = App::query();
         if(!empty($request->get('keyword'))){
             $app_base_query->where('name', 'like', '%'.$request->get('name').'%');

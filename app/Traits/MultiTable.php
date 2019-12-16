@@ -12,6 +12,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 trait MultiTable{
+
+    /**
+     * @param \Closure $fun_build_query
+     * @param $start_date
+     * @param $end_date
+     * @return \Illuminate\Database\Eloquent\Builder
+     * @throws \Exception
+     */
     public static function multiTableQuery(\Closure $fun_build_query, $start_date, $end_date){
         $start = Carbon::parse($start_date);
         $end = Carbon::parse($end_date);
