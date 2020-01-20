@@ -32,27 +32,11 @@
       <!--  </template>-->
       <!--</el-table-column>-->
 
-      <el-table-column label="Campaign" width="300px">
+      <el-table-column label="Channel" width="300px">
         <template slot-scope="scope">
-          <router-link class="link-type" :to="'/acquisition/campaign/'+scope.row.id+'/ad'">
-            {{ scope.row.name }}
-          </router-link>
+          <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-
-      <el-table-column align="center" label="Budget">
-        <template slot-scope="scope">
-          <span>${{ scope.row.default_budget }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column
-        prop="created_at"
-        :formatter="dateFormat"
-        label="Created"
-        align="center"
-        width="100"
-      />
 
       <el-table-column align="center" label="Requests">
         <template slot-scope="scope">
@@ -105,24 +89,23 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="Status">
-        <template slot-scope="scope">
-          <el-icon :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}" size="small" :name="scope.row.status ? 'video-play' : 'video-pause'" />
-          <el-link v-permission="['advertise.campaign.edit']" :type="scope.row.is_admin_disable ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleStatus(scope.row)" />
-        </template>
+        <!--<template slot-scope="scope">-->
+        <!--<el-icon :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}" size="small" :name="scope.row.status ? 'video-play' : 'video-pause'" />-->
+        <!--</template>-->
       </el-table-column>
 
       <el-table-column align="center" label="Actions" width="100">
-        <template slot-scope="scope">
-          <router-link class="link-type" :to="'/acquisition/campaign/'+scope.row.id+'/channel'">Sources</router-link>
-          <!--<el-link v-permission="['advertise.campaign.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />-->
-          <!--<el-link v-permission="['advertise.campaign.destroy']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
-        </template>
+        <!--<template slot-scope="scope">-->
+        <!--<el-link v-permission="['advertise.campaign.ad.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />-->
+        <!--<el-link v-permission="['advertise.campaign.ad.edit']" :type="scope.row.is_admin_disable ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleStatus(scope.row)" />-->
+        <!--<el-link v-permission="['advertise.campaign.ad.destroy']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
+        <!--</template>-->
       </el-table-column>
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
-    <el-dialog :title="'Edit campaign'" :visible.sync="dialogFormVisible">
+    <el-dialog :title="'Create new campaign'" :visible.sync="dialogFormVisible">
       <div v-loading="campaignCreating" class="form-container">
         <el-form ref="campaignForm" :rules="rules" :model="currentCampaign" label-position="left" label-width="150px" style="max-width: 500px;">
           <el-form-item :label="$t('name')" prop="name">
@@ -162,6 +145,7 @@ export default {
       loading: true,
       downloading: false,
       campaignCreating: false,
+      campaign_id: this.$route.params && this.$route.params.campaign_id,
       query: {
         page: 1,
         limit: 15,
@@ -245,7 +229,8 @@ export default {
     async getList() {
       const { limit, page } = this.query;
       this.loading = true;
-      const { data, meta } = await campaignResource.list(this.query);
+
+      const { data, meta } = await campaignResource.channelList(this.campaign_id, this.query);
       this.list = data;
       this.list.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
@@ -294,27 +279,27 @@ export default {
         });
       });
     },
-    handleStatus(campaign) {
-      this.$confirm('This will ' + (campaign.is_admin_disable ? 'release control for' : 'disable') + ' campaign ' + campaign.name + '. Continue?', 'Warning', {
+    handleStatus(ad) {
+      this.$confirm('This will ' + (ad.is_admin_disable ? 'release control for' : 'disable') + ' ad ' + ad.name + '. Continue?', 'Warning', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Cancel',
         type: 'warning',
       }).then(() => {
-        if (campaign.is_admin_disable) {
-          campaignResource.enable(campaign.id).then(response => {
+        if (ad.is_admin_disable) {
+          campaignResource.enableAd(ad.campaign_id, ad.id).then(response => {
             this.$message({
               type: 'success',
-              message: 'Campaign ' + campaign.name + ' released',
+              message: 'Ad ' + ad.name + ' released',
             });
             this.getList();
           }).catch(error => {
             console.log(error);
           });
         } else {
-          campaignResource.disable(campaign.id).then(response => {
+          campaignResource.disableAd(ad.campaign_id, ad.id).then(response => {
             this.$message({
               type: 'success',
-              message: 'Campaign ' + campaign.name + ' disabled',
+              message: 'Ad ' + ad.name + ' disabled',
             });
             this.getList();
           }).catch(error => {

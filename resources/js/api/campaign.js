@@ -28,6 +28,14 @@ class CampaignResource extends Resource {
     });
   }
 
+  channelList(campaign_id, query) {
+    return request({
+      url: '/' + this.uri + '/' + campaign_id + '/channel',
+      method: 'get',
+      params: query,
+    });
+  }
+
   enableAd(campaign_id, ad_id){
     return request({
       url: '/' + this.uri + '/' + campaign_id + '/ad/' + ad_id + '/enable',
