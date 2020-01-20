@@ -32,7 +32,7 @@
       <!--  </template>-->
       <!--</el-table-column>-->
 
-      <el-table-column label="Channel" width="300px">
+      <el-table-column label="App" width="300px">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
