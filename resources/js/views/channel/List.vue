@@ -85,7 +85,7 @@
           <span>{{ scope.row.kpi&&scope.row.kpi.ir ? scope.row.kpi.ir : '0.00' }}%</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Spend">
+      <el-table-column align="center" label="Revenue">
         <template slot-scope="scope">
           <span>${{ scope.row.kpi&&scope.row.kpi.spend ? scope.row.kpi.spend : '0.00' }}</span>
         </template>
