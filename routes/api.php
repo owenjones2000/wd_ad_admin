@@ -50,6 +50,10 @@ Route::group(['middleware' => 'api'], function () {
         Route::group(['prefix' => 'channel'], function () {
             Route::get('', 'ChannelController@list')->name('channel.list')->middleware('permission:advertise.channel');
             Route::post('{id?}', 'ChannelController@save')->name('channel.save')->middleware('permission:advertise.channel.edit');
+
+            // 买量APP数据
+            Route::get('{channel_id}/app', 'ChannelController@app')->name('campaign.channel.app')->middleware('permission:advertise.campaign');
+
         });
 
         // 应用管理
