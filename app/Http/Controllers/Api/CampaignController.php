@@ -119,8 +119,10 @@ class CampaignController extends Controller
             ->get()
             ->keyBy('target_app_id')
             ->toArray();
-        $order_by_ids = implode(',', array_reverse(array_keys($advertise_kpi_list)));
+        $channel_id_list = array_reverse(array_keys($advertise_kpi_list));
+        $order_by_ids = implode(',', $channel_id_list);
         $channel_query = clone $channel_base_query;
+        $channel_query->whereIn('id', $channel_id_list);
         if(!empty($order_by_ids)){
             $channel_query->orderByRaw(DB::raw("FIELD(id,{$order_by_ids}) desc"));
         }
@@ -130,8 +132,6 @@ class CampaignController extends Controller
         foreach($channel_list as $index => &$channel){
             if(isset($advertise_kpi_list[$channel['id']])){
                 $channel->kpi = $advertise_kpi_list[$channel['id']];
-            }else{
-                unset($channel_list[$index]);
             }
         }
         return JsonResource::collection($channel_list);

@@ -142,8 +142,10 @@ class ChannelController extends Controller
             ->get()
             ->keyBy('app_id')
             ->toArray();
-        $order_by_ids = implode(',', array_reverse(array_keys($advertise_kpi_list)));
+        $app_id_list = array_reverse(array_keys($advertise_kpi_list));
+        $order_by_ids = implode(',', $app_id_list);
         $app_query = clone $app_base_query;
+        $app_query->whereIn('id', $app_id_list);
         if(!empty($order_by_ids)){
             $app_query->orderByRaw(DB::raw("FIELD(id,{$order_by_ids}) desc"));
         }
@@ -153,8 +155,6 @@ class ChannelController extends Controller
         foreach($app_list as $index => &$app){
             if(isset($advertise_kpi_list[$app['id']])){
                 $app->kpi = $advertise_kpi_list[$app['id']];
-            }else{
-                unset($app_list[$index]);
             }
         }
         return JsonResource::collection($app_list);
