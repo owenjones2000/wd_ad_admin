@@ -17,7 +17,7 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         {{ $t('table.search') }}
       </el-button>
-      <el-button v-permission="['advertise.channel.edit']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">
+      <el-button v-permission="['basic.channel.edit']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">
         {{ $t('table.add') }}
       </el-button>
       <!--<el-button v-waves :loading="downloading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">-->
@@ -26,27 +26,15 @@
     </div>
 
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="ID" width="80">
-        <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
-        </template>
-      </el-table-column>
+      <!--<el-table-column align="center" label="ID" width="80">-->
+      <!--  <template slot-scope="scope">-->
+      <!--    <span>{{ scope.row.id }}</span>-->
+      <!--  </template>-->
+      <!--</el-table-column>-->
 
-      <el-table-column align="center" label="Name">
+      <el-table-column label="Channel" width="300px">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Package">
-        <template slot-scope="scope">
-          <span>{{ scope.row.bundle_id }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Platform">
-        <template slot-scope="scope">
-          <span>{{ scope.row.platform }}</span>
         </template>
       </el-table-column>
 
@@ -85,7 +73,7 @@
           <span>{{ scope.row.kpi&&scope.row.kpi.ir ? scope.row.kpi.ir : '0.00' }}%</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Revenue">
+      <el-table-column align="center" label="Spend">
         <template slot-scope="scope">
           <span>${{ scope.row.kpi&&scope.row.kpi.spend ? scope.row.kpi.spend : '0.00' }}</span>
         </template>
@@ -100,22 +88,18 @@
           <span>${{ scope.row.kpi&&scope.row.kpi.ecpm ? scope.row.kpi.ecpm : '0.00' }}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="Status">
+        <!--<template slot-scope="scope">-->
+        <!--<el-icon :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}" size="small" :name="scope.row.status ? 'video-play' : 'video-pause'" />-->
+        <!--</template>-->
+      </el-table-column>
 
-      <el-table-column align="center" label="Actions" width="200">
-        <template slot-scope="scope">
-          <el-button v-permission="['advertise.channel.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">
-            Edit
-          </el-button>
-          <el-button v-permission="['basic.auth.token']" type="normal" size="small" icon="el-icon-key " @click="handleToken(scope.row)">
-            Token
-          </el-button>
-          <el-button type="normal" size="small" icon="el-icon-menu">
-            <router-link :to="'/acquisition/channel/'+scope.row.id+'/app'">Sources</router-link>
-          </el-button>
-          <!--<el-button v-permission="['advertise.channel.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">-->
-          <!--  Delete-->
-          <!--</el-button>-->
-        </template>
+      <el-table-column align="center" label="Actions" width="100">
+        <!--<template slot-scope="scope">-->
+        <!--<el-link v-permission="['advertise.channel.ad.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />-->
+        <!--<el-link v-permission="['advertise.channel.ad.edit']" :type="scope.row.is_admin_disable ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleStatus(scope.row)" />-->
+        <!--<el-link v-permission="['advertise.channel.ad.destroy']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
+        <!--</template>-->
       </el-table-column>
     </el-table>
 
@@ -124,17 +108,8 @@
     <el-dialog :title="'Create new channel'" :visible.sync="dialogFormVisible">
       <div v-loading="channelCreating" class="form-container">
         <el-form ref="channelForm" :rules="rules" :model="currentChannel" label-position="left" label-width="150px" style="max-width: 500px;">
-          <el-form-item :label="$t('channel.name')" prop="name">
+          <el-form-item :label="$t('name')" prop="name">
             <el-input v-model="currentChannel.name" />
-          </el-form-item>
-          <el-form-item :label="$t('app.bundle_id')" prop="bundle_id">
-            <el-input v-model="currentChannel.bundle_id" />
-          </el-form-item>
-          <el-form-item :label="$t('platform.name')" prop="platform">
-            <el-select v-model="currentChannel.platform" placeholder="please select platform">
-              <el-option label="iOS" value="ios" />
-              <el-option label="Android" value="android" />
-            </el-select>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -147,62 +122,22 @@
         </div>
       </div>
     </el-dialog>
-
-    <el-dialog :title="dialogTokenFormName" :visible.sync="dialogTokenFormVisible">
-      <div v-loading="channelCreating" class="form-container">
-        <el-form ref="tokenForm" v-permission="['basic.auth.token.make']" :model="newToken" label-position="left" label-width="150px" style="max-width: 500px;">
-          <el-form-item :label="$t('token.expired_at')" prop="expired_at">
-            <el-date-picker v-model="newToken.expired_at" type="date" value-format="yyyy-MM-dd" placeholder="no limit" />
-            <el-button type="primary" @click="makeToken()">
-              {{ $t('token.make') }}
-            </el-button>
-          </el-form-item>
-        </el-form>
-      </div>
-      <el-divider />
-      <el-table v-loading="loading" :data="currentChannelTokens" border fit highlight-current-row style="width: 100%">
-        <el-table-column align="center" label="Access Token" width="200" :show-overflow-tooltip="true">
-          <template slot-scope="scope">
-            <el-link v-clipboard:copy="scope.row.access_token" v-clipboard:success="clipboardSuccess" type="primary" icon="el-icon-document" />
-
-            <span>{{ scope.row.access_token }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column align="center" label="Expired Date">
-          <template slot-scope="scope">
-            <span>{{ scope.row.expired_at }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column align="center" label="Actions" width="100">
-          <template slot-scope="scope">
-            <el-link v-permission="['basic.auth.token.destroy']" type="danger" icon="el-icon-delete" @click="handleTokenDelete(scope.row);" />
-          </template>
-        </el-table-column>
-      </el-table>
-    </el-dialog>
-
   </div>
 </template>
 
 <script>
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
 import ChannelResource from '@/api/channel';
-import TokenResource from '@/api/token';
 import waves from '@/directive/waves'; // Waves directive
 import permission from '@/directive/permission'; // Waves directive
 import checkPermission from '@/utils/permission'; // Permission checking
-import clipboard from '@/directive/clipboard/index.js'; // use clipboard by v-directive
-import defaultDatePickerOptions from '@/utils/datepicker';
 
 const channelResource = new ChannelResource();
-const tokenResource = new TokenResource();
 
 export default {
-  name: 'ChannelList',
+  name: 'AppList',
   components: { Pagination },
-  directives: { waves, permission, clipboard },
+  directives: { waves, permission },
   data() {
     return {
       list: null,
@@ -210,6 +145,7 @@ export default {
       loading: true,
       downloading: false,
       channelCreating: false,
+      channel_id: this.$route.params && this.$route.params.channel_id,
       query: {
         page: 1,
         limit: 15,
@@ -223,18 +159,62 @@ export default {
         name: '',
         tokens: [],
       },
-      currentChannelTokens: [],
       rules: {
         name: [{ required: true, message: 'Name is required', trigger: 'blur' }],
         bundle_id: [{ required: true, message: 'Package name is required', trigger: 'blur' }],
         platform: [{ required: true, message: 'Platform is required', trigger: 'blur' }],
       },
-      dialogTokenFormVisible: false,
-      dialogTokenFormName: 'Api token',
-      newToken: {
-        expired_at: null,
+      defaultPickerValue: [
+        new Date(),
+        new Date(),
+      ],
+      pickerOptions: {
+        shortcuts: [{
+          text: 'Today',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            picker.$emit('pick', [start, end]);
+          },
+        }, {
+          text: 'Yesterday',
+          onClick(picker) {
+            const end = new Date(new Date().setDate(new Date().getDate() - 1));
+            const start = new Date(new Date().setDate(new Date().getDate() - 1));
+            picker.$emit('pick', [start, end]);
+          },
+        }, {
+          text: 'Last 7 days',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+            picker.$emit('pick', [start, end]);
+          },
+        }, {
+          text: 'Month to date',
+          onClick(picker) {
+            const end = new Date(new Date(new Date().setMonth(new Date().getMonth() + 1)).setDate(0));
+            const start = new Date(new Date().setDate(1));
+            picker.$emit('pick', [start, end]);
+          },
+        }, {
+          text: 'The previous Month',
+          onClick(picker) {
+            const end = new Date(new Date().setDate(0));
+            const start = new Date(new Date(new Date().setMonth(new Date().getMonth() - 1)).setDate(1));
+            picker.$emit('pick', [start, end]);
+          },
+        }, {
+          text: 'Year to date',
+          onClick(picker) {
+            const end = new Date(new Date(new Date().setMonth(12)).setDate(0));
+            const start = new Date(new Date(new Date().setMonth(0)).setDate(1));
+            picker.$emit('pick', [start, end]);
+          },
+        },
+        ],
       },
-      pickerOptions: defaultDatePickerOptions,
     };
   },
   computed: {
@@ -249,7 +229,8 @@ export default {
     async getList() {
       const { limit, page } = this.query;
       this.loading = true;
-      const { data, meta } = await channelResource.list(this.query);
+
+      const { data, meta } = await channelResource.appList(this.channel_id, this.query);
       this.list = data;
       this.list.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
@@ -274,83 +255,6 @@ export default {
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['channelForm'].clearValidate();
-      });
-    },
-    async getTokenList(){
-      this.currentChannelTokens = [];
-      const { data } = await tokenResource.list(this.currentChannel.bundle_id);
-      this.currentChannelTokens = data;
-    },
-    handleToken(channel) {
-      this.currentChannel = channel;
-      this.dialogTokenFormName = channel.name;
-      this.getTokenList();
-      this.dialogTokenFormVisible = true;
-    },
-    makeToken() {
-      this.$confirm('This will make a new token for channel ' + this.currentChannel.name + '. Continue?', 'Warning', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-      }).then(() => {
-        tokenResource.makeToken(this.currentChannel.bundle_id, this.newToken.expired_at).then(response => {
-          this.$message({
-            type: 'success',
-            message: 'The new token : ' + response.api_token,
-          });
-          this.getTokenList();
-        }).catch(error => {
-          console.log(error);
-        });
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: 'Make token canceled',
-        });
-      });
-    },
-    handleTokenDelete(token) {
-      this.$confirm('This will permanently delete token ' + token.access_token + '. Continue?', 'Warning', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-      }).then(() => {
-        tokenResource.destroy(token.id).then(response => {
-          this.$message({
-            type: 'success',
-            message: 'Delete token completed',
-          });
-          this.getTokenList();
-        }).catch(error => {
-          console.log(error);
-        });
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: 'Delete token canceled',
-        });
-      });
-    },
-    handleDelete(id, name) {
-      this.$confirm('This will permanently delete channel ' + name + '. Continue?', 'Warning', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-      }).then(() => {
-        channelResource.destroy(id).then(response => {
-          this.$message({
-            type: 'success',
-            message: 'Delete completed',
-          });
-          this.handleFilter();
-        }).catch(error => {
-          console.log(error);
-        });
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: 'Delete canceled',
-        });
       });
     },
     saveChannel() {
@@ -403,12 +307,9 @@ export default {
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => v[j]));
     },
-    clipboardSuccess() {
-      this.$message({
-        message: 'Copy token successfully',
-        type: 'success',
-        duration: 1500,
-      });
+    dateFormat(row, column, cellValue, index){
+      var date = row[column.property];
+      return date.substr(0, 10);
     },
   },
 };
