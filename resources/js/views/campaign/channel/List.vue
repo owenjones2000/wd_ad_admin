@@ -135,7 +135,7 @@ import checkPermission from '@/utils/permission'; // Permission checking
 const campaignResource = new CampaignResource();
 
 export default {
-  name: 'CampaignList',
+  name: 'CampaignChannelList',
   components: { Pagination },
   directives: { waves, permission },
   data() {

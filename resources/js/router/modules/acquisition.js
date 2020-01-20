@@ -16,34 +16,34 @@ const acquisitionRoutes = {
     {
       path: 'account',
       component: () => import('@/views/account/List'),
-      name: 'Account',
+      name: 'AccountList',
       meta: { title: 'Account', icon: 'user', permissions: ['advertise.account'] },
     },
     /** App managements */
     {
       path: 'app',
       component: () => import('@/views/app/List'),
-      name: 'App',
+      name: 'AppList',
       meta: { title: 'App', icon: 'user', permissions: ['advertise.app'] },
     },
     /** Campaign managements */
     {
       path: 'campaign',
       component: () => import('@/views/campaign/List'),
-      name: 'Campaign',
+      name: 'CampaignList',
       meta: { title: 'Campaign', icon: 'user', permissions: ['advertise.campaign'] },
     },
     {
       path: 'campaign/:campaign_id(\\d+)/channel',
       component: () => import('@/views/campaign/channel/List'),
-      name: 'Channel By Campaign',
+      name: 'CampaignChannelList',
       meta: { title: 'Channel By Campaign', icon: 'user', permissions: ['advertise.campaign'] },
       hidden: true,
     },
     {
       path: 'campaign/:campaign_id(\\d+)/ad',
       component: () => import('@/views/campaign/ad/List'),
-      name: 'Ad',
+      name: 'CampaignAdList',
       meta: { title: 'Ad', icon: 'user', permissions: ['advertise.campaign.ad'] },
       hidden: true,
     },
@@ -51,13 +51,13 @@ const acquisitionRoutes = {
     {
       path: 'channel',
       component: () => import('@/views/channel/List'),
-      name: 'Channel',
+      name: 'ChannelList',
       meta: { title: 'Channel', icon: 'user', permissions: ['advertise.channel'] },
     },
     {
       path: 'channel/:channel_id(\\d+)/app',
       component: () => import('@/views/channel/app/List'),
-      name: 'App By Channel',
+      name: 'ChannelAppList',
       meta: { title: 'App By Channel', icon: 'user', permissions: ['advertise.campaign'] },
       hidden: true,
     },
