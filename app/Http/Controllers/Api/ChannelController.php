@@ -150,9 +150,11 @@ class ChannelController extends Controller
         $app_list = $app_query->orderBy($request->get('field','name'),$request->get('order','desc'))
             ->paginate($request->get('limit',30));
 
-        foreach($app_list as &$app){
+        foreach($app_list as $index => &$app){
             if(isset($advertise_kpi_list[$app['id']])){
                 $app->kpi = $advertise_kpi_list[$app['id']];
+            }else{
+                unset($app_list[$index]);
             }
         }
         return JsonResource::collection($app_list);

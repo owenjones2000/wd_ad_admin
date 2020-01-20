@@ -127,9 +127,11 @@ class CampaignController extends Controller
         $channel_list = $channel_query->orderBy($request->get('field','name'),$request->get('order','desc'))
             ->paginate($request->get('limit',30));
 
-        foreach($channel_list as &$channel){
+        foreach($channel_list as $index => &$channel){
             if(isset($advertise_kpi_list[$channel['id']])){
                 $channel->kpi = $advertise_kpi_list[$channel['id']];
+            }else{
+                unset($channel_list[$index]);
             }
         }
         return JsonResource::collection($channel_list);
