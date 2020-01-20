@@ -74,6 +74,9 @@ Route::group(['middleware' => 'api'], function () {
             //删除
 //        Route::delete('destroy', 'CampaignController@destroy')->name('campaign.destroy')->middleware('permission:campaign.destroy');
 
+            // 子渠道数据
+            Route::get('{campaign_id}/channel', 'CampaignController@channel')->name('campaign.channel')->middleware('permission:advertise.campaign');
+
             // 广告
             Route::group(['prefix'=>'{campaign_id}/ad', 'middleware' => 'permission:advertise.campaign'], function () {
                 Route::get('', 'AdController@list')->name('campaign.ad');
