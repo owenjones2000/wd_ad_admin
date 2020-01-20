@@ -135,7 +135,7 @@ import checkPermission from '@/utils/permission'; // Permission checking
 const channelResource = new ChannelResource();
 
 export default {
-  name: 'AppList',
+  name: 'ChannelAppList',
   components: { Pagination },
   directives: { waves, permission },
   data() {
