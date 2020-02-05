@@ -102,6 +102,7 @@ Route::group(['middleware' => 'api'], function () {
         // 统计
         Route::group(['prefix'=>'statis', 'middleware' => 'permission:advertise.statis'], function () {
             Route::get('total', 'StatisController@total')->name('statis.total');
+            Route::get('device', 'StatisController@device')->name('statis.device');
         });
 
         //文件

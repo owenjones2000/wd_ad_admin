@@ -12,12 +12,18 @@ const statisRoutes = {
     permissions: ['advertise.statis'],
   },
   children: [
-    /** Campaign managements */
+    /** Statics */
     {
       path: 'total',
       component: () => import('@/views/statis/List'),
-      name: 'Total',
-      meta: { title: 'Total', icon: 'user', permissions: ['advertise.statis'] },
+      name: 'AdvertiseStatis',
+      meta: { title: 'Total Statis', icon: 'user', permissions: ['advertise.statis'] },
+    },
+    {
+      path: 'device',
+      component: () => import('@/views/statis/Device'),
+      name: 'DeviceStatis',
+      meta: { title: 'Device Statis', icon: 'user', permissions: ['advertise.statis'] },
     },
   ],
 };

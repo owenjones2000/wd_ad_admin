@@ -8,6 +8,13 @@ class Statis {
       params: query,
     });
   }
+  device(query){
+    return request({
+      url: '/statis/device',
+      method: 'get',
+      params: query,
+    });
+  }
 }
 
 export { Statis as default };

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <!--<el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />-->
       <el-date-picker
         v-model="query.daterange"
         type="daterange"
@@ -26,59 +26,29 @@
     </div>
 
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="Apps" prop="apps" />
-      <el-table-column align="center" label="Campaigns" prop="campaigns" />
-      <el-table-column align="center" label="Ads" prop="ads" />
-      <el-table-column align="center" label="Channels" prop="channels" />
-      <el-table-column align="center" label="Countries" prop="countries" />
-      <el-table-column align="center" label="Requests">
+      <el-table-column align="center" label="Devices">
         <template slot-scope="scope">
-          <span>{{ scope.row.requests ? scope.row.requests : 0 }}</span>
+          <span>{{ scope.row.total_device_count ? scope.row.total_device_count : 0 }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Impressions">
+      <el-table-column align="center" label="Request Avg">
         <template slot-scope="scope">
-          <span>{{ scope.row.impressions ? scope.row.impressions : 0 }}</span>
+          <span>{{ scope.row.request_avg ? scope.row.request_avg : 0 }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Clicks">
+      <el-table-column align="center" label="Impression Avg">
         <template slot-scope="scope">
-          <span>{{ scope.row.clicks ? scope.row.clicks : 0 }}</span>
+          <span>{{ scope.row.impression_avg ? scope.row.impression_avg : 0 }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Installs">
+      <el-table-column align="center" label="Click Avg">
         <template slot-scope="scope">
-          <span>{{ scope.row.installs ? scope.row.installs : 0 }}</span>
+          <span>{{ scope.row.click_avg ? scope.row.click_avg : 0 }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="CTR">
+      <el-table-column align="center" label="Install Avg">
         <template slot-scope="scope">
-          <span>{{ scope.row.ctr ? scope.row.ctr : '0.00' }}%</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="CVR">
-        <template slot-scope="scope">
-          <span>{{ scope.row.cvr ? scope.row.cvr : '0.00' }}%</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="IR">
-        <template slot-scope="scope">
-          <span>{{ scope.row.ir ? scope.row.ir : '0.00' }}%</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Spend">
-        <template slot-scope="scope">
-          <span>${{ scope.row.spend ? scope.row.spend : '0.00' }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="eCpi">
-        <template slot-scope="scope">
-          <span>${{ scope.row.ecpi ? scope.row.ecpi : '0.00' }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="eCpm">
-        <template slot-scope="scope">
-          <span>${{ scope.row.ecpm ? scope.row.ecpm : '0.00' }}</span>
+          <span>{{ scope.row.install_avg ? scope.row.install_avg : 0 }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -96,7 +66,7 @@ import defaultDatePickerOptions from '@/utils/datepicker';
 const statis = new Statis();
 
 export default {
-  name: 'AdvertiseStatis',
+  name: 'DeviceStatis',
   components: { },
   directives: { waves, permission },
   data() {
@@ -126,12 +96,12 @@ export default {
     async getList() {
       const { limit, page } = this.query;
       this.loading = true;
-      const { data, meta } = await statis.total(this.query);
+      const { data, meta } = await statis.device(this.query);
       this.list = data;
       this.list.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
       });
-      this.total = meta.total;
+      this.total = meta ? meta.total : 1;
       this.loading = false;
     },
     handleFilter() {
