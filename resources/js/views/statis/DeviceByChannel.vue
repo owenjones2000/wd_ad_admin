@@ -28,7 +28,7 @@
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
       <el-table-column align="center" label="Channel">
         <template slot-scope="scope">
-          <span>{{ scope.row.channel ? scope.row.channel.name : '' }}</span>
+          <span>{{ scope.row.channel ? scope.row.channel.name : 'Unknown' }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="Devices">
