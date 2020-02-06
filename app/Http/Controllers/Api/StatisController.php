@@ -120,7 +120,6 @@ class StatisController extends Controller
         $start_date = date('Ymd', strtotime($range_date[0]??'now'));
         $end_date = date('Ymd', strtotime($range_date[1]??'now'));
 
-        $group_by = $request->get('group');
 //        $start_time = date('Y-m-d 00:00:00', strtotime($range_date[0]??'now'));
 //        $end_time = date('Y-m-d 23:59:59', strtotime($range_date[1]??'now'));
 
@@ -134,7 +133,7 @@ class StatisController extends Controller
 //        ])->first()->toArray();
 
         // Request
-        $request_query = \App\Models\Advertise\Request::multiTableQuery(function($query) use($start_date, $end_date){
+        $avg_request_query = \App\Models\Advertise\Request::multiTableQuery(function($query) use($start_date, $end_date){
             $query->whereBetween('date', [$start_date, $end_date])
             ;
             return $query;
@@ -142,60 +141,165 @@ class StatisController extends Controller
             ->select([
                 DB::raw('count(DISTINCT idfa) as total_device_count'),
                 DB::raw('count(1) / count(DISTINCT idfa) as request_avg'),
-        ]);
+            ]);
 
-        $request_query->addSelect('target_app_id')->groupBy('target_app_id')->with('channel');
+        $avg_request_query->addSelect('target_app_id')->groupBy('target_app_id')->with('channel');
 
-        $total_request_list = $request_query->get()->keyBy('target_app_id')->toArray();
-
+        $avg_request_list = $avg_request_query->paginate();
+        $target_app_id_list = array_column($avg_request_list->items(), 'target_app_id');
         // Impression
-        $impression_query = \App\Models\Advertise\Impression::multiTableQuery(function($query) use($start_date, $end_date){
+        $avg_impression_query = \App\Models\Advertise\Impression::multiTableQuery(function($query) use($start_date, $end_date){
+            $query->whereBetween('date', [$start_date, $end_date])
+            ;
+            return $query;
+        }, $start_date, $end_date)
+            ->where(function($query) use($target_app_id_list) {
+                $query->whereIn('target_app_id', $target_app_id_list)
+                    ->orWhereNull('target_app_id');
+            })
+            ->select([
+                DB::raw('count(1) / count(DISTINCT idfa) as impression_avg'),
+            ]);
+
+        $avg_impression_query->addSelect('target_app_id')->groupBy('target_app_id')->with('app');
+
+        $avg_impression_list = $avg_impression_query->pluck('impression_avg', 'target_app_id')->toArray();
+        // Clicks
+        $avg_click_query = \App\Models\Advertise\Click::multiTableQuery(function($query) use($start_date, $end_date){
+            $query->whereBetween('date', [$start_date, $end_date])
+            ;
+            return $query;
+        }, $start_date, $end_date)
+            ->where(function($query) use($target_app_id_list) {
+                $query->whereIn('target_app_id', $target_app_id_list)
+                    ->orWhereNull('target_app_id');
+            })
+            ->select([
+                DB::raw('count(1) / count(DISTINCT idfa) as click_avg'),
+            ]);
+
+        $avg_click_query->addSelect('target_app_id')->groupBy('target_app_id')->with('app');
+
+        $avg_click_list = $avg_click_query->pluck('click_avg', 'target_app_id')->toArray();
+        // Installs
+        $avg_install_query = \App\Models\Advertise\Install::multiTableQuery(function($query) use($start_date, $end_date){
+            $query->whereBetween('date', [$start_date, $end_date])
+            ;
+            return $query;
+        }, $start_date, $end_date)
+            ->where(function($query) use($target_app_id_list) {
+                $query->whereIn('target_app_id', $target_app_id_list)
+                    ->orWhereNull('target_app_id');
+            })
+            ->select([
+                DB::raw('count(1) / count(DISTINCT idfa) as install_avg'),
+            ]);
+
+        $avg_install_query->addSelect('target_app_id')->groupBy('target_app_id')->with('app');
+
+        $avg_install_list = $avg_install_query->pluck('install_avg', 'target_app_id')->toArray();
+
+        foreach($avg_request_list as &$avg_request){
+            $avg_request['impression_avg'] = $avg_impression_list[$avg_request['target_app_id']] ?? 0;
+            $avg_request['click_avg'] = $avg_click_list[$avg_request['target_app_id']] ?? 0;
+            $avg_request['install_avg'] = $avg_install_list[$avg_request['target_app_id']] ?? 0;
+
+        }
+        return new JsonResource($avg_request_list);
+    }
+
+    public function deviceByApp(Request $request)
+    {
+        $range_date = $request->get('daterange');
+        $start_date = date('Ymd', strtotime($range_date[0]??'now'));
+        $end_date = date('Ymd', strtotime($range_date[1]??'now'));
+
+//        $start_time = date('Y-m-d 00:00:00', strtotime($range_date[0]??'now'));
+//        $end_time = date('Y-m-d 23:59:59', strtotime($range_date[1]??'now'));
+
+        // Device
+//        $device_query = Device::query()
+//            // ->whereBetween('created_at', [$start_time, $end_time])
+//        ;
+//
+//        $total_device = $device_query->select([
+//            DB::raw('count(1) as total_device_count'),
+//        ])->first()->toArray();
+
+        // Request
+        $avg_request_query = \App\Models\Advertise\Request::multiTableQuery(function($query) use($start_date, $end_date){
             $query->whereBetween('date', [$start_date, $end_date])
             ;
             return $query;
         }, $start_date, $end_date)
             ->select([
+                DB::raw('count(DISTINCT idfa) as total_device_count'),
+                DB::raw('count(1) / count(DISTINCT idfa) as request_avg'),
+            ]);
+
+        $avg_request_query->addSelect('app_id')->groupBy('app_id')->with('app');
+
+        $avg_request_list = $avg_request_query->paginate();
+        $app_id_list = array_column($avg_request_list->items(), 'app_id');
+        // Impression
+        $avg_impression_query = \App\Models\Advertise\Impression::multiTableQuery(function($query) use($start_date, $end_date){
+            $query->whereBetween('date', [$start_date, $end_date])
+            ;
+            return $query;
+        }, $start_date, $end_date)
+            ->where(function($query) use($app_id_list) {
+                $query->whereIn('app_id', $app_id_list)
+                    ->orWhereNull('app_id');
+            })
+            ->select([
                 DB::raw('count(1) / count(DISTINCT idfa) as impression_avg'),
-        ]);
+            ]);
 
-        $impression_query->addSelect('target_app_id')->groupBy('target_app_id')->with('channel');
+        $avg_impression_query->addSelect('app_id')->groupBy('app_id')->with('app');
 
-        $total_impression_list = $impression_query->get()->keyBy('target_app_id')->toArray();
+        $avg_impression_list = $avg_impression_query->pluck('impression_avg', 'app_id')->toArray();
         // Clicks
-        $click_query = \App\Models\Advertise\Click::multiTableQuery(function($query) use($start_date, $end_date){
+        $avg_click_query = \App\Models\Advertise\Click::multiTableQuery(function($query) use($start_date, $end_date){
             $query->whereBetween('date', [$start_date, $end_date])
             ;
             return $query;
-        }, $start_date, $end_date)->select([
-            DB::raw('count(1) / count(DISTINCT idfa) as click_avg'),
+        }, $start_date, $end_date)
+            ->where(function($query) use($app_id_list) {
+                $query->whereIn('app_id', $app_id_list)
+                    ->orWhereNull('app_id');
+            })
+            ->select([
+                DB::raw('count(1) / count(DISTINCT idfa) as click_avg'),
         ]);
 
-        $click_query->addSelect('target_app_id')->groupBy('target_app_id')->with('channel');
+        $avg_click_query->addSelect('app_id')->groupBy('app_id')->with('app');
 
-        $total_click_list = $click_query->get()->keyBy('target_app_id')->toArray();
+        $avg_click_list = $avg_click_query->pluck('click_avg', 'app_id')->toArray();
         // Installs
-        $install_query = \App\Models\Advertise\Install::multiTableQuery(function($query) use($start_date, $end_date){
+        $avg_install_query = \App\Models\Advertise\Install::multiTableQuery(function($query) use($start_date, $end_date){
             $query->whereBetween('date', [$start_date, $end_date])
             ;
             return $query;
-        }, $start_date, $end_date)->select([
-            DB::raw('count(1) / count(DISTINCT idfa) as install_avg'),
+        }, $start_date, $end_date)
+            ->where(function($query) use($app_id_list) {
+                $query->whereIn('app_id', $app_id_list)
+                    ->orWhereNull('app_id');
+            })
+            ->select([
+                DB::raw('count(1) / count(DISTINCT idfa) as install_avg'),
         ]);
 
-        $install_query->addSelect('target_app_id')->groupBy('target_app_id')->with('channel');
+        $avg_install_query->addSelect('app_id')->groupBy('app_id')->with('app');
 
-        $total_install_list = $install_query->get()->keyBy('target_app_id')->toArray();
+        $avg_install_list = $avg_install_query->pluck('install_avg', 'app_id')->toArray();
 
-        $result = [];
-        foreach($total_request_list as $total_request){
-            $result[$total_request['target_app_id']] = array_merge(
-                $total_request_list[$total_request['target_app_id']] ?? [],
-                $total_impression_list[$total_request['target_app_id']] ?? [],
-                $total_click_list[$total_request['target_app_id']] ?? [],
-                $total_install_list[$total_request['target_app_id']] ?? []
-            );
+        foreach($avg_request_list as &$avg_request){
+            $avg_request['impression_avg'] = $avg_impression_list[$avg_request['app_id']] ?? 0;
+            $avg_request['click_avg'] = $avg_click_list[$avg_request['app_id']] ?? 0;
+            $avg_request['install_avg'] = $avg_install_list[$avg_request['app_id']] ?? 0;
+
         }
-        return new JsonResource($result);
+        return new JsonResource($avg_request_list);
     }
 
 }

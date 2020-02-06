@@ -15,6 +15,20 @@ class Statis {
       params: query,
     });
   }
+  deviceByChannel(query){
+    return request({
+      url: '/statis/device/channel',
+      method: 'get',
+      params: query,
+    });
+  }
+  deviceByApp(query){
+    return request({
+      url: '/statis/device/app',
+      method: 'get',
+      params: query,
+    });
+  }
 }
 
 export { Statis as default };

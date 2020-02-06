@@ -103,6 +103,8 @@ Route::group(['middleware' => 'api'], function () {
         Route::group(['prefix'=>'statis', 'middleware' => 'permission:advertise.statis'], function () {
             Route::get('total', 'StatisController@total')->name('statis.total');
             Route::get('device', 'StatisController@device')->name('statis.device');
+            Route::get('device/channel', 'StatisController@deviceByChannel')->name('statis.device');
+            Route::get('device/app', 'StatisController@deviceByApp')->name('statis.device');
         });
 
         //文件

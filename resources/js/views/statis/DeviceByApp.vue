@@ -26,6 +26,11 @@
     </div>
 
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
+      <el-table-column align="center" label="App">
+        <template slot-scope="scope">
+          <span>{{ scope.row.app ? scope.row.app.name : 'Unknown' }}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="Devices">
         <template slot-scope="scope">
           <span>{{ scope.row.total_device_count ? scope.row.total_device_count : 0 }}</span>
@@ -49,12 +54,6 @@
       <el-table-column align="center" label="Install Avg">
         <template slot-scope="scope">
           <span>{{ scope.row.install_avg ? scope.row.install_avg : 0 }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Actions" width="100">
-        <template>
-          <router-link class="link-type" :to="'/statis/device/channel'">Channels</router-link>
-          <router-link class="link-type" :to="'/statis/device/app'">Apps</router-link>
         </template>
       </el-table-column>
     </el-table>
@@ -102,7 +101,7 @@ export default {
     async getList() {
       const { limit, page } = this.query;
       this.loading = true;
-      const { data, meta } = await statis.device(this.query);
+      const { data, meta } = await statis.deviceByApp(this.query);
       this.list = data;
       this.list.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
