@@ -120,7 +120,6 @@ class StatisController extends Controller
         $start_date = date('Ymd', strtotime($range_date[0]??'now'));
         $end_date = date('Ymd', strtotime($range_date[1]??'now'));
 
-        $group_by = $request->get('group');
 //        $start_time = date('Y-m-d 00:00:00', strtotime($range_date[0]??'now'));
 //        $end_time = date('Y-m-d 23:59:59', strtotime($range_date[1]??'now'));
 
@@ -193,6 +192,90 @@ class StatisController extends Controller
                 $total_impression_list[$total_request['target_app_id']] ?? [],
                 $total_click_list[$total_request['target_app_id']] ?? [],
                 $total_install_list[$total_request['target_app_id']] ?? []
+            );
+        }
+        return new JsonResource($result);
+    }
+
+    public function deviceByApp(Request $request)
+    {
+        $range_date = $request->get('daterange');
+        $start_date = date('Ymd', strtotime($range_date[0]??'now'));
+        $end_date = date('Ymd', strtotime($range_date[1]??'now'));
+
+//        $start_time = date('Y-m-d 00:00:00', strtotime($range_date[0]??'now'));
+//        $end_time = date('Y-m-d 23:59:59', strtotime($range_date[1]??'now'));
+
+        // Device
+//        $device_query = Device::query()
+//            // ->whereBetween('created_at', [$start_time, $end_time])
+//        ;
+//
+//        $total_device = $device_query->select([
+//            DB::raw('count(1) as total_device_count'),
+//        ])->first()->toArray();
+
+        // Request
+        $request_query = \App\Models\Advertise\Request::multiTableQuery(function($query) use($start_date, $end_date){
+            $query->whereBetween('date', [$start_date, $end_date])
+            ;
+            return $query;
+        }, $start_date, $end_date)
+            ->select([
+                DB::raw('count(DISTINCT idfa) as total_device_count'),
+                DB::raw('count(1) / count(DISTINCT idfa) as request_avg'),
+            ]);
+
+        $request_query->addSelect('app_id')->groupBy('app_id')->with('app');
+
+        $total_request_list = $request_query->get()->keyBy('app_id')->toArray();
+
+        // Impression
+        $impression_query = \App\Models\Advertise\Impression::multiTableQuery(function($query) use($start_date, $end_date){
+            $query->whereBetween('date', [$start_date, $end_date])
+            ;
+            return $query;
+        }, $start_date, $end_date)
+            ->select([
+                DB::raw('count(1) / count(DISTINCT idfa) as impression_avg'),
+            ]);
+
+        $impression_query->addSelect('app_id')->groupBy('app_id')->with('app');
+
+        $total_impression_list = $impression_query->get()->keyBy('app_id')->toArray();
+        // Clicks
+        $click_query = \App\Models\Advertise\Click::multiTableQuery(function($query) use($start_date, $end_date){
+            $query->whereBetween('date', [$start_date, $end_date])
+            ;
+            return $query;
+        }, $start_date, $end_date)->select([
+            DB::raw('count(1) / count(DISTINCT idfa) as click_avg'),
+        ]);
+
+        $click_query->addSelect('app_id')->groupBy('app_id')->with('app');
+
+        $total_click_list = $click_query->get()->keyBy('app_id')->toArray();
+        // Installs
+        $install_query = \App\Models\Advertise\Install::multiTableQuery(function($query) use($start_date, $end_date){
+            $query->whereBetween('date', [$start_date, $end_date])
+            ;
+            return $query;
+        }, $start_date, $end_date)->select([
+            DB::raw('count(1) / count(DISTINCT idfa) as install_avg'),
+        ]);
+
+        $install_query->addSelect('app_id')->groupBy('app_id')->with('app');
+
+        $total_install_list = $install_query->get()->keyBy('app_id')->toArray();
+
+        $result = [];
+        foreach($total_request_list as $total_request){
+            $app_id = empty($total_request['app_id']) ? 0 : $total_request['app_id'];
+            $result[$app_id] = array_merge(
+                $total_request_list[$total_request['app_id']] ?? [],
+                $total_impression_list[$total_request['app_id']] ?? [],
+                $total_click_list[$total_request['app_id']] ?? [],
+                $total_install_list[$total_request['app_id']] ?? []
             );
         }
         return new JsonResource($result);

@@ -25,6 +25,20 @@ const statisRoutes = {
       name: 'DeviceStatis',
       meta: { title: 'Device Statis', icon: 'user', permissions: ['advertise.statis'] },
     },
+    {
+      path: 'device/channel',
+      component: () => import('@/views/statis/DeviceByChannel'),
+      name: 'DeviceStatisByChannel',
+      meta: { title: 'Device Statis By Channel', icon: 'user', permissions: ['advertise.statis'] },
+      hidden: true,
+    },
+    {
+      path: 'device/app',
+      component: () => import('@/views/statis/DeviceByApp'),
+      name: 'DeviceStatisByApp',
+      meta: { title: 'Device Statis By App', icon: 'user', permissions: ['advertise.statis'] },
+      hidden: true,
+    },
   ],
 };
 

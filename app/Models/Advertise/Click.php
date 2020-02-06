@@ -41,4 +41,12 @@ class Click extends Model
     public function channel(){
         return $this->belongsTo(Channel::class, 'target_app_id', 'id');
     }
+
+    /**
+     * 应用
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function app(){
+        return $this->belongsTo(App::class, 'app_id', 'id');
+    }
 }
