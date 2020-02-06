@@ -51,7 +51,7 @@
           <span>{{ scope.row.install_avg ? scope.row.install_avg : 0 }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Actions" width="100">
+      <el-table-column align="center" label="Actions">
         <template>
           <router-link class="link-type" :to="'/statis/device/channel'">Channels</router-link>
           <router-link class="link-type" :to="'/statis/device/app'">Apps</router-link>
