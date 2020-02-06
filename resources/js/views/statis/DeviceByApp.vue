@@ -71,7 +71,7 @@ import defaultDatePickerOptions from '@/utils/datepicker';
 const statis = new Statis();
 
 export default {
-  name: 'DeviceStatis',
+  name: 'DeviceStatisByApp',
   components: { },
   directives: { waves, permission },
   data() {
