@@ -133,13 +133,13 @@ class StatisController extends Controller
 
         $count_install_query->addSelect('ending_frame_group')->groupBy('ending_frame_group');
 
-        $count_install_list = $count_install_query->pluck('install_count', 'ending_frame_group')->toArray();
+        $count_install_list = $count_install_query->get()->keyBy('ending_frame_group')->toArray();
 
         foreach($count_request_list as &$count_request){
             $count_request['impression_count'] = $count_impression_list[$count_request['ending_frame_group']] ?? 0;
             $count_request['click_count'] = $count_click_list[$count_request['ending_frame_group']] ?? 0;
-            $count_request['install_count'] = $count_install_list[$count_request['ending_frame_group']] ?? 0;
-            $count_request['total_spend'] = $count_install_list[$count_request['primaryKey']] ?? '0.00';
+            $count_request['install_count'] = $count_install_list[$count_request['ending_frame_group']]['install_count'] ?? 0;
+            $count_request['total_spend'] = $count_install_list[$count_request['ending_frame_group']]['total_spend'] ?? '0.00';
         }
         return new JsonResource($count_request_list);
     }
@@ -256,13 +256,13 @@ class StatisController extends Controller
             'target_app_id'
         )->groupBy('ending_frame_group', 'target_app_id');
 
-        $count_install_list = $count_install_query->pluck('install_count', 'primaryKey')->toArray();
+        $count_install_list = $count_install_query->get()->keyBy('primaryKey')->toArray();
 
         foreach($count_request_list as &$count_request){
             $count_request['impression_count'] = $count_impression_list[$count_request['primaryKey']] ?? 0;
             $count_request['click_count'] = $count_click_list[$count_request['primaryKey']] ?? 0;
-            $count_request['install_count'] = $count_install_list[$count_request['primaryKey']] ?? 0;
-            $count_request['total_spend'] = $count_install_list[$count_request['primaryKey']] ?? '0.00';
+            $count_request['install_count'] = $count_install_list[$count_request['primaryKey']]['install_count'] ?? 0;
+            $count_request['total_spend'] = $count_install_list[$count_request['primaryKey']]['total_spend'] ?? '0.00';
         }
         return new JsonResource($count_request_list);
     }
