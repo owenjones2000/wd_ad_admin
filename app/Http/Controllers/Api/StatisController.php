@@ -121,13 +121,14 @@ class StatisController extends Controller
         $count_install_query = \App\Models\Advertise\Install::multiTableQuery(function($query) use($start_date, $end_date){
             $query_table = $query->from;
             $query->leftJoin('p_devices', "{$query_table}.idfa", '=', 'p_devices.idfa');
-            $query->select("{$query_table}.idfa", 'ending_frame_group', 'target_app_id');
+            $query->select("{$query_table}.idfa", 'ending_frame_group', 'target_app_id', 'spend');
             $query->whereBetween('date', [$start_date, $end_date])
             ;
             return $query;
         }, $start_date, $end_date)
             ->select([
                 DB::raw('count(*) as install_count'),
+                DB::raw('round(sum(spend), 2) as total_spend'),
             ]);
 
         $count_install_query->addSelect('ending_frame_group')->groupBy('ending_frame_group');
@@ -138,7 +139,7 @@ class StatisController extends Controller
             $count_request['impression_count'] = $count_impression_list[$count_request['ending_frame_group']] ?? 0;
             $count_request['click_count'] = $count_click_list[$count_request['ending_frame_group']] ?? 0;
             $count_request['install_count'] = $count_install_list[$count_request['ending_frame_group']] ?? 0;
-
+            $count_request['total_spend'] = $count_install_list[$count_request['primaryKey']] ?? '0.00';
         }
         return new JsonResource($count_request_list);
     }
@@ -235,7 +236,7 @@ class StatisController extends Controller
         $count_install_query = \App\Models\Advertise\Install::multiTableQuery(function($query) use($start_date, $end_date){
             $query_table = $query->from;
             $query->leftJoin('p_devices', "{$query_table}.idfa", '=', 'p_devices.idfa');
-            $query->select("{$query_table}.idfa", 'ending_frame_group', 'target_app_id');
+            $query->select("{$query_table}.idfa", 'ending_frame_group', 'target_app_id', 'spend');
             $query->whereBetween('date', [$start_date, $end_date])
             ;
             return $query;
@@ -246,6 +247,7 @@ class StatisController extends Controller
             })
             ->select([
                 DB::raw('count(*) as install_count'),
+                DB::raw('round(sum(spend), 2) as total_spend'),
             ]);
 
         $count_install_query->addSelect(
@@ -260,7 +262,7 @@ class StatisController extends Controller
             $count_request['impression_count'] = $count_impression_list[$count_request['primaryKey']] ?? 0;
             $count_request['click_count'] = $count_click_list[$count_request['primaryKey']] ?? 0;
             $count_request['install_count'] = $count_install_list[$count_request['primaryKey']] ?? 0;
-
+            $count_request['total_spend'] = $count_install_list[$count_request['primaryKey']] ?? '0.00';
         }
         return new JsonResource($count_request_list);
     }

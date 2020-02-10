@@ -61,6 +61,11 @@
           <span>{{ scope.row.install_count ? scope.row.install_count : 0 }}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="Revenue">
+        <template slot-scope="scope">
+          <span>${{ scope.row.total_spend ? scope.row.total_spend : '0.00' }}</span>
+        </template>
+      </el-table-column>
     </el-table>
 
   </div>
