@@ -177,9 +177,9 @@ class StatisController extends Controller
 
         $count_request_query->addSelect(
             DB::raw('CONCAT_WS(\',\', ending_frame_group, target_app_id) as primaryKey'),
-            'ending_frame_group',
-            'target_app_id'
-        )->groupBy('ending_frame_group', 'target_app_id')->with('channel');
+            'target_app_id',
+            'ending_frame_group'
+        )->groupBy('target_app_id', 'ending_frame_group')->with('channel');
 
         $count_request_list = $count_request_query->paginate();
         $target_app_id_list = array_column($count_request_list->items(), 'target_app_id');
