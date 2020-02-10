@@ -50,6 +50,221 @@ class StatisController extends Controller
         return JsonResource::collection($advertise_kpi_list);
     }
 
+    public function group(Request $request)
+    {
+        $range_date = $request->get('daterange');
+        $start_date = date('Ymd', strtotime($range_date[0]??'now'));
+        $end_date = date('Ymd', strtotime($range_date[1]??'now'));
+
+//        $start_time = date('Y-m-d 00:00:00', strtotime($range_date[0]??'now'));
+//        $end_time = date('Y-m-d 23:59:59', strtotime($range_date[1]??'now'));
+
+        // Device
+//        $device_query = Device::query()
+//            // ->whereBetween('created_at', [$start_time, $end_time])
+//        ;
+//
+//        $total_device = $device_query->select([
+//            DB::raw('count(1) as total_device_count'),
+//        ])->first()->toArray();
+
+        // Request
+        $count_request_query = \App\Models\Advertise\Request::multiTableQuery(function($query) use($start_date, $end_date){
+            $query_table = $query->from;
+            $query->leftJoin('p_devices', "{$query_table}.idfa", '=', 'p_devices.idfa');
+            $query->select("{$query_table}.idfa", 'ending_frame_group');
+            $query->whereBetween('date', [$start_date, $end_date])
+            ;
+            return $query;
+        }, $start_date, $end_date)
+            ->select([
+                DB::raw('count(DISTINCT idfa) as total_device_count'),
+                DB::raw('count(*) as request_count'),
+            ]);
+
+        $count_request_query->addSelect('ending_frame_group')->groupBy('ending_frame_group');
+
+        $count_request_list = $count_request_query->paginate();
+        // Impression
+        $count_impression_query = \App\Models\Advertise\Impression::multiTableQuery(function($query) use($start_date, $end_date){
+            $query_table = $query->from;
+            $query->leftJoin('p_devices', "{$query_table}.idfa", '=', 'p_devices.idfa');
+            $query->select("{$query_table}.idfa", 'ending_frame_group');
+            $query->whereBetween('date', [$start_date, $end_date])
+            ;
+            return $query;
+        }, $start_date, $end_date)
+            ->select([
+                DB::raw('count(*) as impression_count'),
+            ]);
+
+        $count_impression_query->addSelect('ending_frame_group')->groupBy('ending_frame_group');
+
+        $count_impression_list = $count_impression_query->pluck('impression_count', 'ending_frame_group')->toArray();
+        // Clicks
+        $count_click_query = \App\Models\Advertise\Click::multiTableQuery(function($query) use($start_date, $end_date){
+            $query_table = $query->from;
+            $query->leftJoin('p_devices', "{$query_table}.idfa", '=', 'p_devices.idfa');
+            $query->select("{$query_table}.idfa", 'ending_frame_group');
+            $query->whereBetween('date', [$start_date, $end_date])
+            ;
+            return $query;
+        }, $start_date, $end_date)
+            ->select([
+                DB::raw('count(*) as click_count'),
+            ]);
+
+        $count_click_query->addSelect('ending_frame_group')->groupBy('ending_frame_group');
+
+        $count_click_list = $count_click_query->pluck('click_count', 'ending_frame_group')->toArray();
+        // Installs
+        $count_install_query = \App\Models\Advertise\Install::multiTableQuery(function($query) use($start_date, $end_date){
+            $query_table = $query->from;
+            $query->leftJoin('p_devices', "{$query_table}.idfa", '=', 'p_devices.idfa');
+            $query->select("{$query_table}.idfa", 'ending_frame_group', 'target_app_id');
+            $query->whereBetween('date', [$start_date, $end_date])
+            ;
+            return $query;
+        }, $start_date, $end_date)
+            ->select([
+                DB::raw('count(*) as install_count'),
+            ]);
+
+        $count_install_query->addSelect('ending_frame_group')->groupBy('ending_frame_group');
+
+        $count_install_list = $count_install_query->pluck('install_count', 'ending_frame_group')->toArray();
+
+        foreach($count_request_list as &$count_request){
+            $count_request['impression_count'] = $count_impression_list[$count_request['ending_frame_group']] ?? 0;
+            $count_request['click_count'] = $count_click_list[$count_request['ending_frame_group']] ?? 0;
+            $count_request['install_count'] = $count_install_list[$count_request['ending_frame_group']] ?? 0;
+
+        }
+        return new JsonResource($count_request_list);
+    }
+
+    public function groupByChannel(Request $request)
+    {
+        $range_date = $request->get('daterange');
+        $start_date = date('Ymd', strtotime($range_date[0]??'now'));
+        $end_date = date('Ymd', strtotime($range_date[1]??'now'));
+
+//        $start_time = date('Y-m-d 00:00:00', strtotime($range_date[0]??'now'));
+//        $end_time = date('Y-m-d 23:59:59', strtotime($range_date[1]??'now'));
+
+        // Device
+//        $device_query = Device::query()
+//            // ->whereBetween('created_at', [$start_time, $end_time])
+//        ;
+//
+//        $total_device = $device_query->select([
+//            DB::raw('count(1) as total_device_count'),
+//        ])->first()->toArray();
+
+        // Request
+        $count_request_query = \App\Models\Advertise\Request::multiTableQuery(function($query) use($start_date, $end_date){
+            $query_table = $query->from;
+            $query->leftJoin('p_devices', "{$query_table}.idfa", '=', 'p_devices.idfa');
+            $query->select("{$query_table}.idfa", 'ending_frame_group', 'target_app_id');
+            $query->whereBetween('date', [$start_date, $end_date])
+            ;
+            return $query;
+        }, $start_date, $end_date)
+            ->select([
+                DB::raw('count(DISTINCT idfa) as total_device_count'),
+                DB::raw('count(*) as request_count'),
+            ]);
+
+        $count_request_query->addSelect(
+            DB::raw('CONCAT_WS(\',\', ending_frame_group, target_app_id) as primaryKey'),
+            'ending_frame_group',
+            'target_app_id'
+        )->groupBy('ending_frame_group', 'target_app_id')->with('channel');
+
+        $count_request_list = $count_request_query->paginate();
+        $target_app_id_list = array_column($count_request_list->items(), 'target_app_id');
+        // Impression
+        $count_impression_query = \App\Models\Advertise\Impression::multiTableQuery(function($query) use($start_date, $end_date){
+            $query_table = $query->from;
+            $query->leftJoin('p_devices', "{$query_table}.idfa", '=', 'p_devices.idfa');
+            $query->select("{$query_table}.idfa", 'ending_frame_group', 'target_app_id');
+            $query->whereBetween('date', [$start_date, $end_date])
+            ;
+            return $query;
+        }, $start_date, $end_date)
+            ->where(function($query) use($target_app_id_list) {
+                $query->whereIn('target_app_id', $target_app_id_list)
+                    ->orWhereNull('target_app_id');
+            })
+            ->select([
+                DB::raw('count(*) as impression_count'),
+            ]);
+
+        $count_impression_query->addSelect(
+            DB::raw('CONCAT_WS(\',\', ending_frame_group, target_app_id) as primaryKey'),
+            'ending_frame_group',
+            'target_app_id'
+        )->groupBy('ending_frame_group', 'target_app_id');
+
+        $count_impression_list = $count_impression_query->pluck('impression_count', 'primaryKey')->toArray();
+        // Clicks
+        $count_click_query = \App\Models\Advertise\Click::multiTableQuery(function($query) use($start_date, $end_date){
+            $query_table = $query->from;
+            $query->leftJoin('p_devices', "{$query_table}.idfa", '=', 'p_devices.idfa');
+            $query->select("{$query_table}.idfa", 'ending_frame_group', 'target_app_id');
+            $query->whereBetween('date', [$start_date, $end_date])
+            ;
+            return $query;
+        }, $start_date, $end_date)
+            ->where(function($query) use($target_app_id_list) {
+                $query->whereIn('target_app_id', $target_app_id_list)
+                    ->orWhereNull('target_app_id');
+            })
+            ->select([
+                DB::raw('count(*) as click_count'),
+            ]);
+
+        $count_click_query->addSelect(
+            DB::raw('CONCAT_WS(\',\', ending_frame_group, target_app_id) as primaryKey'),
+            'ending_frame_group',
+            'target_app_id'
+        )->groupBy('ending_frame_group', 'target_app_id');
+
+        $count_click_list = $count_click_query->pluck('click_count', 'primaryKey')->toArray();
+        // Installs
+        $count_install_query = \App\Models\Advertise\Install::multiTableQuery(function($query) use($start_date, $end_date){
+            $query_table = $query->from;
+            $query->leftJoin('p_devices', "{$query_table}.idfa", '=', 'p_devices.idfa');
+            $query->select("{$query_table}.idfa", 'ending_frame_group', 'target_app_id');
+            $query->whereBetween('date', [$start_date, $end_date])
+            ;
+            return $query;
+        }, $start_date, $end_date)
+            ->where(function($query) use($target_app_id_list) {
+                $query->whereIn('target_app_id', $target_app_id_list)
+                    ->orWhereNull('target_app_id');
+            })
+            ->select([
+                DB::raw('count(*) as install_count'),
+            ]);
+
+        $count_install_query->addSelect(
+            DB::raw('CONCAT_WS(\',\', ending_frame_group, target_app_id) as primaryKey'),
+            'ending_frame_group',
+            'target_app_id'
+        )->groupBy('ending_frame_group', 'target_app_id');
+
+        $count_install_list = $count_install_query->pluck('install_count', 'primaryKey')->toArray();
+
+        foreach($count_request_list as &$count_request){
+            $count_request['impression_count'] = $count_impression_list[$count_request['primaryKey']] ?? 0;
+            $count_request['click_count'] = $count_click_list[$count_request['primaryKey']] ?? 0;
+            $count_request['install_count'] = $count_install_list[$count_request['primaryKey']] ?? 0;
+
+        }
+        return new JsonResource($count_request_list);
+    }
+
     public function device(Request $request)
     {
         $range_date = $request->get('daterange');
@@ -161,7 +376,7 @@ class StatisController extends Controller
                 DB::raw('count(1) / count(DISTINCT idfa) as impression_avg'),
             ]);
 
-        $avg_impression_query->addSelect('target_app_id')->groupBy('target_app_id')->with('app');
+        $avg_impression_query->addSelect('target_app_id')->groupBy('target_app_id');
 
         $avg_impression_list = $avg_impression_query->pluck('impression_avg', 'target_app_id')->toArray();
         // Clicks
@@ -178,7 +393,7 @@ class StatisController extends Controller
                 DB::raw('count(1) / count(DISTINCT idfa) as click_avg'),
             ]);
 
-        $avg_click_query->addSelect('target_app_id')->groupBy('target_app_id')->with('app');
+        $avg_click_query->addSelect('target_app_id')->groupBy('target_app_id');
 
         $avg_click_list = $avg_click_query->pluck('click_avg', 'target_app_id')->toArray();
         // Installs
@@ -195,7 +410,7 @@ class StatisController extends Controller
                 DB::raw('count(1) / count(DISTINCT idfa) as install_avg'),
             ]);
 
-        $avg_install_query->addSelect('target_app_id')->groupBy('target_app_id')->with('app');
+        $avg_install_query->addSelect('target_app_id')->groupBy('target_app_id');
 
         $avg_install_list = $avg_install_query->pluck('install_avg', 'target_app_id')->toArray();
 
@@ -255,7 +470,7 @@ class StatisController extends Controller
                 DB::raw('count(1) / count(DISTINCT idfa) as impression_avg'),
             ]);
 
-        $avg_impression_query->addSelect('app_id')->groupBy('app_id')->with('app');
+        $avg_impression_query->addSelect('app_id')->groupBy('app_id');
 
         $avg_impression_list = $avg_impression_query->pluck('impression_avg', 'app_id')->toArray();
         // Clicks
@@ -272,7 +487,7 @@ class StatisController extends Controller
                 DB::raw('count(1) / count(DISTINCT idfa) as click_avg'),
         ]);
 
-        $avg_click_query->addSelect('app_id')->groupBy('app_id')->with('app');
+        $avg_click_query->addSelect('app_id')->groupBy('app_id');
 
         $avg_click_list = $avg_click_query->pluck('click_avg', 'app_id')->toArray();
         // Installs
@@ -289,7 +504,7 @@ class StatisController extends Controller
                 DB::raw('count(1) / count(DISTINCT idfa) as install_avg'),
         ]);
 
-        $avg_install_query->addSelect('app_id')->groupBy('app_id')->with('app');
+        $avg_install_query->addSelect('app_id')->groupBy('app_id');
 
         $avg_install_list = $avg_install_query->pluck('install_avg', 'app_id')->toArray();
 

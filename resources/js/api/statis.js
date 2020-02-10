@@ -8,6 +8,20 @@ class Statis {
       params: query,
     });
   }
+  group(query){
+    return request({
+      url: '/statis/group',
+      method: 'get',
+      params: query,
+    });
+  }
+  groupByChannel(query){
+    return request({
+      url: '/statis/group/channel',
+      method: 'get',
+      params: query,
+    });
+  }
   device(query){
     return request({
       url: '/statis/device',
