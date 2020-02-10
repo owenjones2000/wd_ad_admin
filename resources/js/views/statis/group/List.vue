@@ -56,11 +56,11 @@
           <span>{{ scope.row.install_count ? scope.row.install_count : 0 }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Actions">
-        <template>
-          <router-link class="link-type" :to="'/statis/group/channel'">Channels</router-link>
-        </template>
-      </el-table-column>
+      <!--<el-table-column align="center" label="Actions">-->
+      <!--<template>-->
+      <!--<router-link class="link-type" :to="'/statis/group/channel'">Channels</router-link>-->
+      <!--</template>-->
+      <!--</el-table-column>-->
     </el-table>
 
   </div>

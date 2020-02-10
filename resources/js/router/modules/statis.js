@@ -30,7 +30,7 @@ const statisRoutes = {
       component: () => import('@/views/statis/group/ListByChannel'),
       name: 'GroupStatisByChannel',
       meta: { title: 'AbTest Statis By Channel', icon: 'user', permissions: ['advertise.statis'] },
-      hidden: true,
+      hidden: false,
     },
     {
       path: 'device',
