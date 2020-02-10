@@ -20,6 +20,19 @@ const statisRoutes = {
       meta: { title: 'Total Statis', icon: 'user', permissions: ['advertise.statis'] },
     },
     {
+      path: 'group',
+      component: () => import('@/views/statis/group/List'),
+      name: 'GroupStatis',
+      meta: { title: 'AbTest Statis', icon: 'user', permissions: ['advertise.statis'] },
+    },
+    {
+      path: 'group/channel',
+      component: () => import('@/views/statis/group/ListByChannel'),
+      name: 'GroupStatisByChannel',
+      meta: { title: 'AbTest Statis By Channel', icon: 'user', permissions: ['advertise.statis'] },
+      hidden: true,
+    },
+    {
       path: 'device',
       component: () => import('@/views/statis/Device'),
       name: 'DeviceStatis',
