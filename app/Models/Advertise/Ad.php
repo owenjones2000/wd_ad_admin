@@ -44,6 +44,24 @@ class Ad extends Model
     }
 
     /**
+     * 通过审核
+     * @throws \Throwable
+     */
+    public function passReview()
+    {
+        if ($this->need_review) {
+            $this->need_review = false;
+            $this->saveOrFail();
+//            if($this->is_upload_completed){
+//                $this->status = true;
+//                $this->saveOrFail();
+//            } else {
+//                throw new \Exception('Lack of assets.');
+//            }
+        }
+    }
+
+    /**
      * 广告活动
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

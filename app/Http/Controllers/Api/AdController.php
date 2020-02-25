@@ -164,6 +164,20 @@ class AdController extends Controller
     }
 
     /**
+     * 通过审核
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
+    public function passReview($campaign_id, $id)
+    {
+        /** @var Ad $ad */
+        $ad = Ad::query()->where(['id' => $id, 'campaign_id' => $campaign_id])->firstOrFail();
+        $ad->passReview();
+        return response()->json(['code'=>0,'msg'=>'Enabled']);
+    }
+
+    /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id

@@ -49,6 +49,13 @@ class CampaignResource extends Resource {
       method: 'post',
     });
   }
+
+  passAd(campaign_id, ad_id){
+    return request({
+      url: '/' + this.uri + '/' + campaign_id + '/ad/' + ad_id + '/pass',
+      method: 'post',
+    });
+  }
 }
 
 export { CampaignResource as default };

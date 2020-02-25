@@ -88,6 +88,8 @@ Route::group(['middleware' => 'api'], function () {
                 Route::post('{id?}', 'AdController@save')->name('campaign.ad.save')->middleware('permission:advertise.campaign.ad.edit');
                 Route::post('{id}/enable', 'AdController@enable')->name('campaign.ad.enable')->middleware('permission:advertise.campaign.ad.edit');
                 Route::post('{id}/disable', 'AdController@disable')->name('campaign.ad.disable')->middleware('permission:advertise.campaign.ad.edit');
+                Route::post('{id}/pass', 'AdController@passReview')->name('campaign.ad.review.pass')->middleware('permission:advertise.campaign.ad.edit');
+
                 //删除
 //            Route::delete('destroy', 'AdController@destroy')->name('campaign.ad.destroy')->middleware('permission:campaign.ad.destroy');
             });

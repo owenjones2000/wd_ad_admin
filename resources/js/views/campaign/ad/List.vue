@@ -99,13 +99,16 @@
       <el-table-column align="center" label="Status">
         <template slot-scope="scope">
           <el-icon :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}" size="small" :name="scope.row.status ? 'video-play' : 'video-pause'" />
+          <el-link v-permission="['advertise.campaign.ad.edit']" :type="scope.row.is_admin_disable ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleStatus(scope.row)" />
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Actions" width="100">
+      <el-table-column align="center" label="Actions" width="100px">
         <template slot-scope="scope">
           <!--<el-link v-permission="['advertise.campaign.ad.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />-->
-          <el-link v-permission="['advertise.campaign.ad.edit']" :type="scope.row.is_admin_disable ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleStatus(scope.row)" />
+          <el-button v-if="scope.row.need_review" v-permission="['advertise.campaign.ad.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleReview(scope.row);">
+            Review
+          </el-button>
           <!--<el-link v-permission="['advertise.campaign.ad.destroy']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
         </template>
       </el-table-column>
@@ -285,6 +288,27 @@ export default {
           type: 'info',
           message: 'Delete canceled',
         });
+      });
+    },
+    handleReview(ad) {
+      this.$confirm('This will pass the ad ' + ad.name + '. Continue?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }).then(() => {
+        if (ad.need_review) {
+          campaignResource.passAd(ad.campaign_id, ad.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'Ad ' + ad.name + ' released',
+            });
+            this.getList();
+          }).catch(error => {
+            console.log(error);
+          });
+        }
+      }).catch(error => {
+        console.log(error);
       });
     },
     handleStatus(ad) {
