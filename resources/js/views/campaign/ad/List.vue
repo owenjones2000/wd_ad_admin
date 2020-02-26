@@ -17,9 +17,6 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         {{ $t('table.search') }}
       </el-button>
-      <el-button v-permission="['basic.campaign.edit']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">
-        {{ $t('table.add') }}
-      </el-button>
       <!--<el-button v-waves :loading="downloading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">-->
       <!--  {{ $t('table.export') }}-->
       <!--</el-button>-->
@@ -35,6 +32,12 @@
       <el-table-column label="Ad" width="300px">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="Preview">
+        <template slot-scope="scope">
+          <el-link v-permission="['advertise.campaign.ad']" :type="scope.row.is_upload_completed ? 'success' : 'warning'" size="medium" icon="el-icon-view" :underline="false" @click="handlePreview(scope.row);" />
         </template>
       </el-table-column>
 
@@ -103,35 +106,27 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Actions" width="100px">
+      <el-table-column align="center" label="Actions" width="150px">
         <template slot-scope="scope">
-          <!--<el-link v-permission="['advertise.campaign.ad.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />-->
-          <el-button v-if="scope.row.need_review" v-permission="['advertise.campaign.ad.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleReview(scope.row);">
+          <el-button v-if="scope.row.need_review" v-permission="['advertise.campaign.ad.edit']" type="primary" size="small" icon="el-icon-finished" @click="handleReview(scope.row);">
             Review
           </el-button>
-          <!--<el-link v-permission="['advertise.campaign.ad.destroy']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
         </template>
       </el-table-column>
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
-    <el-dialog :title="'Create new campaign'" :visible.sync="dialogFormVisible">
-      <div v-loading="campaignCreating" class="form-container">
-        <el-form ref="campaignForm" :rules="rules" :model="currentCampaign" label-position="left" label-width="150px" style="max-width: 500px;">
-          <el-form-item :label="$t('name')" prop="name">
-            <el-input v-model="currentCampaign.name" />
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">
-            {{ $t('table.cancel') }}
-          </el-button>
-          <el-button type="primary" @click="saveCampaign()">
-            {{ $t('table.confirm') }}
-          </el-button>
-        </div>
-      </div>
+    <el-dialog :title="'Preview'" :visible.sync="previewDialogFormVisible" width="80%">
+      <el-collapse>
+        <el-collapse-item v-for="(asset) in currentAd.assets" :key="asset.id" :title="asset.type.name" :name="asset.id">
+          <div>
+            <video v-if="asset.type.mime_type == 'video'" :src="asset.url" :width="((asset.spec && asset.spec.width) ? ((asset.spec.width > 500) ? '500px' : asset.spec.width) : '500') + 'px'" poster controls controlsList="nodownload" />
+            <img v-else-if="asset.type.mime_type == 'image'" :src="asset.url" :width="((asset.spec && asset.spec.width) ? ((asset.spec.width > 500) ? '500px' : asset.spec.width) : 500) + 'px'">
+            <el-link v-else-if="asset.type.mime_type == 'html'" :href="asset.url" target="_blank" type="primary">Click to preview</el-link>
+          </div>
+        </el-collapse-item>
+      </el-collapse>
     </el-dialog>
   </div>
 </template>
@@ -155,7 +150,6 @@ export default {
       total: 0,
       loading: true,
       downloading: false,
-      campaignCreating: false,
       campaign_id: this.$route.params && this.$route.params.campaign_id,
       query: {
         page: 1,
@@ -163,17 +157,9 @@ export default {
         keyword: '',
         daterange: [new Date(), new Date()],
       },
-      newCampaign: {},
-      dialogFormVisible: false,
-      currentCampaignId: 0,
-      currentCampaign: {
+      previewDialogFormVisible: false,
+      currentAd: {
         name: '',
-        tokens: [],
-      },
-      rules: {
-        name: [{ required: true, message: 'Name is required', trigger: 'blur' }],
-        bundle_id: [{ required: true, message: 'Package name is required', trigger: 'blur' }],
-        platform: [{ required: true, message: 'Platform is required', trigger: 'blur' }],
       },
       defaultPickerValue: [
         new Date(),
@@ -253,42 +239,9 @@ export default {
       this.query.page = 1;
       this.getList();
     },
-    handleCreate() {
-      this.resetNewCampaign();
-      this.currentCampaign = this.newCampaign;
-      this.dialogFormVisible = true;
-      this.$nextTick(() => {
-        this.$refs['campaignForm'].clearValidate();
-      });
-    },
-    handleEdit(campaign) {
-      this.currentCampaign = campaign;
-      this.dialogFormVisible = true;
-      this.$nextTick(() => {
-        this.$refs['campaignForm'].clearValidate();
-      });
-    },
-    handleDelete(id, name) {
-      this.$confirm('This will permanently delete campaign ' + name + '. Continue?', 'Warning', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-      }).then(() => {
-        campaignResource.destroy(id).then(response => {
-          this.$message({
-            type: 'success',
-            message: 'Delete completed',
-          });
-          this.handleFilter();
-        }).catch(error => {
-          console.log(error);
-        });
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: 'Delete canceled',
-        });
-      });
+    handlePreview(ad) {
+      this.currentAd = ad;
+      this.previewDialogFormVisible = true;
     },
     handleReview(ad) {
       this.$confirm('This will pass the ad ' + ad.name + '. Continue?', 'Warning', {
