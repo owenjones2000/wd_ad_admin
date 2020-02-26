@@ -49,6 +49,20 @@
         width="100"
       />
 
+      <el-table-column align="center" label="Status">
+        <template slot-scope="scope">
+          <el-icon :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}" size="small" :name="scope.row.status ? 'video-play' : 'video-pause'" />
+          <el-link v-permission="['advertise.campaign.ad.edit']" :type="scope.row.is_admin_disable ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleStatus(scope.row)" />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Actions" width="150px">
+        <template slot-scope="scope">
+          <el-button v-if="scope.row.need_review" v-permission="['advertise.campaign.ad.edit']" type="primary" size="small" icon="el-icon-finished" @click="handleReview(scope.row);">
+            Review
+          </el-button>
+        </template>
+      </el-table-column>
+
       <el-table-column align="center" label="Requests">
         <template slot-scope="scope">
           <span>{{ scope.row.kpi&&scope.row.kpi.requests ? scope.row.kpi.requests : 0 }}</span>
@@ -97,20 +111,6 @@
       <el-table-column align="center" label="eCpm">
         <template slot-scope="scope">
           <span>${{ scope.row.kpi&&scope.row.kpi.ecpm ? scope.row.kpi.ecpm : '0.00' }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Status">
-        <template slot-scope="scope">
-          <el-icon :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}" size="small" :name="scope.row.status ? 'video-play' : 'video-pause'" />
-          <el-link v-permission="['advertise.campaign.ad.edit']" :type="scope.row.is_admin_disable ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleStatus(scope.row)" />
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Actions" width="150px">
-        <template slot-scope="scope">
-          <el-button v-if="scope.row.need_review" v-permission="['advertise.campaign.ad.edit']" type="primary" size="small" icon="el-icon-finished" @click="handleReview(scope.row);">
-            Review
-          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -253,7 +253,7 @@ export default {
           campaignResource.passAd(ad.campaign_id, ad.id).then(response => {
             this.$message({
               type: 'success',
-              message: 'Ad ' + ad.name + ' released',
+              message: 'Ad ' + ad.name + ' passed',
             });
             this.getList();
           }).catch(error => {
