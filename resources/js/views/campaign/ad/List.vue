@@ -29,7 +29,7 @@
       <!--  </template>-->
       <!--</el-table-column>-->
 
-      <el-table-column label="Ad" width="300px">
+      <el-table-column label="Ad" width="300px" fixed>
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
