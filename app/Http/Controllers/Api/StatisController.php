@@ -16,10 +16,11 @@ class StatisController extends Controller
         $range_date = $request->get('daterange');
         $start_date = date('Ymd', strtotime($range_date[0]??'now'));
         $end_date = date('Ymd', strtotime($range_date[1]??'now'));
+        $group_by = $request->get('grouping');
 
         $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function($query) use($start_date, $end_date){
             $query->whereBetween('date', [$start_date, $end_date])
-                ->select(['requests', 'impressions', 'clicks', 'installations', 'spend',
+                ->select(['date', 'requests', 'impressions', 'clicks', 'installations', 'spend',
                     'app_id', 'campaign_id', 'ad_id', 'target_app_id', 'country'
                 ])
             ;
@@ -44,6 +45,11 @@ class StatisController extends Controller
             DB::raw('round(sum(spend) / sum(installations), 2) as ecpi'),
             DB::raw('round(sum(spend) * 1000 / sum(impressions), 2) as ecpm'),
         ]);
+        if ($group_by) {
+            $advertise_kpi_query->addSelect('date');
+            $advertise_kpi_query->groupBy('date');
+            $advertise_kpi_query->orderByDesc('date');
+        }
 
         $advertise_kpi_list = $advertise_kpi_query->paginate();
 

@@ -25,7 +25,7 @@
       <!--</el-button>-->
     </div>
 
-    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
+    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%; margin-bottom: 20px;">
       <el-table-column align="center" label="Apps" prop="apps" />
       <el-table-column align="center" label="Campaigns" prop="campaigns" />
       <el-table-column align="center" label="Ads" prop="ads" />
@@ -82,12 +82,72 @@
         </template>
       </el-table-column>
     </el-table>
-
+    <el-divider></el-divider>
+    <el-table v-loading="loading" :data="listByGroup" border fit highlight-current-row style="width: 100%">
+      <el-table-column align="center" label="Date" prop="date" />
+      <el-table-column align="center" label="Apps" prop="apps" />
+      <el-table-column align="center" label="Campaigns" prop="campaigns" />
+      <el-table-column align="center" label="Ads" prop="ads" />
+      <el-table-column align="center" label="Channels" prop="channels" />
+      <el-table-column align="center" label="Countries" prop="countries" />
+      <el-table-column align="center" label="Requests">
+        <template slot-scope="scope">
+          <span>{{ scope.row.requests ? scope.row.requests : 0 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Impressions">
+        <template slot-scope="scope">
+          <span>{{ scope.row.impressions ? scope.row.impressions : 0 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Clicks">
+        <template slot-scope="scope">
+          <span>{{ scope.row.clicks ? scope.row.clicks : 0 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Installs">
+        <template slot-scope="scope">
+          <span>{{ scope.row.installs ? scope.row.installs : 0 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="CTR">
+        <template slot-scope="scope">
+          <span>{{ scope.row.ctr ? scope.row.ctr : '0.00' }}%</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="CVR">
+        <template slot-scope="scope">
+          <span>{{ scope.row.cvr ? scope.row.cvr : '0.00' }}%</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="IR">
+        <template slot-scope="scope">
+          <span>{{ scope.row.ir ? scope.row.ir : '0.00' }}%</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Spend">
+        <template slot-scope="scope">
+          <span>${{ scope.row.spend ? scope.row.spend : '0.00' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="eCpi">
+        <template slot-scope="scope">
+          <span>${{ scope.row.ecpi ? scope.row.ecpi : '0.00' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="eCpm">
+        <template slot-scope="scope">
+          <span>${{ scope.row.ecpm ? scope.row.ecpm : '0.00' }}</span>
+        </template>
+      </el-table-column>
+    </el-table>
+    <pagination v-show="totalListByGroup>0" :total="totalListByGroup" :page.sync="query.page" :limit.sync="query.limit" @pagination="getListByGroup" />
   </div>
 </template>
 
 <script>
 import Statis from '@/api/statis';
+import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
 import waves from '@/directive/waves'; // Waves directive
 import permission from '@/directive/permission'; // Waves directive
 import checkPermission from '@/utils/permission'; // Permission checking
@@ -97,12 +157,14 @@ const statis = new Statis();
 
 export default {
   name: 'AdvertiseStatis',
-  components: { },
+  components: { Pagination },
   directives: { waves, permission },
   data() {
     return {
       list: null,
       total: 0,
+      listByGroup: null,
+      totalListByGroup: 0,
       loading: true,
       downloading: false,
       appCreating: false,
@@ -110,7 +172,7 @@ export default {
         page: 1,
         limit: 15,
         keyword: '',
-        daterange: [new Date(), new Date()],
+        daterange: [new Date(new Date().setDate(new Date().getDate() - 7)), new Date()],
       },
       pickerOptions: defaultDatePickerOptions,
     };
@@ -119,6 +181,7 @@ export default {
   },
   created() {
     this.getList();
+    this.getListByGroup();
   },
   methods: {
     checkPermission,
@@ -134,9 +197,23 @@ export default {
       this.total = meta.total;
       this.loading = false;
     },
+    async getListByGroup() {
+      const { limit, page } = this.query;
+      const group_query = { ...this.query };
+      group_query['grouping'] = 'date';
+      this.loading = true;
+      const { data, meta } = await statis.total(group_query);
+      this.listByGroup = data;
+      this.listByGroup.forEach((element, index) => {
+        element['index'] = (page - 1) * limit + index + 1;
+      });
+      this.totalListByGroup = meta.total;
+      this.loading = false;
+    },
     handleFilter() {
       this.query.page = 1;
       this.getList();
+      this.getListByGroup();
     },
     handleDownload() {
       this.downloading = true;
@@ -184,6 +261,13 @@ export default {
   }
   .clear-left {
     clear: left;
+  }
+}
+
+.el-container {
+  margin-bottom: 20px;
+  &:last-child {
+    margin-bottom: 0;
   }
 }
 </style>
