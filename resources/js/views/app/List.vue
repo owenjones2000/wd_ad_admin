@@ -28,7 +28,7 @@
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%" @expand-change="handleExpandChange">
       <el-table-column align="center" label="" width="80" type="expand">
         <template slot-scope="scope">
-          <el-table v-loading="rowLoading" :data="scope.row.children" border fit highlight-current-row style="width: 100%">
+          <el-table v-loading="scope.row.loading" :data="scope.row.children" border fit highlight-current-row style="width: 100%">
             <el-table-column align="center" label="Date" width="100">
               <template slot-scope="children">
                 <span>{{ children.row.date }}</span>
@@ -296,10 +296,11 @@ export default {
       const { limit, page } = this.query;
       this.loading = true;
       const { data, meta } = await appResource.list(this.query);
-      this.list = data;
-      this.list.forEach((element, index) => {
+      data.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
+        element['loading'] = false;
       });
+      this.list = data;
       this.total = meta.total;
       this.loading = false;
     },
@@ -310,7 +311,7 @@ export default {
     async handleExpandChange(row) {
       if (!row.hasOwnProperty('children')) {
         const { limit, page } = this.query;
-        this.rowLoading = true;
+        row.loading = true;
         const query = { ...this.query };
         query['id'] = row.id;
         query['grouping'] = 'date';
@@ -320,7 +321,7 @@ export default {
           element['index'] = (page - 1) * limit + index + 1;
         });
       }
-      this.rowLoading = false;
+      row.loading = false;
     },
     handleCreate() {
       this.resetNewApp();
