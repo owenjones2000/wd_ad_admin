@@ -25,10 +25,66 @@
       <!--</el-button>-->
     </div>
 
-    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="ID" width="80">
+    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%" @expand-change="handleExpandChange">
+      <el-table-column align="center" label="" width="80" type="expand">
         <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
+          <el-table v-loading="rowLoading" :data="scope.row.children" border fit highlight-current-row style="width: 100%">
+            <el-table-column align="center" label="Date" width="100">
+              <template slot-scope="children">
+                <span>{{ children.row.date }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="Requests">
+              <template slot-scope="children">
+                <span>{{ children.row.requests ? children.row.requests : 0 }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="Impressions">
+              <template slot-scope="children">
+                <span>{{ children.row.impressions ? children.row.impressions : 0 }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="Clicks">
+              <template slot-scope="children">
+                <span>{{ children.row.clicks ? children.row.clicks : 0 }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="Installs">
+              <template slot-scope="children">
+                <span>{{ children.row.installs ? children.row.installs : 0 }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="CTR">
+              <template slot-scope="children">
+                <span>{{ children.row.ctr ? children.row.ctr : '0.00' }}%</span>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="CVR">
+              <template slot-scope="children">
+                <span>{{ children.row.cvr ? children.row.cvr : '0.00' }}%</span>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="IR">
+              <template slot-scope="children">
+                <span>{{ children.row.ir ? children.row.ir : '0.00' }}%</span>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="Spend">
+              <template slot-scope="children">
+                <span>${{ children.row.spend ? children.row.spend : '0.00' }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="eCpi">
+              <template slot-scope="children">
+                <span>${{ children.row.ecpi ? children.row.ecpi : '0.00' }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="eCpm">
+              <template slot-scope="children">
+                <span>${{ children.row.ecpm ? children.row.ecpm : '0.00' }}</span>
+              </template>
+            </el-table-column>
+          </el-table>
         </template>
       </el-table-column>
 
@@ -197,6 +253,7 @@ export default {
       list: null,
       total: 0,
       loading: true,
+      rowLoading: false,
       downloading: false,
       appCreating: false,
       query: {
@@ -249,6 +306,21 @@ export default {
     handleFilter() {
       this.query.page = 1;
       this.getList();
+    },
+    async handleExpandChange(row) {
+      if (!row.hasOwnProperty('children')) {
+        const { limit, page } = this.query;
+        this.rowLoading = true;
+        const query = { ...this.query };
+        query['id'] = row.id;
+        query['grouping'] = 'date';
+        const { data } = await appResource.data(query);
+        row['children'] = data;
+        row['children'].forEach((element, index) => {
+          element['index'] = (page - 1) * limit + index + 1;
+        });
+      }
+      this.rowLoading = false;
     },
     handleCreate() {
       this.resetNewApp();

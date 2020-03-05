@@ -82,7 +82,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-divider></el-divider>
+    <el-divider />
     <el-table v-loading="loading" :data="listByGroup" border fit highlight-current-row style="width: 100%">
       <el-table-column align="center" label="Date" prop="date" />
       <el-table-column align="center" label="Apps" prop="apps" />

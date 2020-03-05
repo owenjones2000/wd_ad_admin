@@ -6,6 +6,14 @@ class AppResource extends Resource {
     super('app');
   }
 
+  data(query) {
+    return request({
+      url: '/' + this.uri + '/data',
+      method: 'get',
+      params: query,
+    });
+  }
+
   enable(app_id){
     return request({
       url: '/' + this.uri + '/' + app_id + '/enable',

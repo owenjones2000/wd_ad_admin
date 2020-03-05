@@ -59,6 +59,8 @@ Route::group(['middleware' => 'api'], function () {
         // 应用管理
         Route::group(['prefix'=>'app', 'middleware' => 'permission:advertise.app'], function () {
             Route::get('', 'AppController@list')->name('app');
+            Route::get('data', 'AppController@data')->name('app.data');
+
             //编辑
 //            Route::post('{id?}', 'AppController@save')->name('app.save')->middleware('permission:advertise.app.edit');
             Route::post('{id}/enable', 'AppController@enable')->name('app.enable')->middleware('permission:advertise.app.edit');

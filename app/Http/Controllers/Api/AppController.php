@@ -69,6 +69,60 @@ class AppController extends Controller
         return JsonResource::collection($app_list);
     }
 
+    public function data(Request $request)
+    {
+        $range_date = $request->get('daterange');
+        $start_date = date('Ymd', strtotime($range_date[0]??'now'));
+        $end_date = date('Ymd', strtotime($range_date[1]??'now'));
+        $group_by = $request->get('grouping');
+
+        $app_base_query = App::query();
+        if(!empty($request->get('keyword'))){
+            $app_base_query->where('name', 'like', '%'.$request->get('name').'%');
+        }
+        if(!empty($request->get('id'))){
+            $app_base_query->where('id', $request->get('id'));
+        }
+        $app_id_query = clone $app_base_query;
+        $app_id_query->select('id');
+        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function($query) use($start_date, $end_date, $app_id_query){
+            $query->whereBetween('date', [$start_date, $end_date])
+                ->whereIn('app_id', $app_id_query)
+                ->select(['date', 'requests', 'impressions', 'clicks', 'installations', 'spend',
+                    'app_id',
+                ])
+            ;
+            return $query;
+        }, $start_date, $end_date);
+
+        $advertise_kpi_query->select([
+            DB::raw('sum(requests) as requests'),
+            DB::raw('sum(impressions) as impressions'),
+            DB::raw('sum(clicks) as clicks'),
+            DB::raw('sum(installations) as installs'),
+            DB::raw('round(sum(clicks) * 100 / sum(impressions), 2) as ctr'),
+            DB::raw('round(sum(installations) * 100 / sum(clicks), 2) as cvr'),
+            DB::raw('round(sum(installations) * 100 / sum(impressions), 2) as ir'),
+            DB::raw('round(sum(spend), 2) as spend'),
+            DB::raw('round(sum(spend) / sum(installations), 2) as ecpi'),
+            DB::raw('round(sum(spend) * 1000 / sum(impressions), 2) as ecpm'),
+            'app_id',
+        ]);
+        if ($group_by == 'date') {
+            $advertise_kpi_query->addSelect('date');
+            $advertise_kpi_query->groupBy($group_by);
+            $advertise_kpi_query->orderByDesc('date');
+        } else {
+            $advertise_kpi_query->groupBy('app_id');
+        }
+
+        $advertise_kpi_list = $advertise_kpi_query
+            ->orderBy('spend','desc')
+            ->get();
+
+        return JsonResource::collection($advertise_kpi_list);
+    }
+
     /**
      * Display the specified resource.
      *
