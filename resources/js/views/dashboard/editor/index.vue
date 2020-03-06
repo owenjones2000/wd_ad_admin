@@ -3,15 +3,15 @@
 
     <panel-group @handleSetLineChartData="handleSetLineChartData" />
 
-    <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
-      <line-chart :chart-data="lineChartData" />
-    </el-row>
+    <!--<el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">-->
+    <!--<line-chart :chart-data="lineChartData" />-->
+    <!--</el-row>-->
   </div>
 </template>
 
 <script>
 import PanelGroup from './components/PanelGroup';
-import LineChart from './components/LineChart';
+// import LineChart from './components/LineChart';
 
 const lineChartData = {
   newVisitis: {
@@ -36,7 +36,7 @@ export default {
   name: 'DashboardAdmin',
   components: {
     PanelGroup,
-    LineChart,
+    // LineChart,
   },
   data() {
     return {
