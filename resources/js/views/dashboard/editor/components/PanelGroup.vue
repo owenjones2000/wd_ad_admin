@@ -88,7 +88,10 @@ export default {
       };
       const { data } = await statis.total(query);
       if (data.length > 0) {
-        this.total = data[0];
+        this.total.impressions = Number(data[0].impressions);
+        this.total.clicks = Number(data[0].clicks);
+        this.total.installs = Number(data[0].installs);
+        this.total.spend = Number(data[0].spend);
       }
     },
   },

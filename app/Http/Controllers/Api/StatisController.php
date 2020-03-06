@@ -17,6 +17,7 @@ class StatisController extends Controller
         $start_date = date('Ymd', strtotime($range_date[0]??'now'));
         $end_date = date('Ymd', strtotime($range_date[1]??'now'));
         $group_by = $request->get('grouping');
+        $order = $request->get('order', 'desc');
 
         $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function($query) use($start_date, $end_date){
             $query->whereBetween('date', [$start_date, $end_date])
@@ -48,7 +49,7 @@ class StatisController extends Controller
         if ($group_by) {
             $advertise_kpi_query->addSelect('date');
             $advertise_kpi_query->groupBy('date');
-            $advertise_kpi_query->orderByDesc('date');
+            $advertise_kpi_query->orderBy('date', $order);
         }
 
         $advertise_kpi_list = $advertise_kpi_query->paginate();
