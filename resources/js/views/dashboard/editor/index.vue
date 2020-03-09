@@ -104,19 +104,6 @@ export default {
             var serie = {
               name: legend_key,
               type: type,
-              smooth: true,
-              itemStyle: {
-                normal: {
-                  color: '#3888fa',
-                  lineStyle: {
-                    color: '#3888fa',
-                    width: 2,
-                  },
-                  areaStyle: {
-                    color: '#f3f8ff',
-                  },
-                },
-              },
             };
             if (type === 'bar') {
               serie['stack'] = key;

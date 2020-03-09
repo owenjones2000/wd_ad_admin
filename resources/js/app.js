@@ -6,6 +6,7 @@ import store from './store';
 import router from '@/router';
 import i18n from './lang'; // Internationalization
 import '@/icons'; // icon
+import 'font-awesome/scss/font-awesome.scss';
 import '@/permission'; // permission control
 
 import * as filters from './filters'; // global filters
