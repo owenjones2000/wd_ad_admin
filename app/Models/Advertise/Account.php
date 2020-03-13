@@ -68,6 +68,38 @@ class Account extends Model
         }
     }
 
+    /**
+     * 生成账单
+     */
+    public function generateBill(){
+        $last_month_timestamp = strtotime('-1 month');
+        $start_date = date('Y-m-01', $last_month_timestamp);
+        $end_date = date('Y-m-t', $last_month_timestamp);
+        $due_date = date('Y-m-t');
+        $fee_amount_query = Install::multiTableQuery(function($query){
+            return $query->select(['spend'])->whereIn('app_id', $this->apps()->select('id')->getQuery());
+        }, $start_date, $end_date);
+        $fee_amount = $fee_amount_query->sum('spend');
+        $this->bills()
+            ->updateOrCreate(
+                [
+                    'start_date' => $start_date,
+                    'end_date' =>$end_date,
+                ],
+                [
+                    'fee_amount' => $fee_amount,
+                    'due_date' => $due_date,
+                ]
+        );
+    }
+
+    public function apps(){
+        return $this->hasMany(App::class, 'main_user_id', 'id');
+    }
+    public function bills(){
+        return $this->hasMany(Bill::class, 'main_user_id', 'id');
+    }
+
     public function children(){
         return $this->hasMany(Account::class, 'main_user_id', 'id');
     }
