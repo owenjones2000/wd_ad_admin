@@ -39,6 +39,13 @@ Route::group(['middleware' => 'api'], function () {
             //删除
 //            Route::delete('account/destroy','AccountController@destroy')->name('account.destroy')->middleware('permission:advertise.account.destroy');
         });
+
+        // Bill
+        Route::group(['prefix' => 'bill'],function (){
+            Route::get('','BillController@list')->name('bill')->middleware('permission:advertise.bill');
+            // 确认已支付
+            Route::post('{id}/pay', 'BillController@pay')->name('bill.pay')->middleware('permission:advertise.bill.pay');
+        });
         
         // API
         Route::group(['prefix' => 'auth'], function () {
