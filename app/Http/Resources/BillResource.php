@@ -15,12 +15,14 @@ class BillResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'id' => $this->id,
             'realname' => $this->account->realname,
             'email' => $this->account->email,
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
             'fee_amount' => $this->fee_amount,
             'due_date' => $this->due_date,
+            'paid_at' => $this->paid_at,
         ];
     }
 }

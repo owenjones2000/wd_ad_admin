@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BillResource;
+use App\Models\Advertise\Account;
 use App\Models\Advertise\Bill;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -21,15 +22,18 @@ class BillController extends Controller
     public function list(Request $request)
     {
         $searchParams = $request->all();
-        $billQuery = Bill::query()->with('account');
+        $bill_query = Bill::query()->with('account');
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
         $keyword = Arr::get($searchParams, 'keyword', '');
-
         if (!empty($keyword)) {
-            $billQuery->where('realname', 'LIKE', '%' . $keyword . '%');
-            $billQuery->where('email', 'LIKE', '%' . $keyword . '%');
+            $account_query = Account::query()->select('id');
+            $account_query->where('realname', 'LIKE', '%' . $keyword . '%');
+            $account_query->orWhere('email', 'LIKE', '%' . $keyword . '%');
+            $bill_query->whereIn('main_user_id', $account_query);
         }
-        return BillResource::collection($billQuery->paginate($limit));
+
+        $bill_query->orderBy('paid_at');
+        return BillResource::collection($bill_query->paginate($limit));
     }
 
     /**

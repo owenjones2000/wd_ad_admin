@@ -16,8 +16,8 @@ class Bill extends Model
     }
 
     public function pay(){
-        if($this->payed_at){
-            $this->payed_at = Carbon::now();
+        if(!$this->paid_at){
+            $this->paid_at = Carbon::now();
             $this->saveOrFail();
         }
         return true;
