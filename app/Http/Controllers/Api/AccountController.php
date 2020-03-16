@@ -80,14 +80,10 @@ class AccountController extends Controller
 
     public function setBill(Request $request, $id)
     {
-        /** @var BillSet $bill_set */
-        BillSet::query()->updateOrCreate(
-            ['id' => $id],
-            [
-                'address' => $request->input('address'),
-                'phone' => $request->input('phone'),
-            ]
-        );
+        /** @var Account $account */
+        $account = Account::query()->findOrFail($id);
+        $account->setBill($request->only('address', 'phone'));
+
         return response()->json(['code'=>0,'msg'=>'Bill set updated']);
     }
 

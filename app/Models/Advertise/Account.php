@@ -3,6 +3,7 @@ namespace App\Models\Advertise;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -67,6 +68,23 @@ class Account extends Model
             $this->status = false;
             $this->saveOrFail();
         }
+    }
+
+    /**
+     * 设置账单配置
+     *
+     * @param $params
+     */
+    public function setBill($params){
+        $main_account_id = $this['main_user_id'] > 0 ? $this['main_user_id'] : $this['id'];
+        /** @var BillSet $bill_set */
+        BillSet::query()->updateOrCreate(
+            ['id' => $main_account_id],
+            [
+                'address' => Arr::get($params, 'address', ''),
+                'phone' => Arr::get($params, 'phone', ''),
+            ]
+        );
     }
 
     /**
