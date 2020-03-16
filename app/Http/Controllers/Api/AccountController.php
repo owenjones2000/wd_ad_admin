@@ -6,6 +6,7 @@ use App\Http\Requests\MakeAccountRequest;
 use App\Http\Resources\AccountResource;
 use App\Models\Advertise\Account;
 use App\Http\Controllers\Controller;
+use App\Models\Advertise\BillSet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
@@ -22,7 +23,7 @@ class AccountController extends Controller
     public function list(Request $request, $main_user_id = 0)
     {
         $searchParams = $request->all();
-        $accountQuery = Account::query()->with('children')->where('main_user_id', $main_user_id);
+        $accountQuery = Account::query()->with('children', 'bill')->where('main_user_id', $main_user_id);
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
         $keyword = Arr::get($searchParams, 'keyword', '');
 
@@ -75,6 +76,19 @@ class AccountController extends Controller
         $account = Account::findOrFail($id);
         $account->disable();
         return response()->json(['code'=>0,'msg'=>'Disabled']);
+    }
+
+    public function setBill(Request $request, $id)
+    {
+        /** @var BillSet $bill_set */
+        BillSet::query()->updateOrCreate(
+            ['id' => $id],
+            [
+                'address' => $request->input('address'),
+                'phone' => $request->input('phone'),
+            ]
+        );
+        return response()->json(['code'=>0,'msg'=>'Bill set updated']);
     }
 
     /**

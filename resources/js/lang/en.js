@@ -145,6 +145,10 @@ export default {
   account: {
     realname: 'Real Name',
   },
+  bill: {
+    address: 'Address',
+    phone: 'phone',
+  },
   platform: {
     name: 'Platform',
   },

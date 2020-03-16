@@ -46,6 +46,9 @@
           <el-button v-permission="['advertise.account.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">
             Edit
           </el-button>
+          <el-button v-permission="['advertise.bill']" type="primary" size="small" icon="el-icon-edit" @click="handleBillSet(scope.row)">
+            BillSet
+          </el-button>
           <!--<el-button v-permission="['advertise.account.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">-->
           <!--  Delete-->
           <!--</el-button>-->
@@ -82,6 +85,27 @@
       </div>
     </el-dialog>
 
+    <el-dialog :title="'Bill Set'" :visible.sync="billDialogFormVisible">
+      <div v-loading="billSetting" class="form-container">
+        <el-form ref="billSetForm" :rules="billSetRules" :model="currentBillSet" label-position="left" label-width="150px" style="max-width: 500px;">
+          <el-form-item :label="$t('bill.address')" prop="address">
+            <el-input v-model="currentBillSet.address" type="textarea" />
+          </el-form-item>
+          <el-form-item :label="$t('bill.phone')" prop="phone">
+            <el-input v-model="currentBillSet.phone" />
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="billDialogFormVisible = false">
+            {{ $t('table.cancel') }}
+          </el-button>
+          <el-button type="primary" @click="saveBillSet()">
+            {{ $t('table.confirm') }}
+          </el-button>
+        </div>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -105,6 +129,7 @@ export default {
       loading: true,
       downloading: false,
       accountCreating: false,
+      billSetting: false,
       query: {
         page: 1,
         limit: 15,
@@ -118,7 +143,11 @@ export default {
       currentAccount: {
         email: '',
       },
-
+      currentBillSet: {
+        address: '',
+        phone: '',
+      },
+      billDialogFormVisible: false,
     };
   },
   computed: {
@@ -138,6 +167,15 @@ export default {
         realname: [{ required: true, message: 'Real name is required', trigger: 'blur' }],
         password: [{ required: this.passwordRequired, message: 'Password is required', trigger: 'blur' }],
         confirmPassword: [{ validator: validateConfirmPassword, trigger: 'blur' }],
+      };
+    },
+    billSetRules() {
+      return {
+        address: [
+          { required: true, message: 'Address is required', trigger: 'blur' },
+          { max: 255 },
+        ],
+        phone: [{ max: 13 }],
       };
     },
   },
@@ -269,6 +307,43 @@ export default {
         password: '',
         confirmPassword: '',
       };
+    },
+    handleBillSet(account) {
+      this.currentAccount = account;
+      this.currentBillSet = account.bill ? account.bill : { address: '', phone: '' };
+      this.currentBillSet.id = account.id;
+      this.billDialogFormVisible = true;
+      this.$nextTick(() => {
+        this.$refs['billSetForm'].clearValidate();
+      });
+    },
+    saveBillSet() {
+      this.$refs['billSetForm'].validate((valid) => {
+        if (valid) {
+          this.billSetting = true;
+          accountResource
+            .saveBillSet(this.currentBillSet)
+            .then(response => {
+              this.$message({
+                message: 'The bill set of Account ' + this.currentAccount.email + ' has been saved successfully.',
+                type: 'success',
+                duration: 5 * 1000,
+              });
+              this.resetNewAccount();
+              this.billDialogFormVisible = false;
+              this.handleFilter();
+            })
+            .catch(error => {
+              console.log(error);
+            })
+            .finally(() => {
+              this.billSetting = false;
+            });
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
     },
     handleDownload() {
       this.downloading = true;

@@ -20,6 +20,7 @@ class AccountResource extends JsonResource
             'realname' => $this->realname,
             'status' => $this->status,
             'children' => $this->children,
+            'bill' => $this->bill,
         ];
     }
 }

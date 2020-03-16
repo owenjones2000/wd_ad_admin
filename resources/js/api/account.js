@@ -19,6 +19,14 @@ class AccountResource extends Resource {
       method: 'post',
     });
   }
+
+  saveBillSet(billSet){
+    return request({
+      url: '/' + this.uri + '/' + billSet.id + '/bill',
+      method: 'post',
+      data: billSet,
+    });
+  }
 }
 
 export { AccountResource as default };

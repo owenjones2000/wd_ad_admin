@@ -98,6 +98,10 @@ class Account extends Model
     public function apps(){
         return $this->hasMany(App::class, 'main_user_id', 'id');
     }
+
+    public function bill(){
+        return $this->hasOne(BillSet::class, 'id', 'id');
+    }
     public function bills(){
         return $this->hasMany(Bill::class, 'main_user_id', 'id');
     }
