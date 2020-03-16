@@ -3,6 +3,7 @@ namespace App\Models\Advertise;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -89,6 +90,7 @@ class Account extends Model
                 [
                     'fee_amount' => $fee_amount,
                     'due_date' => $due_date,
+                    'paid_at' => $fee_amount > 0 ? null : Carbon::now()
                 ]
         );
     }
