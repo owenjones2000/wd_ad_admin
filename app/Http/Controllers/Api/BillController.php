@@ -34,7 +34,8 @@ class BillController extends Controller
 
         $bill_query
             ->orderBy('paid_at')
-            ->orderByRaw('IF(ISNULL(due_date),1,0), due_date');
+            ->orderByRaw('IF(ISNULL(due_date),1,0), due_date')
+        ;
         return BillResource::collection($bill_query->paginate($limit));
     }
 
