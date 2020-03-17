@@ -12,6 +12,19 @@ class BillResource extends Resource {
       method: 'post',
     });
   }
+  invoice(id){
+    return request({
+      url: '/' + this.uri + '/' + id + '/invoice',
+      method: 'get',
+    });
+  }
+  invoicePdf(id){
+    return request({
+      url: '/' + this.uri + '/' + id + '/invoice/pdf',
+      method: 'get',
+      responseType: 'blob',
+    });
+  }
 }
 
 export { BillResource as default };

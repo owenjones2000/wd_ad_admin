@@ -75,65 +75,13 @@
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
     <el-dialog :title="'Invoice'" :visible.sync="invoiceDialogVisible">
-      <div class="container">
-        <el-container :model="currentBill">
-          <el-header>
-            <div>
-              <h3>{{ currentBill.realname }}</h3>
-              <p>{{ currentBill.email }}</p>
-            </div>
-          </el-header>
-          <el-main>
-            <h1>Invoice</h1>
-            <el-row :gutter="24">
-              <el-col :span="8">
-                <div>
-                  <h3>Invoice for</h3>
-                </div>
-              </el-col>
-              <el-col :span="8">
-                <div>
-                  <h3>Payable to</h3>
-                  <p>{{ currentBill.realname }}</p>
-                  <h3>Project</h3>
-                  <p>Service from {{ currentBill.start_date }} to {{ currentBill.end_date }}</p>
-                </div>
-              </el-col>
-              <el-col :span="8">
-                <div>
-                  <h3>Invoice #</h3>
-                  <p>{{ currentBill.id }}</p>
-                  <h3>Due date</h3>
-                  <p>{{ currentBill.due_date }}</p>
-                </div>
-              </el-col>
-            </el-row>
-            <el-divider />
-            <table frame="void" style="width: 100%;border-collapse:collapse;border:none;line-height: 1.5em">
-              <tr class="table">
-                <th style="text-align: left; width: 80%">Description</th>
-                <th style="text-align: right; width: 20%">Fee Amount</th>
-              </tr>
-              <tr class="odd-row">
-                <td>Service Fee</td>
-                <td style="text-align: right;">${{ currentBill.fee_amount }}</td>
-              </tr>
-              <tr>
-                <td>(See attached for invoice details.)</td>
-              </tr>
-              <tr v-for="index in 6" :key="index" :class="{'odd-row': index%2!=0}">
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-              </tr>
-            </table>
-            <el-divider />
-          </el-main>
-        </el-container>
+      <div class="form-container">
+        <div id="invoice" v-html="invoice" />
         <div slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="invoiceDialogVisible = false">
-            {{ $t('send') }}
-          </el-button>
-          <el-button type="primary">
+          <!--<el-button type="primary" @click="invoiceDialogVisible = false">-->
+          <!--{{ $t('send') }}-->
+          <!--</el-button>-->
+          <el-button type="primary" @click="handleInvoicePdf()">
             {{ $t('download') }}
           </el-button>
         </div>
@@ -176,7 +124,7 @@ export default {
       currentBill: {
         email: '',
       },
-
+      invoice: '',
     };
   },
   computed: {
@@ -202,9 +150,21 @@ export default {
       this.query.page = 1;
       this.getList();
     },
-    handleInvoice(bill) {
+    async handleInvoice(bill) {
+      const data = await billResource.invoice(bill.id);
+      this.invoice = data;
       this.currentBill = bill;
       this.invoiceDialogVisible = true;
+    },
+    async handleInvoicePdf() {
+      const data = await billResource.invoicePdf(this.currentBill.id);
+      const url = window.URL.createObjectURL(data);
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      link.href = url;
+      link.setAttribute('download', 'invoice.pdf');
+      document.body.appendChild(link);
+      link.click();
     },
     handlePay(bill) {
       this.$confirm('Confirm that the bill has been paid ?', 'Warning', {

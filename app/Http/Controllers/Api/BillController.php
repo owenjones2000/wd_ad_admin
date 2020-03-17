@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\BillResource;
 use App\Models\Advertise\Account;
 use App\Models\Advertise\Bill;
+use Barryvdh\DomPDF\Facade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
@@ -51,5 +52,16 @@ class BillController extends Controller
         $bill = Bill::findOrFail($id);
         $bill->pay();
         return response()->json(['code'=>0,'msg'=>'Payed']);
+    }
+
+    public function invoice($id){
+        $bill = Bill::query()->where('id', $id)->with('account')->firstOrFail();
+        return view('bill.invoice', ['bill' => $bill]);
+    }
+
+    public function invoicePdf($id){
+        $bill = Bill::query()->where('id', $id)->with('account')->firstOrFail();
+        $pdf = Facade::loadView('bill.invoice', ['bill' => $bill]);
+        return $pdf->download('invoice.pdf');
     }
 }

@@ -47,6 +47,9 @@ Route::group(['middleware' => 'api'], function () {
             Route::get('','BillController@list')->name('bill')->middleware('permission:advertise.bill');
             // 确认已支付
             Route::post('{id}/pay', 'BillController@pay')->name('bill.pay')->middleware('permission:advertise.bill.pay');
+            Route::get('{id}/invoice', 'BillController@invoice')->name('bill.invoice');
+            Route::get('{id}/invoice/pdf', 'BillController@invoicePdf')->name('bill.invoice.pdf');
+
         });
         
         // API
