@@ -42,7 +42,7 @@
       </el-table-column>
       <el-table-column align="center" label="Fee Amount">
         <template slot-scope="scope">
-          <span>{{ scope.row.fee_amount }}</span>
+          <span>${{ scope.row.fee_amount }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="DueDate">
@@ -57,10 +57,13 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Actions" width="200">
+      <el-table-column align="center" label="Actions" width="300">
         <template slot-scope="scope">
           <el-button v-if="scope.row.paid_at==null" v-permission="['advertise.bill.pay']" type="danger" size="small" icon="el-icon-money" @click="handlePay(scope.row)">
             Confirm Paid
+          </el-button>
+          <el-button v-permission="['advertise.bill']" type="success" size="small" icon="fa fa-eye" @click="handleInvoice(scope.row)">
+            Invoice
           </el-button>
           <!--<el-button v-permission="['advertise.bill.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">-->
           <!--  Delete-->
@@ -71,6 +74,71 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
+    <el-dialog :title="'Invoice'" :visible.sync="invoiceDialogVisible">
+      <div class="container">
+        <el-container :model="currentBill">
+          <el-header>
+            <div>
+              <h3>{{ currentBill.realname }}</h3>
+              <p>{{ currentBill.email }}</p>
+            </div>
+          </el-header>
+          <el-main>
+            <h1>Invoice</h1>
+            <el-row :gutter="24">
+              <el-col :span="8">
+                <div>
+                  <h3>Invoice for</h3>
+                </div>
+              </el-col>
+              <el-col :span="8">
+                <div>
+                  <h3>Payable to</h3>
+                  <p>{{ currentBill.realname }}</p>
+                  <h3>Project</h3>
+                  <p>Service from {{ currentBill.start_date }} to {{ currentBill.end_date }}</p>
+                </div>
+              </el-col>
+              <el-col :span="8">
+                <div>
+                  <h3>Invoice #</h3>
+                  <p>{{ currentBill.id }}</p>
+                  <h3>Due date</h3>
+                  <p>{{ currentBill.due_date }}</p>
+                </div>
+              </el-col>
+            </el-row>
+            <el-divider />
+            <table frame="void" style="width: 100%;border-collapse:collapse;border:none;line-height: 1.5em">
+              <tr class="table">
+                <th style="text-align: left; width: 80%">Description</th>
+                <th style="text-align: right; width: 20%">Fee Amount</th>
+              </tr>
+              <tr class="odd-row">
+                <td>Service Fee</td>
+                <td style="text-align: right;">${{ currentBill.fee_amount }}</td>
+              </tr>
+              <tr>
+                <td>(See attached for invoice details.)</td>
+              </tr>
+              <tr v-for="index in 6" :key="index" :class="{'odd-row': index%2!=0}">
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+              </tr>
+            </table>
+            <el-divider />
+          </el-main>
+        </el-container>
+        <div slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="invoiceDialogVisible = false">
+            {{ $t('send') }}
+          </el-button>
+          <el-button type="primary">
+            {{ $t('download') }}
+          </el-button>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -102,6 +170,7 @@ export default {
       },
       newBill: {},
       dialogFormVisible: false,
+      invoiceDialogVisible: false,
       passwordRequired: true,
       currentBillId: 0,
       currentBill: {
@@ -132,6 +201,10 @@ export default {
     handleFilter() {
       this.query.page = 1;
       this.getList();
+    },
+    handleInvoice(bill) {
+      this.currentBill = bill;
+      this.invoiceDialogVisible = true;
     },
     handlePay(bill) {
       this.$confirm('Confirm that the bill has been paid ?', 'Warning', {
@@ -202,5 +275,8 @@ export default {
   .clear-left {
     clear: left;
   }
+}
+table .odd-row {
+  background: #f0f0f0;
 }
 </style>
