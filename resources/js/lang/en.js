@@ -149,6 +149,10 @@ export default {
     address: 'Address',
     phone: 'phone',
   },
+  invoice: {
+    send_to: 'Send To',
+    download: 'Download',
+  },
   platform: {
     name: 'Platform',
   },
