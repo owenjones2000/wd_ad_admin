@@ -148,10 +148,12 @@ export default {
       this.getList();
     },
     async handleInvoice(bill) {
+      this.loading = true;
       const data = await billResource.invoice(bill.id);
       this.invoice = data;
       this.currentBill = bill;
       this.invoiceDialogVisible = true;
+      this.loading = false;
     },
     async handleInvoicePdf() {
       const data = await billResource.invoicePdf(this.currentBill.id);
