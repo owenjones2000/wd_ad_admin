@@ -59,15 +59,12 @@
 
       <el-table-column align="center" label="Actions" width="300">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.paid_at==null" v-permission="['advertise.bill.pay']" type="danger" size="small" icon="el-icon-money" @click="handlePay(scope.row)">
+          <el-button v-if="scope.row.paid_at==null" v-permission="['advertise.bill.pay']" type="danger" size="small" icon="el-icon-finished" @click="handlePay(scope.row)">
             Confirm Paid
           </el-button>
           <el-button v-permission="['advertise.bill']" type="success" size="small" icon="fa fa-eye" @click="handleInvoice(scope.row)">
             Invoice
           </el-button>
-          <!--<el-button v-permission="['advertise.bill.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">-->
-          <!--  Delete-->
-          <!--</el-button>-->
         </template>
       </el-table-column>
     </el-table>
