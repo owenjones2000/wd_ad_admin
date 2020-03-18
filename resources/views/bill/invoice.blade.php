@@ -26,6 +26,7 @@
 </head>
 <body>
 <div>
+    <div style="height: 10px; background: #f6993f;" ></div>
     <div>
         <h3 style="font-size: 1.38125em; color: #666666;">
             Essentials Tech Limited
@@ -91,7 +92,7 @@
         </tr>
     </table>
     <hr />
-    <p style="color: #E01B84;text-align: right">Subtotal: ${{ $bill['fee_amount'] }}</p>
+    <p style="color: #E01B84;text-align: right"><strong>Subtotal: ${{ $bill['fee_amount'] }}</strong></p>
 </div>
 </body>
 </html>
