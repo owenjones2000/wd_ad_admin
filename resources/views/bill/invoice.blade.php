@@ -85,14 +85,14 @@
         </tr>
         <tr class="odd-row">
             <td>Service Fee</td>
-            <td style="text-align: right;">${{ $bill['fee_amount'] }}</td>
+            <td style="text-align: right;">${{ number_format($bill['fee_amount'], 2) }}</td>
         </tr>
         <tr>
             <td>(See attached for invoice details.)</td><td></td>
         </tr>
     </table>
     <hr />
-    <p style="color: #E01B84;text-align: right"><strong>Subtotal: ${{ $bill['fee_amount'] }}</strong></p>
+    <p style="color: #E01B84;text-align: right"><strong>Subtotal: ${{ number_format($bill['fee_amount'], 2) }}</strong></p>
 </div>
 </body>
 </html>
