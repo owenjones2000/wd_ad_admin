@@ -63,13 +63,14 @@ class BillController extends Controller
     public function invoicePdf($id){
         $bill = Bill::query()->where('id', $id)->with('account')->firstOrFail();
         $pdf = Facade::loadView('bill.invoice', ['bill' => $bill]);
-        return $pdf->download('invoice.pdf');
+        $invoice_name = 'Invoice_' . $bill['start_date'] . '~' . $bill['end_date'];
+        return $pdf->download($invoice_name.'.pdf');
     }
 
     public function sendInvoice($id){
         $bill = Bill::query()->where('id', $id)->with('account')->firstOrFail();
         Mail::send('bill.invoice_email', ['bill' => $bill], function($message) use($bill) {
-            $invoice_name = 'invoice_' . $bill['start_date'] . '~' . $bill['end_date'];
+            $invoice_name = 'Invoice_' . $bill['start_date'] . '~' . $bill['end_date'];
             $pdf = Facade::loadView('bill.invoice', ['bill' => $bill]);
             $message->to($bill['account']['email'], $bill['account']['realname'])
                 ->subject($invoice_name)
