@@ -25,6 +25,12 @@ class BillResource extends Resource {
       responseType: 'blob',
     });
   }
+  sendInvoice(id){
+    return request({
+      url: '/' + this.uri + '/' + id + '/invoice/send',
+      method: 'post',
+    });
+  }
 }
 
 export { BillResource as default };

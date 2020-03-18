@@ -49,6 +49,7 @@ Route::group(['middleware' => 'api'], function () {
             Route::post('{id}/pay', 'BillController@pay')->name('bill.pay')->middleware('permission:advertise.bill.pay');
             Route::get('{id}/invoice', 'BillController@invoice')->name('bill.invoice');
             Route::get('{id}/invoice/pdf', 'BillController@invoicePdf')->name('bill.invoice.pdf');
+            Route::post('{id}/invoice/send', 'BillController@sendInvoice')->name('bill.invoice.send');
 
         });
         

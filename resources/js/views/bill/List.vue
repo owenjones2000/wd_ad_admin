@@ -74,12 +74,12 @@
     <el-dialog :title="'Invoice'" :visible.sync="invoiceDialogVisible">
       <div class="form-container">
         <div id="invoice" v-html="invoice" />
-        <div slot="footer" class="dialog-footer">
-          <!--<el-button type="primary" @click="invoiceDialogVisible = false">-->
-          <!--{{ $t('send') }}-->
-          <!--</el-button>-->
+        <div slot="footer" class="el-footer" style="text-align: right">
+          <el-button type="primary" @click="handleSendInvoice()">
+            {{ $t('Send To') }} : {{ currentBill.email }}
+          </el-button>
           <el-button type="primary" @click="handleInvoicePdf()">
-            {{ $t('download') }}
+            {{ $t('Download') }}
           </el-button>
         </div>
       </div>
@@ -162,6 +162,28 @@ export default {
       link.setAttribute('download', 'invoice.pdf');
       document.body.appendChild(link);
       link.click();
+    },
+    handleSendInvoice() {
+      this.$confirm('Send pdf of invoice to ' + this.currentBill.email + ' ?', 'Warning', {
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }).then(() => {
+        billResource.sendInvoice(this.currentBill.id).then(response => {
+          this.$message({
+            type: 'success',
+            message: 'Send successfully',
+          });
+          this.handleFilter();
+        }).catch(error => {
+          console.log(error);
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: 'canceled',
+        });
+      });
     },
     handlePay(bill) {
       this.$confirm('Confirm that the bill has been paid ?', 'Warning', {

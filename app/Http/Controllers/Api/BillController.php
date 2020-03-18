@@ -9,6 +9,7 @@ use App\Models\Advertise\Bill;
 use Barryvdh\DomPDF\Facade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Mail;
 
 class BillController extends Controller
 {
@@ -63,5 +64,16 @@ class BillController extends Controller
         $bill = Bill::query()->where('id', $id)->with('account')->firstOrFail();
         $pdf = Facade::loadView('bill.invoice', ['bill' => $bill]);
         return $pdf->download('invoice.pdf');
+    }
+
+    public function sendInvoice($id){
+        $bill = Bill::query()->where('id', $id)->with('account')->firstOrFail();
+        Mail::send('bill.invoice_email', ['bill' => $bill], function($message) use($bill) {
+            $invoice_name = 'invoice_' . $bill['start_date'] . '~' . $bill['end_date'];
+            $pdf = Facade::loadView('bill.invoice', ['bill' => $bill]);
+            $message->to($bill['account']['email'], $bill['account']['realname'])
+                ->subject($invoice_name)
+                ->attachData($pdf->output(), $invoice_name . '.pdf');
+        });
     }
 }
