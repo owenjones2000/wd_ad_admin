@@ -9,7 +9,7 @@ class Bill extends Model
 {
     protected $table = 'a_bill';
 
-    protected $fillable = ['start_date', 'end_date', 'fee_amount', 'due_date'];
+    protected $fillable = ['start_date', 'end_date', 'fee_amount', 'due_date', 'paid_at'];
 
     public function account(){
         return $this->belongsTo(Account::class,'main_user_id','id');
