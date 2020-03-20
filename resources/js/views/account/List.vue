@@ -16,7 +16,7 @@
     <el-table
       v-loading="loading"
       :data="list"
-      row-key="id"
+      row-key="rowKey"
       border
       fit
       highlight-current-row
@@ -192,8 +192,13 @@ export default {
       this.loading = true;
       const { data, meta } = await accountResource.list(this.query);
       this.list = data;
+      var rowKey = 1;
       this.list.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
+        element['rowKey'] = rowKey++;
+        element.children.forEach((child) => {
+            child['rowKey'] = rowKey++;
+        });
       });
       this.total = meta.total;
       this.loading = false;

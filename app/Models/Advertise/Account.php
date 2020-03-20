@@ -88,10 +88,8 @@ class Account extends Model
      * @param $params
      */
     public function setBill($params){
-        $main_account_id = $this['main_user_id'] > 0 ? $this['main_user_id'] : $this['id'];
-        /** @var BillSet $bill_set */
-        BillSet::query()->updateOrCreate(
-            ['id' => $main_account_id],
+        $this->bill()->updateOrCreate(
+            [],
             [
                 'address' => Arr::get($params, 'address', ''),
                 'phone' => Arr::get($params, 'phone', ''),
