@@ -20,7 +20,7 @@ class AccountController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return 
      */
-    public function list(Request $request, $main_user_id = 0)
+    public function list(Request $request)
     {
         $searchParams = $request->all();
         $accountQuery = Account::query()->with('bill', 'advertisers', 'advertisers.bill');
@@ -28,10 +28,11 @@ class AccountController extends Controller
         $keyword = Arr::get($searchParams, 'keyword', '');
 
         if (!empty($keyword)) {
-            $accountQuery->where('realname', 'LIKE', '%' . $keyword . '%');
-            $accountQuery->where('email', 'LIKE', '%' . $keyword . '%');
+            $accountQuery->where(function($query) use($keyword) {
+                $query->where('realname', 'LIKE', '%' . $keyword . '%');
+                $query->orwhere('email', 'LIKE', '%' . $keyword . '%');
+            });
         }
-
         return AccountResource::collection($accountQuery->paginate($limit));
     }
 
