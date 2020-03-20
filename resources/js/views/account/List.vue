@@ -58,7 +58,7 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
-    <el-dialog :title="'Edit account'" :visible.sync="dialogFormVisible">
+    <el-dialog :title="isNewAccount?'Add Main Account':'Edit Account'" :visible.sync="dialogFormVisible">
       <div v-loading="accountCreating" class="form-container">
         <el-form ref="accountForm" :rules="rules" :model="currentAccount" label-position="left" label-width="150px" style="max-width: 500px;">
           <el-form-item :label="$t('email')" prop="email">
@@ -137,6 +137,7 @@ export default {
         daterange: [new Date(), new Date()],
       },
       newAccount: {},
+      isNewAccount: false,
       dialogFormVisible: false,
       passwordRequired: true,
       currentAccountId: 0,
@@ -203,6 +204,7 @@ export default {
     },
     handleCreate() {
       this.resetNewAccount();
+      this.isNewAccount = true;
       this.currentAccount = this.newAccount;
       this.passwordRequired = true;
       this.dialogFormVisible = true;
@@ -211,6 +213,7 @@ export default {
       });
     },
     handleEdit(account) {
+      this.isNewAccount = false;
       this.currentAccount = account;
       this.passwordRequired = false;
       this.dialogFormVisible = true;
