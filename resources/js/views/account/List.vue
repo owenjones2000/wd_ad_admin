@@ -197,7 +197,7 @@ export default {
         element['index'] = (page - 1) * limit + index + 1;
         element['rowKey'] = rowKey++;
         element.children.forEach((child) => {
-            child['rowKey'] = rowKey++;
+          child['rowKey'] = rowKey++;
         });
       });
       this.total = meta.total;
