@@ -19,7 +19,7 @@ class AccountResource extends JsonResource
             'email' => $this->email,
             'realname' => $this->realname,
             'status' => $this->status,
-            'children' => $this->children,
+            'children' => $this->advertisers,
             'bill' => $this->bill,
         ];
     }

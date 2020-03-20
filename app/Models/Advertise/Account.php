@@ -14,7 +14,7 @@ class Account extends Model
 
     protected $table = 'a_users';
 
-    protected $hidden = ['password_hash', 'remember_token', 'username'];
+    protected $hidden = ['password_hash', 'remember_token', 'username', 'pivot'];
     protected $fillable = ['username', 'email', 'realname'];
 
     /**
@@ -138,6 +138,17 @@ class Account extends Model
 
     public function children(){
         return $this->hasMany(Account::class, 'main_user_id', 'id');
+    }
+
+    /**
+     * 广告人员
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function advertisers(){
+        return $this->belongsToMany(Account::class, 'a_users_advertiser',
+            'main_user_id','advertiser_user_id',
+            'id', 'id'
+        );
     }
 
     public function permissions(){

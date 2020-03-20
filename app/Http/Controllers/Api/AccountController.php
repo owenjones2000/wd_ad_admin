@@ -23,7 +23,7 @@ class AccountController extends Controller
     public function list(Request $request, $main_user_id = 0)
     {
         $searchParams = $request->all();
-        $accountQuery = Account::query()->with('children', 'bill')->where('main_user_id', $main_user_id);
+        $accountQuery = Account::query()->with('advertisers', 'bill', 'advertisers.bill')->where('main_user_id', $main_user_id);
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
         $keyword = Arr::get($searchParams, 'keyword', '');
 
