@@ -41,6 +41,18 @@ class Account extends Model
 
             $account->fill($params);
             $account->saveOrFail();
+
+            if(empty($params['id'])){
+                $permission_keys = UaPermission::query()->pluck('id')->toArray();
+                $permissions = array_fill_keys(
+                    $permission_keys,
+                    [
+                        'main_user_id' => $account['id'],
+                        'model_type' => 'App\User',
+                    ]
+                );
+                $account->permissions()->sync($permissions);
+            }
             
             return $account;
         }, 3);
@@ -126,6 +138,14 @@ class Account extends Model
 
     public function children(){
         return $this->hasMany(Account::class, 'main_user_id', 'id');
+    }
+
+    public function permissions(){
+        return $this->belongsToMany(
+            UaPermission::class,
+            'ua_model_has_permissions',
+            'model_id',
+            'permission_id');
     }
     
     public static function rules($request_params = [])
