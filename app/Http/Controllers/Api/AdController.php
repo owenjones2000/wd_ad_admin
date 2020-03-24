@@ -22,8 +22,16 @@ class AdController extends Controller
         $end_date = date('Ymd', strtotime($range_date[1]??'now'));
         $ad_base_query = Ad::query()->where('campaign_id', $campaign_id);
         if(!empty($request->get('keyword'))){
-            $ad_base_query->where('name', 'like', '%'.$request->get('name').'%');
+            $like_keyword = '%'.$request->get('keyword').'%';
+            $ad_base_query->where('name', 'like', $like_keyword);
+            $ad_base_query->orWhereHas('campaign.advertiser', function($query) use($like_keyword) {
+                $query->where('realname', 'like', $like_keyword);
+            });
+            $ad_base_query->orWhereHas('campaign.app', function($query) use($like_keyword) {
+                $query->where('name', 'like', $like_keyword);
+            });
         }
+
         $ad_id_query = clone $ad_base_query;
         $ad_id_query->select('id');
         $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function($query) use($start_date, $end_date, $ad_id_query){
@@ -53,7 +61,7 @@ class AdController extends Controller
             ->keyBy('ad_id')
             ->toArray();
         $order_by_ids = implode(',', array_reverse(array_keys($advertise_kpi_list)));
-        $ad_base_query->with('campaign.app');
+        $ad_base_query->with('campaign.app', 'campaign.advertiser');
         if(!empty($order_by_ids)){
             $ad_base_query->orderByRaw(DB::raw("FIELD(id,{$order_by_ids}) desc"));
         }

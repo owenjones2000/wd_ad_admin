@@ -201,6 +201,13 @@ class Campaign extends Model
     }
 
     /**
+     * 广告主
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function advertiser(){
+        return $this->belongsTo(Account::class, 'main_user_id', 'id');
+    }
+    /**
      * 所属应用
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

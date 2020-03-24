@@ -22,7 +22,14 @@ class CampaignController extends Controller
         $campaign_base_query = Campaign::query();
 
         if(!empty($request->get('keyword'))){
-            $campaign_base_query->where('name', 'like', '%'.$request->get('keyword').'%');
+            $like_keyword = '%'.$request->get('keyword').'%';
+            $campaign_base_query->where('name', 'like', $like_keyword);
+            $campaign_base_query->orWhereHas('advertiser', function($query) use($like_keyword) {
+                $query->where('realname', 'like', $like_keyword);
+            });
+            $campaign_base_query->orWhereHas('app', function($query) use($like_keyword) {
+                $query->where('name', 'like', $like_keyword);
+            });
         }
 
         $campaign_id_query = clone $campaign_base_query;
@@ -55,7 +62,7 @@ class CampaignController extends Controller
             ->toArray();
         $order_by_ids = implode(',', array_reverse(array_keys($advertise_kpi_list)));
         $campaign_query = clone $campaign_base_query;
-        $campaign_query->with('app');
+        $campaign_query->with('app', 'advertiser');
         if(!empty($order_by_ids)){
             $campaign_query->orderByRaw(DB::raw("FIELD(id,{$order_by_ids}) desc"));
         }

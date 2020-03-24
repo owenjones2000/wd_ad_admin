@@ -39,6 +39,16 @@
           </router-link>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="App">
+        <template slot-scope="scope">
+          <span>{{ scope.row.app.name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Account">
+        <template slot-scope="scope">
+          <span>{{ scope.row.advertiser.realname }}</span>
+        </template>
+      </el-table-column>
 
       <el-table-column align="center" label="Budget">
         <template slot-scope="scope">

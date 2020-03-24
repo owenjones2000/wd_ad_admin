@@ -24,7 +24,7 @@ const acquisitionRoutes = {
       path: 'bill',
       component: () => import('@/views/bill/List'),
       name: 'BillList',
-      meta: { title: 'Bill', icon: 'dollar', permissions: ['advertise.bill'] },
+      meta: { title: 'Billing', icon: 'dollar', permissions: ['advertise.bill'] },
     },
     /** App managements */
     {
