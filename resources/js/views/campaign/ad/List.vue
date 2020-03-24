@@ -39,7 +39,7 @@
           <span>{{ scope.row.campaign.app.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Account">
+      <el-table-column align="center" label="Advertiser">
         <template slot-scope="scope">
           <span>{{ scope.row.campaign.advertiser.realname }}</span>
         </template>
