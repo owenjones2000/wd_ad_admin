@@ -19,7 +19,11 @@ class AppController extends Controller
         
         $app_base_query = App::query();
         if(!empty($request->get('keyword'))){
-            $app_base_query->where('name', 'like', '%'.$request->get('name').'%');
+            $like_keyword = '%'.$request->get('keyword').'%';
+            $app_base_query->where('name', 'like', $like_keyword);
+            $app_base_query->orWhereHas('advertiser', function($query) use($like_keyword) {
+                $query->where('realname', 'like', $like_keyword);
+            });
         }
         $app_id_query = clone $app_base_query;
         $app_id_query->select('id');
@@ -58,7 +62,7 @@ class AppController extends Controller
         if(!empty($order_by_ids)){
             $app_query->orderByRaw(DB::raw("FIELD(id,{$order_by_ids}) desc"));
         }
-        $app_list = $app_query->orderBy($request->get('field','name'),$request->get('order','desc'))
+        $app_list = $app_query->with('advertiser')->orderBy($request->get('field','name'),$request->get('order','desc'))
             ->paginate($request->get('limit',30));
 
         foreach($app_list as &$app){

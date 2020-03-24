@@ -69,4 +69,12 @@ class App extends Model
     public function getTrackAttribute(){
         return TrackPlatform::get($this['track_platform_id']);
     }
+
+    /**
+     * 广告主
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function advertiser(){
+        return $this->belongsTo(Account::class, 'main_user_id', 'id');
+    }
 }

@@ -35,6 +35,12 @@
         </template>
       </el-table-column>
 
+      <el-table-column align="center" label="Phone">
+        <template slot-scope="scope">
+          <span>{{ scope.row.phone }}</span>
+        </template>
+      </el-table-column>
+
       <el-table-column align="center" label="Status">
         <template slot-scope="scope">
           <el-link v-permission="['advertise.account.edit']" :type="scope.row.status ? 'success' : 'info'" size="small" icon="el-icon-s-custom" :underline="false" @click="handleStatus(scope.row)" />

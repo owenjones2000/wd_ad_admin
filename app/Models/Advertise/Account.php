@@ -14,7 +14,8 @@ class Account extends Model
 
     protected $table = 'a_users';
 
-    protected $hidden = ['password_hash', 'remember_token', 'username', 'pivot'];
+    protected $hidden = ['name', 'password_hash', 'remember_token', 'username', 'pivot',
+        'main_user_id', 'deleted_at'];
     protected $fillable = ['username', 'email', 'realname'];
 
     /**

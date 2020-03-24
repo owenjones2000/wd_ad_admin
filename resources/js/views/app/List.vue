@@ -99,6 +99,11 @@
           <span>{{ scope.row.bundle_id }}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="Advertiser">
+        <template slot-scope="scope">
+          <span>{{ scope.row.advertiser.realname }}</span>
+        </template>
+      </el-table-column>
 
       <el-table-column align="center" label="Requests">
         <template slot-scope="scope">
