@@ -39,81 +39,10 @@
           </router-link>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="App">
-        <template slot-scope="scope">
-          <span>{{ scope.row.app.name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Advertiser">
-        <template slot-scope="scope">
-          <span>{{ scope.row.advertiser.realname }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Budget">
-        <template slot-scope="scope">
-          <span>${{ scope.row.default_budget }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column
-        prop="created_at"
-        :formatter="dateFormat"
-        label="Created"
-        align="center"
-        width="100"
-      />
-
-      <el-table-column align="center" label="Requests">
-        <template slot-scope="scope">
-          <span>{{ scope.row.kpi&&scope.row.kpi.requests ? scope.row.kpi.requests : 0 }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Impressions">
-        <template slot-scope="scope">
-          <span>{{ scope.row.kpi&&scope.row.kpi.impressions ? scope.row.kpi.impressions : 0 }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Clicks">
-        <template slot-scope="scope">
-          <span>{{ scope.row.kpi&&scope.row.kpi.clicks ? scope.row.kpi.clicks : 0 }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Installs">
-        <template slot-scope="scope">
-          <span>{{ scope.row.kpi&&scope.row.kpi.installs ? scope.row.kpi.installs : 0 }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="CTR">
-        <template slot-scope="scope">
-          <span>{{ scope.row.kpi&&scope.row.kpi.ctr ? scope.row.kpi.ctr : '0.00' }}%</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="CVR">
-        <template slot-scope="scope">
-          <span>{{ scope.row.kpi&&scope.row.kpi.cvr ? scope.row.kpi.cvr : '0.00' }}%</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="IR">
-        <template slot-scope="scope">
-          <span>{{ scope.row.kpi&&scope.row.kpi.ir ? scope.row.kpi.ir : '0.00' }}%</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Spend">
-        <template slot-scope="scope">
-          <span>${{ scope.row.kpi&&scope.row.kpi.spend ? scope.row.kpi.spend : '0.00' }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="eCpi">
-        <template slot-scope="scope">
-          <span>${{ scope.row.kpi&&scope.row.kpi.ecpi ? scope.row.kpi.ecpi : '0.00' }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="eCpm">
-        <template slot-scope="scope">
-          <span>${{ scope.row.kpi&&scope.row.kpi.ecpm ? scope.row.kpi.ecpm : '0.00' }}</span>
-        </template>
-      </el-table-column>
+      <el-table-column prop="app.name" align="center" label="App" />
+      <el-table-column prop="advertiser.realname" align="center" label="Advertiser" />
+      <el-table-column prop="default_budget" align="center" label="Budget" />
+      <el-table-column prop="created_at" :formatter="dateFormat" label="Created" align="center" width="100" />
       <el-table-column align="center" label="Status">
         <template slot-scope="scope">
           <el-icon :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}" size="small" :name="scope.row.status ? 'video-play' : 'video-pause'" />
@@ -121,7 +50,18 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Actions" width="100">
+      <el-table-column prop="kpi.requests" :formatter="numberFormat" align="center" label="Requests" />
+      <el-table-column prop="kpi.impressions" :formatter="numberFormat" align="center" label="Impressions" sortable />
+      <el-table-column prop="kpi.impressions" :formatter="numberFormat" align="center" label="Clicks" />
+      <el-table-column prop="kpi.installs" :formatter="numberFormat" align="center" label="Installs" />
+      <el-table-column prop="kpi.ctr" :formatter="numberFormat" align="center" label="CTR" />
+      <el-table-column prop="kpi.cvr" :formatter="numberFormat" align="center" label="CVR" />
+      <el-table-column prop="kpi.ir" :formatter="numberFormat" align="center" label="IR" />
+      <el-table-column prop="kpi.spend" :formatter="numberFormat" align="center" label="Spend" />
+      <el-table-column prop="kpi.ecpi" :formatter="numberFormat" align="center" label="eCpi" />
+      <el-table-column prop="kpi.ecpm" :formatter="numberFormat" align="center" label="eCpm" />
+
+      <el-table-column align="center" label="Actions" width="100" fixed="right">
         <template slot-scope="scope">
           <router-link class="link-type" :to="'/acquisition/campaign/'+scope.row.id+'/channel'">Sources</router-link>
           <!--<el-link v-permission="['advertise.campaign.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />-->
@@ -388,6 +328,9 @@ export default {
     dateFormat(row, column, cellValue, index){
       var date = row[column.property];
       return date.substr(0, 10);
+    },
+    numberFormat(row, column, cellValue, index){
+      return cellValue !== undefined ? cellValue : '-';
     },
   },
 };

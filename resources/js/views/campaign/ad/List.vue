@@ -44,7 +44,6 @@
           <span>{{ scope.row.campaign.advertiser.realname }}</span>
         </template>
       </el-table-column>
-      
       <el-table-column align="center" label="Preview">
         <template slot-scope="scope">
           <el-link v-permission="['advertise.campaign.ad']" :type="scope.row.is_upload_completed ? 'success' : 'warning'" size="medium" icon="el-icon-view" :underline="false" @click="handlePreview(scope.row);" />
