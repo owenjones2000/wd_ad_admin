@@ -319,13 +319,13 @@ export default {
       return date.substr(0, 10);
     },
     numberFormat(row, column, cellValue, index){
-      return cellValue !== undefined ? cellValue : '-';
+      return (cellValue === undefined || cellValue === null) ? '-' : cellValue;
     },
     moneyFormat(row, column, cellValue, index){
-      return cellValue !== undefined ? '$' + cellValue : '-';
+      return (cellValue === undefined || cellValue === null) ? '-' : '$' + cellValue;
     },
     percentageFormat(row, column, cellValue, index){
-      return cellValue !== undefined ? cellValue + '%' : '-';
+      return (cellValue === undefined || cellValue === null) ? '-' : cellValue + '%';
     },
   },
 };
