@@ -52,7 +52,7 @@
 
       <el-table-column prop="kpi.requests" :formatter="numberFormat" align="center" label="Requests" sortable="custom" />
       <el-table-column prop="kpi.impressions" :formatter="numberFormat" align="center" label="Impressions" sortable="custom" />
-      <el-table-column prop="kpi.impressions" :formatter="numberFormat" align="center" label="Clicks" sortable="custom" />
+      <el-table-column prop="kpi.clicks" :formatter="numberFormat" align="center" label="Clicks" sortable="custom" />
       <el-table-column prop="kpi.installs" :formatter="numberFormat" align="center" label="Installs" sortable="custom" />
       <el-table-column prop="kpi.ctr" :formatter="percentageFormat" align="center" label="CTR" sortable="custom" />
       <el-table-column prop="kpi.cvr" :formatter="percentageFormat" align="center" label="CVR" sortable="custom" />
