@@ -25,7 +25,7 @@
       <!--</el-button>-->
     </div>
 
-    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
+    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%" @sort-change="handleSort">
       <!--<el-table-column align="center" label="ID" width="80">-->
       <!--  <template slot-scope="scope">-->
       <!--    <span>{{ scope.row.id }}</span>-->
@@ -39,8 +39,8 @@
           </router-link>
         </template>
       </el-table-column>
-      <el-table-column prop="app.name" align="center" label="App" />
-      <el-table-column prop="advertiser.realname" align="center" label="Advertiser" />
+      <el-table-column prop="app.name" align="center" label="App" fixed />
+      <el-table-column prop="advertiser.realname" align="center" label="Advertiser" fixed />
       <el-table-column prop="default_budget" align="center" label="Budget" />
       <el-table-column prop="created_at" :formatter="dateFormat" label="Created" align="center" width="100" />
       <el-table-column align="center" label="Status">
@@ -50,16 +50,16 @@
         </template>
       </el-table-column>
 
-      <el-table-column prop="kpi.requests" :formatter="numberFormat" align="center" label="Requests" />
-      <el-table-column prop="kpi.impressions" :formatter="numberFormat" align="center" label="Impressions" sortable />
-      <el-table-column prop="kpi.impressions" :formatter="numberFormat" align="center" label="Clicks" />
-      <el-table-column prop="kpi.installs" :formatter="numberFormat" align="center" label="Installs" />
-      <el-table-column prop="kpi.ctr" :formatter="numberFormat" align="center" label="CTR" />
-      <el-table-column prop="kpi.cvr" :formatter="numberFormat" align="center" label="CVR" />
-      <el-table-column prop="kpi.ir" :formatter="numberFormat" align="center" label="IR" />
-      <el-table-column prop="kpi.spend" :formatter="numberFormat" align="center" label="Spend" />
-      <el-table-column prop="kpi.ecpi" :formatter="numberFormat" align="center" label="eCpi" />
-      <el-table-column prop="kpi.ecpm" :formatter="numberFormat" align="center" label="eCpm" />
+      <el-table-column prop="kpi.requests" :formatter="numberFormat" align="center" label="Requests" sortable="custom" />
+      <el-table-column prop="kpi.impressions" :formatter="numberFormat" align="center" label="Impressions" sortable="custom" />
+      <el-table-column prop="kpi.impressions" :formatter="numberFormat" align="center" label="Clicks" sortable="custom" />
+      <el-table-column prop="kpi.installs" :formatter="numberFormat" align="center" label="Installs" sortable="custom" />
+      <el-table-column prop="kpi.ctr" :formatter="numberFormat" align="center" label="CTR" sortable="custom" />
+      <el-table-column prop="kpi.cvr" :formatter="numberFormat" align="center" label="CVR" sortable="custom" />
+      <el-table-column prop="kpi.ir" :formatter="numberFormat" align="center" label="IR" sortable="custom" />
+      <el-table-column prop="kpi.spend" :formatter="numberFormat" align="center" label="Spend" sortable="custom" />
+      <el-table-column prop="kpi.ecpi" :formatter="numberFormat" align="center" label="eCpi" sortable="custom" />
+      <el-table-column prop="kpi.ecpm" :formatter="numberFormat" align="center" label="eCpm" sortable="custom" />
 
       <el-table-column align="center" label="Actions" width="100" fixed="right">
         <template slot-scope="scope">
@@ -204,6 +204,23 @@ export default {
       this.loading = false;
     },
     handleFilter() {
+      this.query.page = 1;
+      this.getList();
+    },
+    handleSort(column){
+      switch(column.order){
+        case 'ascending':
+          this.query.field = column.prop;
+          this.query.order = 'asc';
+          break;
+        case 'descending':
+          this.query.field = column.prop;
+          this.query.order = 'desc';
+          break;
+        default:
+          delete this.query.field;
+          delete this.query.order;
+      }
       this.query.page = 1;
       this.getList();
     },
