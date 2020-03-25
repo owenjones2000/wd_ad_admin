@@ -54,12 +54,12 @@
       <el-table-column prop="kpi.impressions" :formatter="numberFormat" align="center" label="Impressions" sortable="custom" />
       <el-table-column prop="kpi.impressions" :formatter="numberFormat" align="center" label="Clicks" sortable="custom" />
       <el-table-column prop="kpi.installs" :formatter="numberFormat" align="center" label="Installs" sortable="custom" />
-      <el-table-column prop="kpi.ctr" :formatter="numberFormat" align="center" label="CTR" sortable="custom" />
-      <el-table-column prop="kpi.cvr" :formatter="numberFormat" align="center" label="CVR" sortable="custom" />
-      <el-table-column prop="kpi.ir" :formatter="numberFormat" align="center" label="IR" sortable="custom" />
-      <el-table-column prop="kpi.spend" :formatter="numberFormat" align="center" label="Spend" sortable="custom" />
-      <el-table-column prop="kpi.ecpi" :formatter="numberFormat" align="center" label="eCpi" sortable="custom" />
-      <el-table-column prop="kpi.ecpm" :formatter="numberFormat" align="center" label="eCpm" sortable="custom" />
+      <el-table-column prop="kpi.ctr" :formatter="percentageFormat" align="center" label="CTR" sortable="custom" />
+      <el-table-column prop="kpi.cvr" :formatter="percentageFormat" align="center" label="CVR" sortable="custom" />
+      <el-table-column prop="kpi.ir" :formatter="percentageFormat" align="center" label="IR" sortable="custom" />
+      <el-table-column prop="kpi.spend" :formatter="moneyFormat" align="center" label="Spend" sortable="custom" />
+      <el-table-column prop="kpi.ecpi" :formatter="moneyFormat" align="center" label="eCpi" sortable="custom" />
+      <el-table-column prop="kpi.ecpm" :formatter="moneyFormat" align="center" label="eCpm" sortable="custom" />
 
       <el-table-column align="center" label="Actions" width="100" fixed="right">
         <template slot-scope="scope">
@@ -348,6 +348,12 @@ export default {
     },
     numberFormat(row, column, cellValue, index){
       return cellValue !== undefined ? cellValue : '-';
+    },
+    moneyFormat(row, column, cellValue, index){
+      return cellValue !== undefined ? '$' + cellValue : '-';
+    },
+    percentageFormat(row, column, cellValue, index){
+      return cellValue !== undefined ? cellValue + '%' : '-';
     },
   },
 };
