@@ -208,7 +208,7 @@ export default {
       this.getList();
     },
     handleSort(column){
-      switch(column.order){
+      switch (column.order) {
         case 'ascending':
           this.query.field = column.prop;
           this.query.order = 'asc';

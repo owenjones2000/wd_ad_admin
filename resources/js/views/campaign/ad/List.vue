@@ -22,41 +22,23 @@
       <!--</el-button>-->
     </div>
 
-    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
+    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%" @sort-change="handleSort">
       <!--<el-table-column align="center" label="ID" width="80">-->
       <!--  <template slot-scope="scope">-->
       <!--    <span>{{ scope.row.id }}</span>-->
       <!--  </template>-->
       <!--</el-table-column>-->
 
-      <el-table-column label="Ad" width="300px" fixed>
-        <template slot-scope="scope">
-          <span>{{ scope.row.name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="App">
-        <template slot-scope="scope">
-          <span>{{ scope.row.campaign.app.name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Advertiser">
-        <template slot-scope="scope">
-          <span>{{ scope.row.campaign.advertiser.realname }}</span>
-        </template>
-      </el-table-column>
+      <el-table-column prop="name" label="Ad" width="300px" fixed />
+      <el-table-column prop="campaign.app.name" align="center" label="App" fixed />
+      <el-table-column prop="campaign.advertiser.realname" align="center" label="Advertiser" fixed />
       <el-table-column align="center" label="Preview">
         <template slot-scope="scope">
           <el-link v-permission="['advertise.campaign.ad']" :type="scope.row.is_upload_completed ? 'success' : 'warning'" size="medium" icon="el-icon-view" :underline="false" @click="handlePreview(scope.row);" />
         </template>
       </el-table-column>
 
-      <el-table-column
-        prop="created_at"
-        :formatter="dateFormat"
-        label="Created"
-        align="center"
-        width="100"
-      />
+      <el-table-column prop="created_at" :formatter="dateFormat" label="Created" align="center" width="100" />
 
       <el-table-column align="center" label="Status">
         <template slot-scope="scope">
@@ -64,62 +46,23 @@
           <el-link v-permission="['advertise.campaign.ad.edit']" :type="scope.row.is_admin_disable ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleStatus(scope.row)" />
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Actions" width="150px">
+
+      <el-table-column prop="kpi.requests" :formatter="numberFormat" align="center" label="Requests" sortable="custom" />
+      <el-table-column prop="kpi.impressions" :formatter="numberFormat" align="center" label="Impressions" sortable="custom" />
+      <el-table-column prop="kpi.clicks" :formatter="numberFormat" align="center" label="Clicks" sortable="custom" />
+      <el-table-column prop="kpi.installs" :formatter="numberFormat" align="center" label="Installs" sortable="custom" />
+      <el-table-column prop="kpi.ctr" :formatter="numberFormat" align="center" label="CTR" sortable="custom" />
+      <el-table-column prop="kpi.cvr" :formatter="numberFormat" align="center" label="CVR" sortable="custom" />
+      <el-table-column prop="kpi.ir" :formatter="numberFormat" align="center" label="IR" sortable="custom" />
+      <el-table-column prop="kpi.spend" :formatter="numberFormat" align="center" label="Spend" sortable="custom" />
+      <el-table-column prop="kpi.ecpi" :formatter="numberFormat" align="center" label="eCpi" sortable="custom" />
+      <el-table-column prop="kpi.ecpm" :formatter="numberFormat" align="center" label="eCpm" sortable="custom" />
+
+      <el-table-column align="center" label="Actions" width="150px" fixed="right">
         <template slot-scope="scope">
           <el-button v-if="scope.row.need_review" v-permission="['advertise.campaign.ad.edit']" type="primary" size="small" icon="el-icon-finished" @click="handleReview(scope.row);">
             Review
           </el-button>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Requests">
-        <template slot-scope="scope">
-          <span>{{ scope.row.kpi&&scope.row.kpi.requests ? scope.row.kpi.requests : 0 }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Impressions">
-        <template slot-scope="scope">
-          <span>{{ scope.row.kpi&&scope.row.kpi.impressions ? scope.row.kpi.impressions : 0 }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Clicks">
-        <template slot-scope="scope">
-          <span>{{ scope.row.kpi&&scope.row.kpi.clicks ? scope.row.kpi.clicks : 0 }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Installs">
-        <template slot-scope="scope">
-          <span>{{ scope.row.kpi&&scope.row.kpi.installs ? scope.row.kpi.installs : 0 }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="CTR">
-        <template slot-scope="scope">
-          <span>{{ scope.row.kpi&&scope.row.kpi.ctr ? scope.row.kpi.ctr : '0.00' }}%</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="CVR">
-        <template slot-scope="scope">
-          <span>{{ scope.row.kpi&&scope.row.kpi.cvr ? scope.row.kpi.cvr : '0.00' }}%</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="IR">
-        <template slot-scope="scope">
-          <span>{{ scope.row.kpi&&scope.row.kpi.ir ? scope.row.kpi.ir : '0.00' }}%</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Spend">
-        <template slot-scope="scope">
-          <span>${{ scope.row.kpi&&scope.row.kpi.spend ? scope.row.kpi.spend : '0.00' }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="eCpi">
-        <template slot-scope="scope">
-          <span>${{ scope.row.kpi&&scope.row.kpi.ecpi ? scope.row.kpi.ecpi : '0.00' }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="eCpm">
-        <template slot-scope="scope">
-          <span>${{ scope.row.kpi&&scope.row.kpi.ecpm ? scope.row.kpi.ecpm : '0.00' }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -248,6 +191,23 @@ export default {
       this.query.page = 1;
       this.getList();
     },
+    handleSort(column){
+      switch (column.order) {
+        case 'ascending':
+          this.query.field = column.prop;
+          this.query.order = 'asc';
+          break;
+        case 'descending':
+          this.query.field = column.prop;
+          this.query.order = 'desc';
+          break;
+        default:
+          delete this.query.field;
+          delete this.query.order;
+      }
+      this.query.page = 1;
+      this.getList();
+    },
     handlePreview(ad) {
       this.currentAd = ad;
       this.previewDialogFormVisible = true;
@@ -357,6 +317,9 @@ export default {
     dateFormat(row, column, cellValue, index){
       var date = row[column.property];
       return date.substr(0, 10);
+    },
+    numberFormat(row, column, cellValue, index){
+      return cellValue !== undefined ? cellValue : '-';
     },
   },
 };
