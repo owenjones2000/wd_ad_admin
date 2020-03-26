@@ -94,7 +94,7 @@ class CampaignController extends Controller
         $range_date = $request->get('daterange');
         $start_date = date('Ymd', strtotime($range_date[0]??'now'));
         $end_date = date('Ymd', strtotime($range_date[1]??'now'));
-        $order_by = explode('.', $request->get('field', 'status'));
+        $order_by = explode('.', $request->get('field', 'name'));
         $order_sort = $request->get('order', 'desc');
 
         $channel_base_query = Channel::query();
