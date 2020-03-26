@@ -29,13 +29,13 @@
 
       <el-table-column align="center" label="Status">
         <template slot-scope="scope">
-          <el-link v-permission="['advertise.account.edit']" :type="scope.row.status ? 'success' : 'info'" size="small" icon="el-icon-s-custom" :underline="false" @click="handleStatus(scope.row)" />
+          <el-link :type="scope.row.status ? 'success' : 'info'" size="small" icon="el-icon-s-custom" :underline="false" @click="handleStatus(scope.row)" />
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="Advertising Status">
         <template slot-scope="scope">
-          <el-link v-permission="['advertise.account.edit']" :type="scope.row.isAdvertiseEnabled ? 'success' : 'info'" size="small" icon="el-icon-upload" :underline="false" @click="handleAdvertisingStatus(scope.row)" />
+          <el-link :type="scope.row.isAdvertiseEnabled ? 'success' : 'info'" size="small" icon="el-icon-upload" :underline="false" @click="handleAdvertisingStatus(scope.row)"/>
         </template>
       </el-table-column>
 
@@ -247,6 +247,13 @@ export default {
       });
     },
     handleStatus(account) {
+      if(!checkPermission(['advertise.account.edit'])){
+        this.$message({
+          type: 'warning',
+          message: 'No permission',
+        });
+        return;
+      }
       var displayName = account.realname + '(' + account.email + ')';
       this.$confirm('This will ' + (account.status ? 'disable' : 'enable') + ' account ' + displayName + '. Continue?', 'Warning', {
         confirmButtonText: 'OK',
@@ -279,6 +286,13 @@ export default {
       });
     },
     handleAdvertisingStatus(account) {
+      if(!checkPermission(['advertise.account.edit'])){
+        this.$message({
+          type: 'warning',
+          message: 'No permission',
+        });
+        return;
+      }
       var displayName = account.realname + '(' + account.email + ')';
       this.$confirm('This will ' + (account.isAdvertiseEnabled ? 'disable' : 'enable') + ' advertising for account ' + displayName + '. Continue?', 'Warning', {
         confirmButtonText: 'OK',
