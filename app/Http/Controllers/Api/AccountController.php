@@ -33,6 +33,7 @@ class AccountController extends Controller
                 $query->orwhere('email', 'LIKE', '%' . $keyword . '%');
             });
         }
+        $accountQuery->orderBy('isAdvertiseEnabled', 'desc');
         return AccountResource::collection($accountQuery->paginate($limit));
     }
 
@@ -76,6 +77,34 @@ class AccountController extends Controller
         /** @var Account $account */
         $account = Account::findOrFail($id);
         $account->disable();
+        return response()->json(['code'=>0,'msg'=>'Disabled']);
+    }
+
+    /**
+     * 启用广告投放
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
+    public function enableAdvertising($id)
+    {
+        /** @var Account $account */
+        $account = Account::findOrFail($id);
+        $account->enableAdvertising();
+        return response()->json(['code'=>0,'msg'=>'Enabled']);
+    }
+
+    /**
+     * 禁用广告投放
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
+    public function disableAdvertising($id)
+    {
+        /** @var Account $account */
+        $account = Account::findOrFail($id);
+        $account->disableAdvertising();
         return response()->json(['code'=>0,'msg'=>'Disabled']);
     }
 

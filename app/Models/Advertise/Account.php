@@ -84,6 +84,27 @@ class Account extends Model
     }
 
     /**
+     * 启用广告投放
+     * @throws \Throwable
+     */
+    public function enableAdvertising(){
+        if(!$this->isAdvertiseEnabled){
+            $this->isAdvertiseEnabled = true;
+            $this->saveOrFail();
+        }
+    }
+
+    /**
+     * 停用广告投放
+     * @throws \Throwable
+     */
+    public function disableAdvertising(){
+        if($this->isAdvertiseEnabled){
+            $this->isAdvertiseEnabled = false;
+            $this->saveOrFail();
+        }
+    }
+    /**
      * 设置账单配置
      *
      * @param $params

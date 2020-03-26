@@ -36,6 +36,8 @@ Route::group(['middleware' => 'api'], function () {
             Route::post('{id?}','AccountController@save')->name('account.save')->middleware('permission:advertise.account.edit');
             Route::post('{id}/enable', 'AccountController@enable')->name('account.enable')->middleware('permission:advertise.account.edit');
             Route::post('{id}/disable', 'AccountController@disable')->name('account.disable')->middleware('permission:advertise.account.edit');
+            Route::post('{id}/advertising/enable', 'AccountController@enableAdvertising')->name('account.advertising.enable')->middleware('permission:advertise.account.edit');
+            Route::post('{id}/advertising/disable', 'AccountController@disableAdvertising')->name('account.advertising.disable')->middleware('permission:advertise.account.edit');
             Route::post('{id}/bill', 'AccountController@setBill')->name('account.bill')->middleware('permission:advertise.account.edit');
 
             //删除

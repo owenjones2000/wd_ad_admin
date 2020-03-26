@@ -23,27 +23,19 @@
       style="width: 100%"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
-      <el-table-column align="left" label="Email">
-        <template slot-scope="scope">
-          <span>{{ scope.row.email }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Real Name">
-        <template slot-scope="scope">
-          <span>{{ scope.row.realname }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Phone">
-        <template slot-scope="scope">
-          <span>{{ scope.row.phone }}</span>
-        </template>
-      </el-table-column>
+      <el-table-column prop="email" align="left" label="Email" />
+      <el-table-column prop="realname" align="center" label="Real Name" />
+      <el-table-column prop="phone" align="center" label="Phone" />
 
       <el-table-column align="center" label="Status">
         <template slot-scope="scope">
           <el-link v-permission="['advertise.account.edit']" :type="scope.row.status ? 'success' : 'info'" size="small" icon="el-icon-s-custom" :underline="false" @click="handleStatus(scope.row)" />
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="Advertising Status">
+        <template slot-scope="scope">
+          <el-link v-permission="['advertise.account.edit']" :type="scope.row.isAdvertiseEnabled ? 'success' : 'info'" size="small" icon="el-icon-upload" :underline="false" @click="handleAdvertisingStatus(scope.row)" />
         </template>
       </el-table-column>
 
@@ -278,6 +270,38 @@ export default {
               message: 'Account ' + displayName + ' enabled',
             });
             account.status = true;
+          }).catch(error => {
+            console.log(error);
+          });
+        }
+      }).catch(error => {
+        console.log(error);
+      });
+    },
+    handleAdvertisingStatus(account) {
+      var displayName = account.realname + '(' + account.email + ')';
+      this.$confirm('This will ' + (account.isAdvertiseEnabled ? 'disable' : 'enable') + ' advertising for account ' + displayName + '. Continue?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }).then(() => {
+        if (account.isAdvertiseEnabled) {
+          accountResource.disableAdvertising(account.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'Advertising of Account ' + displayName + ' disabled',
+            });
+            account.isAdvertiseEnabled = false;
+          }).catch(error => {
+            console.log(error);
+          });
+        } else {
+          accountResource.enableAdvertising(account.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'Advertising of Account ' + displayName + ' enabled',
+            });
+            account.isAdvertiseEnabled = true;
           }).catch(error => {
             console.log(error);
           });

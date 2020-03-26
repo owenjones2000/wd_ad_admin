@@ -43,11 +43,9 @@ class UserController extends Controller
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
         $role = Arr::get($searchParams, 'role', '');
         $keyword = Arr::get($searchParams, 'keyword', '');
-
         if (!empty($role)) {
             $userQuery->whereHas('roles', function($q) use ($role) { $q->where('name', $role); });
         }
-
         if (!empty($keyword)) {
             $userQuery->where('name', 'LIKE', '%' . $keyword . '%');
             $userQuery->where('email', 'LIKE', '%' . $keyword . '%');
