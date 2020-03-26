@@ -94,6 +94,8 @@ class CampaignController extends Controller
         $range_date = $request->get('daterange');
         $start_date = date('Ymd', strtotime($range_date[0]??'now'));
         $end_date = date('Ymd', strtotime($range_date[1]??'now'));
+        $order_by = explode('.', $request->get('field', 'status'));
+        $order_sort = $request->get('order', 'desc');
 
         $channel_base_query = Channel::query();
         if(!empty($request->get('keyword'))){
@@ -127,6 +129,9 @@ class CampaignController extends Controller
             'campaign_id'
         ]);
         $advertise_kpi_query->groupBy('target_app_id');
+        if($order_by[0] === 'kpi' && isset($order_by[1])){
+            $advertise_kpi_query->orderBy($order_by[1], $order_sort);
+        }
 
         $advertise_kpi_list = $advertise_kpi_query
             ->orderBy('spend','desc')
@@ -140,8 +145,10 @@ class CampaignController extends Controller
         if(!empty($order_by_ids)){
             $channel_query->orderByRaw(DB::raw("FIELD(id,{$order_by_ids}) desc"));
         }
-        $channel_list = $channel_query->orderBy($request->get('field','name'),$request->get('order','desc'))
-            ->paginate($request->get('limit',30));
+        if($order_by[0] !== 'kpi'){
+            $channel_query->orderBy($order_by[0], $order_sort);
+        }
+        $channel_list = $channel_query->paginate($request->get('limit',30));
 
         foreach($channel_list as $index => &$channel){
             if(isset($advertise_kpi_list[$channel['id']])){
