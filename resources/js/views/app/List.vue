@@ -49,22 +49,9 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Name">
-        <template slot-scope="scope">
-          <span>{{ scope.row.name }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Package">
-        <template slot-scope="scope">
-          <span>{{ scope.row.bundle_id }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Advertiser">
-        <template slot-scope="scope">
-          <span>{{ scope.row.advertiser.realname }}</span>
-        </template>
-      </el-table-column>
+      <el-table-column prop="name" align="center" label="Name" />
+      <el-table-column prop="bundle_id" align="center" label="Package" />
+      <el-table-column prop="advertiser.realname" align="center" label="Advertiser" />
 
       <el-table-column prop="kpi.requests" :formatter="numberFormat" align="center" label="Requests" sortable="custom" />
       <el-table-column prop="kpi.impressions" :formatter="numberFormat" align="center" label="Impressions" sortable="custom" />
