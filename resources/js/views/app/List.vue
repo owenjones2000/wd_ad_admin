@@ -25,7 +25,7 @@
       <!--</el-button>-->
     </div>
 
-    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%" @expand-change="handleExpandChange">
+    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%" @expand-change="handleExpandChange" @sort-change="handleSort">
       <el-table-column align="center" label="" width="80" type="expand">
         <template slot-scope="scope">
           <el-table v-loading="scope.row.loading" :data="scope.row.children" border fit highlight-current-row style="width: 100%">
@@ -34,56 +34,17 @@
                 <span>{{ children.row.date }}</span>
               </template>
             </el-table-column>
-            <el-table-column align="center" label="Requests">
-              <template slot-scope="children">
-                <span>{{ children.row.requests ? children.row.requests : 0 }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column align="center" label="Impressions">
-              <template slot-scope="children">
-                <span>{{ children.row.impressions ? children.row.impressions : 0 }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column align="center" label="Clicks">
-              <template slot-scope="children">
-                <span>{{ children.row.clicks ? children.row.clicks : 0 }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column align="center" label="Installs">
-              <template slot-scope="children">
-                <span>{{ children.row.installs ? children.row.installs : 0 }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column align="center" label="CTR">
-              <template slot-scope="children">
-                <span>{{ children.row.ctr ? children.row.ctr : '0.00' }}%</span>
-              </template>
-            </el-table-column>
-            <el-table-column align="center" label="CVR">
-              <template slot-scope="children">
-                <span>{{ children.row.cvr ? children.row.cvr : '0.00' }}%</span>
-              </template>
-            </el-table-column>
-            <el-table-column align="center" label="IR">
-              <template slot-scope="children">
-                <span>{{ children.row.ir ? children.row.ir : '0.00' }}%</span>
-              </template>
-            </el-table-column>
-            <el-table-column align="center" label="Spend">
-              <template slot-scope="children">
-                <span>${{ children.row.spend ? children.row.spend : '0.00' }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column align="center" label="eCpi">
-              <template slot-scope="children">
-                <span>${{ children.row.ecpi ? children.row.ecpi : '0.00' }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column align="center" label="eCpm">
-              <template slot-scope="children">
-                <span>${{ children.row.ecpm ? children.row.ecpm : '0.00' }}</span>
-              </template>
-            </el-table-column>
+            <el-table-column prop="requests" :formatter="numberFormat" align="center" label="Requests" />
+            <el-table-column prop="impressions" :formatter="numberFormat" align="center" label="Impressions" />
+            <el-table-column prop="clicks" :formatter="numberFormat" align="center" label="Clicks" />
+            <el-table-column prop="installs" :formatter="numberFormat" align="center" label="Installs" />
+            <el-table-column prop="ctr" :formatter="percentageFormat" align="center" label="CTR" />
+            <el-table-column prop="cvr" :formatter="percentageFormat" align="center" label="CVR" />
+            <el-table-column prop="ir" :formatter="percentageFormat" align="center" label="IR" />
+            <el-table-column prop="spend" :formatter="moneyFormat" align="center" label="Spend" />
+            <el-table-column prop="ecpi" :formatter="moneyFormat" align="center" label="eCpi" />
+            <el-table-column prop="ecpm" :formatter="moneyFormat" align="center" label="eCpm" />
+
           </el-table>
         </template>
       </el-table-column>
@@ -105,56 +66,16 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Requests">
-        <template slot-scope="scope">
-          <span>{{ scope.row.kpi&&scope.row.kpi.requests ? scope.row.kpi.requests : 0 }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Impressions">
-        <template slot-scope="scope">
-          <span>{{ scope.row.kpi&&scope.row.kpi.impressions ? scope.row.kpi.impressions : 0 }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Clicks">
-        <template slot-scope="scope">
-          <span>{{ scope.row.kpi&&scope.row.kpi.clicks ? scope.row.kpi.clicks : 0 }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Installs">
-        <template slot-scope="scope">
-          <span>{{ scope.row.kpi&&scope.row.kpi.installs ? scope.row.kpi.installs : 0 }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="CTR">
-        <template slot-scope="scope">
-          <span>{{ scope.row.kpi&&scope.row.kpi.ctr ? scope.row.kpi.ctr : '0.00' }}%</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="CVR">
-        <template slot-scope="scope">
-          <span>{{ scope.row.kpi&&scope.row.kpi.cvr ? scope.row.kpi.cvr : '0.00' }}%</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="IR">
-        <template slot-scope="scope">
-          <span>{{ scope.row.kpi&&scope.row.kpi.ir ? scope.row.kpi.ir : '0.00' }}%</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Spend">
-        <template slot-scope="scope">
-          <span>${{ scope.row.kpi&&scope.row.kpi.spend ? scope.row.kpi.spend : '0.00' }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="eCpi">
-        <template slot-scope="scope">
-          <span>${{ scope.row.kpi&&scope.row.kpi.ecpi ? scope.row.kpi.ecpi : '0.00' }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="eCpm">
-        <template slot-scope="scope">
-          <span>${{ scope.row.kpi&&scope.row.kpi.ecpm ? scope.row.kpi.ecpm : '0.00' }}</span>
-        </template>
-      </el-table-column>
+      <el-table-column prop="kpi.requests" :formatter="numberFormat" align="center" label="Requests" sortable="custom" />
+      <el-table-column prop="kpi.impressions" :formatter="numberFormat" align="center" label="Impressions" sortable="custom" />
+      <el-table-column prop="kpi.clicks" :formatter="numberFormat" align="center" label="Clicks" sortable="custom" />
+      <el-table-column prop="kpi.installs" :formatter="numberFormat" align="center" label="Installs" sortable="custom" />
+      <el-table-column prop="kpi.ctr" :formatter="percentageFormat" align="center" label="CTR" sortable="custom" />
+      <el-table-column prop="kpi.cvr" :formatter="percentageFormat" align="center" label="CVR" sortable="custom" />
+      <el-table-column prop="kpi.ir" :formatter="percentageFormat" align="center" label="IR" sortable="custom" />
+      <el-table-column prop="kpi.spend" :formatter="moneyFormat" align="center" label="Spend" sortable="custom" />
+      <el-table-column prop="kpi.ecpi" :formatter="moneyFormat" align="center" label="eCpi" sortable="custom" />
+      <el-table-column prop="kpi.ecpm" :formatter="moneyFormat" align="center" label="eCpm" sortable="custom" />
 
       <el-table-column align="center" label="Status">
         <template slot-scope="scope">
@@ -313,6 +234,23 @@ export default {
       this.query.page = 1;
       this.getList();
     },
+    handleSort(column){
+      switch (column.order) {
+        case 'ascending':
+          this.query.field = column.prop;
+          this.query.order = 'asc';
+          break;
+        case 'descending':
+          this.query.field = column.prop;
+          this.query.order = 'desc';
+          break;
+        default:
+          delete this.query.field;
+          delete this.query.order;
+      }
+      this.query.page = 1;
+      this.getList();
+    },
     async handleExpandChange(row) {
       if (!row.hasOwnProperty('children')) {
         const { limit, page } = this.query;
@@ -452,6 +390,15 @@ export default {
         type: 'success',
         duration: 1500,
       });
+    },
+    numberFormat(row, column, cellValue, index){
+      return (cellValue === undefined || cellValue === null) ? '-' : cellValue;
+    },
+    moneyFormat(row, column, cellValue, index){
+      return (cellValue === undefined || cellValue === null) ? '-' : '$' + cellValue;
+    },
+    percentageFormat(row, column, cellValue, index){
+      return (cellValue === undefined || cellValue === null) ? '-' : cellValue + '%';
     },
   },
 };

@@ -16,7 +16,9 @@ class AppController extends Controller
         $range_date = $request->get('daterange');
         $start_date = date('Ymd', strtotime($range_date[0]??'now'));
         $end_date = date('Ymd', strtotime($range_date[1]??'now'));
-        
+        $order_by = explode('.', $request->get('field', 'status'));
+        $order_sort = $request->get('order', 'desc');
+
         $app_base_query = App::query();
         if(!empty($request->get('keyword'))){
             $like_keyword = '%'.$request->get('keyword').'%';
@@ -51,6 +53,9 @@ class AppController extends Controller
             'app_id',
         ]);
         $advertise_kpi_query->groupBy('app_id');
+        if($order_by[0] === 'kpi' && isset($order_by[1])){
+            $advertise_kpi_query->orderBy($order_by[1], $order_sort);
+        }
 
         $advertise_kpi_list = $advertise_kpi_query
             ->orderBy('spend','desc')
@@ -62,8 +67,10 @@ class AppController extends Controller
         if(!empty($order_by_ids)){
             $app_query->orderByRaw(DB::raw("FIELD(id,{$order_by_ids}) desc"));
         }
-        $app_list = $app_query->with('advertiser')->orderBy($request->get('field','name'),$request->get('order','desc'))
-            ->paginate($request->get('limit',30));
+        if($order_by[0] !== 'kpi'){
+            $app_query->orderBy($order_by[0], $order_sort);
+        }
+        $app_list = $app_query->with('advertiser')->paginate($request->get('limit',30));
 
         foreach($app_list as &$app){
             if(isset($advertise_kpi_list[$app['id']])){
