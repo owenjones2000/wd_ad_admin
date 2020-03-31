@@ -35,7 +35,7 @@
 
       <el-table-column align="center" label="Advertising Status">
         <template slot-scope="scope">
-          <el-link :type="scope.row.isAdvertiseEnabled ? 'success' : 'info'" size="small" icon="el-icon-upload" :underline="false" @click="handleAdvertisingStatus(scope.row)"/>
+          <el-link :type="scope.row.isAdvertiseEnabled ? 'success' : 'info'" size="small" icon="el-icon-upload" :underline="false" @click="handleAdvertisingStatus(scope.row)" />
         </template>
       </el-table-column>
 
@@ -247,7 +247,7 @@ export default {
       });
     },
     handleStatus(account) {
-      if(!checkPermission(['advertise.account.edit'])){
+      if (!checkPermission(['advertise.account.edit'])) {
         this.$message({
           type: 'warning',
           message: 'No permission',
@@ -286,7 +286,7 @@ export default {
       });
     },
     handleAdvertisingStatus(account) {
-      if(!checkPermission(['advertise.account.edit'])){
+      if (!checkPermission(['advertise.account.edit'])) {
         this.$message({
           type: 'warning',
           message: 'No permission',
