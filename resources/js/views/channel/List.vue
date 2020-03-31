@@ -387,7 +387,7 @@ export default {
       return (cellValue === undefined || cellValue === null) ? '-' : cellValue + '%';
     },
     putModeFormat(row, column, cellValue, index){
-      switch(cellValue){
+      switch (cellValue) {
         case 1:
           return 'Normal';
         case 2:
