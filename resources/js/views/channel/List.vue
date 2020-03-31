@@ -78,6 +78,12 @@
               <el-option label="Android" value="android" />
             </el-select>
           </el-form-item>
+          <el-form-item :label="$t('channel.put_mode')" prop="put_mode">
+            <el-select v-model="currentChannel.put_mode" placeholder="please select put mode">
+              <el-option label="Normal" :value="1" />
+              <el-option label="Backup" :value="2" />
+            </el-select>
+          </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">
@@ -170,6 +176,7 @@ export default {
         name: [{ required: true, message: 'Name is required', trigger: 'blur' }],
         bundle_id: [{ required: true, message: 'Package name is required', trigger: 'blur' }],
         platform: [{ required: true, message: 'Platform is required', trigger: 'blur' }],
+        put_mode: [{ required: true, message: 'Put mode is required', trigger: 'blur' }],
       },
       dialogTokenFormVisible: false,
       dialogTokenFormName: 'Api token',
