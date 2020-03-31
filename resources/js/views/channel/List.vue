@@ -31,6 +31,7 @@
       <el-table-column prop="name" align="center" label="Name" fixed />
       <el-table-column prop="bundle_id" align="center" label="Package" fixed />
       <el-table-column prop="platform" align="center" label="Platform" fixed />
+      <el-table-column prop="put_mode" :formatter="putModeFormat" align="center" label="Put Mode" fixed />
 
       <el-table-column prop="kpi.requests" :formatter="numberFormat" align="center" label="Requests" sortable="custom" />
       <el-table-column prop="kpi.impressions" :formatter="numberFormat" align="center" label="Impressions" sortable="custom" />
@@ -384,6 +385,16 @@ export default {
     },
     percentageFormat(row, column, cellValue, index){
       return (cellValue === undefined || cellValue === null) ? '-' : cellValue + '%';
+    },
+    putModeFormat(row, column, cellValue, index){
+      switch(cellValue){
+        case 1:
+          return 'Normal';
+        case 2:
+          return 'Backup';
+        default:
+          return 'Unknown';
+      }
     },
   },
 };
