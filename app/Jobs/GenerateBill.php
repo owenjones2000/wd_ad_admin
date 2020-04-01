@@ -34,7 +34,6 @@ class GenerateBill implements ShouldQueue
         /** @var Account $account */
         $account = Account::query()
             ->where('id', $this->account_id)
-            ->where('main_user_id', 0)
             ->where('status', 1)
             ->firstOrFail();
         $account->generateBill();
