@@ -131,18 +131,20 @@ class Account extends Model
             return $query->select(['spend'])->whereIn('app_id', $this->apps()->select('id')->getQuery());
         }, $start_date, $end_date);
         $fee_amount = $fee_amount_query->sum('spend');
-        $this->bills()
-            ->updateOrCreate(
-                [
-                    'start_date' => $start_date,
-                    'end_date' =>$end_date,
-                ],
-                [
-                    'fee_amount' => $fee_amount,
-                    'due_date' => $due_date,
-                    'paid_at' => $fee_amount > 0 ? null : Carbon::now()
-                ]
-        );
+        if($fee_amount > 0){
+            $this->bills()
+                ->updateOrCreate(
+                    [
+                        'start_date' => $start_date,
+                        'end_date' =>$end_date,
+                    ],
+                    [
+                        'fee_amount' => $fee_amount,
+                        'due_date' => $due_date,
+                        'paid_at' => $fee_amount > 0 ? null : Carbon::now()
+                    ]
+                );
+        }
     }
 
     public function apps(){

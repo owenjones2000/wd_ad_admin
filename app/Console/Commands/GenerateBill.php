@@ -39,7 +39,6 @@ class GenerateBill extends Command
     public function handle()
     {
         Account::query()
-            ->where('main_user_id', 0)
             ->where('status', 1)
             ->each(function($account){
                 dispatch(new \App\Jobs\GenerateBill($account['id']));
