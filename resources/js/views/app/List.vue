@@ -82,7 +82,7 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
-    <el-dialog :title="'Create new app'" :visible.sync="dialogFormVisible">
+    <el-dialog :title="'Edit new app'" :visible.sync="dialogFormVisible">
       <div v-loading="appCreating" class="form-container">
         <el-form ref="appForm" :rules="rules" :model="currentApp" label-position="left" label-width="150px" style="max-width: 500px;">
           <el-form-item :label="$t('name')" prop="name">

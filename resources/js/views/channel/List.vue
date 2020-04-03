@@ -31,6 +31,7 @@
       <el-table-column prop="name" align="center" label="Name" fixed />
       <el-table-column prop="bundle_id" align="center" label="Package" fixed />
       <el-table-column prop="platform" align="center" label="Platform" fixed />
+      <el-table-column prop="publisher.realname" align="center" label="Publisher" fixed />
       <el-table-column prop="put_mode" :formatter="putModeFormat" align="center" label="Put Mode" fixed />
       <el-table-column prop="rate" :formatter="percentageFormat" align="center" label="Rate" fixed />
 
@@ -65,7 +66,7 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
-    <el-dialog :title="'Create new channel'" :visible.sync="dialogFormVisible">
+    <el-dialog :title="'Edit channel'" :visible.sync="dialogFormVisible">
       <div v-loading="channelCreating" class="form-container">
         <el-form ref="channelForm" :rules="rules" :model="currentChannel" label-position="left" label-width="150px" style="max-width: 500px;">
           <el-form-item :label="$t('channel.name')" prop="name">
