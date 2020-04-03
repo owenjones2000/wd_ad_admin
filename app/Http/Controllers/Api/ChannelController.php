@@ -11,8 +11,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ChannelResource;
-use App\Http\Resources\UserResource;
-use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
 use App\Models\Advertise\AdvertiseKpi;
 use App\Models\Advertise\ApiToken;
@@ -21,10 +19,8 @@ use App\Models\Advertise\Channel;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 /**
  * Class UserController
