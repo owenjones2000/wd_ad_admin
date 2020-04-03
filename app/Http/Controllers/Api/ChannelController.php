@@ -51,7 +51,11 @@ class ChannelController extends Controller
         
         $channel_base_query = Channel::query();
         if(!empty($request->get('keyword'))){
-            $channel_base_query->where('name', 'like', '%'.$request->get('keyword').'%');
+            $like_keyword = '%'.$request->get('keyword').'%';
+            $channel_base_query->where('name', 'like', $like_keyword);
+            $channel_base_query->orWhereHas('publisher', function($query) use($like_keyword) {
+                $query->where('realname', 'like', $like_keyword);
+            });
         }
         $channel_id_query = clone $channel_base_query;
         $channel_id_query->select('id');
