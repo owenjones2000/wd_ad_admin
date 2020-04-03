@@ -166,5 +166,6 @@ export default {
   channel: {
     name: 'Name',
     put_mode: 'Put Mode',
+    rate: 'Rate',
   },
 };

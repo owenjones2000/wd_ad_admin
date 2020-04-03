@@ -32,6 +32,7 @@
       <el-table-column prop="bundle_id" align="center" label="Package" fixed />
       <el-table-column prop="platform" align="center" label="Platform" fixed />
       <el-table-column prop="put_mode" :formatter="putModeFormat" align="center" label="Put Mode" fixed />
+      <el-table-column prop="rate" :formatter="percentageFormat" align="center" label="Rate" fixed />
 
       <el-table-column prop="kpi.requests" :formatter="numberFormat" align="center" label="Requests" sortable="custom" />
       <el-table-column prop="kpi.impressions" :formatter="numberFormat" align="center" label="Impressions" sortable="custom" />
@@ -44,7 +45,7 @@
       <el-table-column prop="kpi.ecpi" :formatter="moneyFormat" align="center" label="eCpi" sortable="custom" />
       <el-table-column prop="kpi.ecpm" :formatter="moneyFormat" align="center" label="eCpm" sortable="custom" />
 
-      <el-table-column align="center" label="Actions" width="200">
+      <el-table-column align="center" label="Actions" width="200" fixed="right">
         <template slot-scope="scope">
           <el-button v-permission="['advertise.channel.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">
             Edit
@@ -84,6 +85,9 @@
               <el-option label="Normal" :value="1" />
               <el-option label="Backup" :value="2" />
             </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('channel.rate') + '(%)'" prop="put_mode">
+            <el-input-number v-model="currentChannel.rate" :precision="2" :step="10" :max="100" :min="0" />
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
