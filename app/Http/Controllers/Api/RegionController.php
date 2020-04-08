@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Advertise;
+namespace App\Http\Controllers\Api;
 
 use App\Models\Advertise\AdvertiseKpi;
 use App\Models\Advertise\App;
