@@ -34,6 +34,20 @@ class AccountResource extends Resource {
     });
   }
 
+  enablePublishing(id){
+    return request({
+      url: '/' + this.uri + '/' + id + '/publishing/enable',
+      method: 'post',
+    });
+  }
+
+  disablePublishing(id){
+    return request({
+      url: '/' + this.uri + '/' + id + '/publishing/disable',
+      method: 'post',
+    });
+  }
+
   saveBillSet(billSet){
     return request({
       url: '/' + this.uri + '/' + billSet.id + '/bill',

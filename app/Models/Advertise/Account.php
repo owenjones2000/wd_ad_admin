@@ -104,6 +104,29 @@ class Account extends Model
             $this->saveOrFail();
         }
     }
+
+    /**
+     * 启用广告变现
+     * @throws \Throwable
+     */
+    public function enablePublishing(){
+        if(!$this->isPublishEnabled){
+            $this->isPublishEnabled = true;
+            $this->saveOrFail();
+        }
+    }
+
+    /**
+     * 停用广告变现
+     * @throws \Throwable
+     */
+    public function disablePublishing(){
+        if($this->isPublishEnabled){
+            $this->isPublishEnabled = false;
+            $this->saveOrFail();
+        }
+    }
+
     /**
      * 设置账单配置
      *

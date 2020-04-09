@@ -39,6 +39,12 @@
         </template>
       </el-table-column>
 
+      <el-table-column align="center" label="Publishing Status">
+        <template slot-scope="scope">
+          <el-link :type="scope.row.isPublishEnabled ? 'success' : 'info'" size="small" icon="el-icon-upload" :underline="false" @click="handlePublishingStatus(scope.row)" />
+        </template>
+      </el-table-column>
+
       <el-table-column align="center" label="Actions" width="200">
         <template slot-scope="scope">
           <el-button v-permission="['advertise.account.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">
@@ -316,6 +322,45 @@ export default {
               message: 'Advertising of Account ' + displayName + ' enabled',
             });
             account.isAdvertiseEnabled = true;
+          }).catch(error => {
+            console.log(error);
+          });
+        }
+      }).catch(error => {
+        console.log(error);
+      });
+    },
+    handlePublishingStatus(account) {
+      if (!checkPermission(['advertise.account.edit'])) {
+        this.$message({
+          type: 'warning',
+          message: 'No permission',
+        });
+        return;
+      }
+      var displayName = account.realname + '(' + account.email + ')';
+      this.$confirm('This will ' + (account.isPublishEnabled ? 'disable' : 'enable') + ' publishing for account ' + displayName + '. Continue?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }).then(() => {
+        if (account.isPublishEnabled) {
+          accountResource.disablePublishing(account.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'Publishing of Account ' + displayName + ' disabled',
+            });
+            account.isPublishEnabled = false;
+          }).catch(error => {
+            console.log(error);
+          });
+        } else {
+          accountResource.enablePublishing(account.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'Publishing of Account ' + displayName + ' enabled',
+            });
+            account.isPublishEnabled = true;
           }).catch(error => {
             console.log(error);
           });

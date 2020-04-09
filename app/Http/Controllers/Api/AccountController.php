@@ -108,6 +108,34 @@ class AccountController extends Controller
         return response()->json(['code'=>0,'msg'=>'Disabled']);
     }
 
+    /**
+     * 启用广告变现
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
+    public function enablePublishing($id)
+    {
+        /** @var Account $account */
+        $account = Account::findOrFail($id);
+        $account->enablePublishing();
+        return response()->json(['code'=>0,'msg'=>'Enabled']);
+    }
+
+    /**
+     * 禁用广告变现
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
+    public function disablePublishing($id)
+    {
+        /** @var Account $account */
+        $account = Account::findOrFail($id);
+        $account->disablePublishing();
+        return response()->json(['code'=>0,'msg'=>'Disabled']);
+    }
+
     public function setBill(Request $request, $id)
     {
         /** @var Account $account */
