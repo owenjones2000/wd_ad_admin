@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use SebastianBergmann\CodeCoverage\Report\PHP;
 
 class Account extends Model
 {
@@ -146,7 +147,7 @@ class Account extends Model
      * 生成账单
      */
     public function generateBill(){
-        $last_month_timestamp = strtotime('-1 month');
+        $last_month_timestamp = strtotime('-2 month');
         $start_date = date('Y-m-01', $last_month_timestamp);
         $end_date = date('Y-m-t', $last_month_timestamp);
         $due_date = date('Y-m-t');
@@ -155,8 +156,8 @@ class Account extends Model
         }, $start_date, $end_date);
         $fee_amount = $fee_amount_query->sum('spend');
         if($fee_amount > 0){
-            $this->bills()
-                ->updateOrCreate(
+            DB::transaction(function() use($start_date, $end_date, $fee_amount, $due_date, $last_month_timestamp){
+                $bill = $this->bills()->firstOrNew(
                     [
                         'start_date' => $start_date,
                         'end_date' =>$end_date,
@@ -167,6 +168,14 @@ class Account extends Model
                         'paid_at' => $fee_amount > 0 ? null : Carbon::now()
                     ]
                 );
+                if(empty($bill['id']) || empty($bill['invoice_id'])){
+                    $bill['invoice_id'] = 'wudiads-'
+                        .date('Ym', $last_month_timestamp)
+                        .'-'.date('md').str_pad(rand(1,999), 3, '0', STR_PAD_LEFT)
+                    ;
+                }
+                $bill->saveOrFail();
+            }, 3);
         }
     }
 
