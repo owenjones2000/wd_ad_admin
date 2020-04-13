@@ -16,6 +16,7 @@ use App\Models\Advertise\AdvertiseKpi;
 use App\Models\Advertise\ApiToken;
 use App\Models\Advertise\App;
 use App\Models\Advertise\Channel;
+use App\Rules\AdvertiseName;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -187,7 +188,7 @@ class ChannelController extends Controller
      */
     public function save(Request $request, $id = null)
     {
-        $validator = Validator::make($request->all(), $this->getValidationRules());
+        $validator = Validator::make($request->all(), $this->getValidationRules($request));
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
         }
@@ -243,10 +244,16 @@ class ChannelController extends Controller
      * @param bool $isNew
      * @return array
      */
-    private function getValidationRules()
+    private function getValidationRules(Request $request)
     {
+        $id = $request->input('id');
         return [
-            'name' => 'required|max:255',
+            'name' => [
+                'required',
+                'string',
+                'unique:a_target_apps,name,'.$id.',id,platform,'.$request->input('platform'),
+                new AdvertiseName()
+            ],
             'bundle_id' => 'required|max:255',
             'platform' => 'required|in:ios,android',
             'put_mode' => 'required|integer|in:1,2',

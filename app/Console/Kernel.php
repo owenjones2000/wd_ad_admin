@@ -26,7 +26,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('bill:generate')
             ->runInBackground()
-            ->monthlyOn(1, '00:50');
+            ->monthlyOn(8, '00:50');
     }
 
     /**
