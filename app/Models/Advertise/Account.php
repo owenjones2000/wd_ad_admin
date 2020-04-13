@@ -7,7 +7,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use SebastianBergmann\CodeCoverage\Report\PHP;
 
 class Account extends Model
 {
