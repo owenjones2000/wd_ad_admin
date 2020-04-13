@@ -75,9 +75,9 @@
       <div class="form-container">
         <div id="invoice" v-html="invoice" />
         <div slot="footer" class="el-footer" style="text-align: right">
-          <el-button type="primary" @click="handleSendInvoice()">
-            {{ $t('invoice.send_to') }} : {{ currentBill.email }}
-          </el-button>
+          <!--<el-button type="primary" @click="handleSendInvoice()">-->
+          <!--{{ $t('invoice.send_to') }} : {{ currentBill.email }}-->
+          <!--</el-button>-->
           <el-button type="primary" @click="handleInvoicePdf()">
             {{ $t('invoice.download') }}
           </el-button>

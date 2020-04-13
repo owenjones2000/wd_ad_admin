@@ -17,6 +17,14 @@
     .detail .odd-row{
         background: whitesmoke;
     }
+    .bank_info {
+        font-size: 12px;
+        line-height: 1.5em;
+        border-collapse: collapse;
+    }
+    .bank_info .odd-row{
+        /*background: whitesmoke;*/
+    }
 </style>
 <body>
 <div>
@@ -87,5 +95,41 @@
     </table>
     <hr />
     <p style="color: #E01B84;text-align: right"><strong>Subtotal: ${{ number_format($bill['fee_amount'], 2) }}</strong></p>
+    <hr />
+    <table class="bank_info" style="width: 50%">
+        <tr>
+            <th style="">Payment Info:</th>
+        </tr>
+        <tr class="odd-row">
+            <td>012 BANK OF CHINA (HONG KONG) LIMITED</td>
+        </tr>
+        <tr class="odd-row">
+            <td>Name: ESSENTIALS TECH LIMITED</td>
+        </tr>
+        <tr class="">
+            <td>Account (HKD): 80510752405 (HKD)</td>
+        </tr>
+        <tr class="odd-row">
+            <td>Account (USD): 80592389638 (USD)</td>
+        </tr>
+        <tr class="">
+            <td>swift code: BKCHHKHH</td>
+        </tr>
+        <tr class="odd-row">
+            <td>Address: Shop 2103, Level 2, Ma On Shan Plaza Sai Sha Road, Ma On Shan, New Territories, Hong Kong</td>
+        </tr>
+        <tr class="">
+            <td>Bank Name: Bank of China (Hong Kong) Ltd</td>
+        </tr>
+        <tr class="odd-row">
+            <td>Bank Country: Hong Kong</td>
+        </tr>
+        <tr class="">
+            <td>Clearing Code: 012 / 805</td>
+        </tr>
+    </table>
+    <p>
+
+    </p>
 </div>
 </body>
