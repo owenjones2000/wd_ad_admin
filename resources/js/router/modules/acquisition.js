@@ -33,6 +33,13 @@ const acquisitionRoutes = {
       name: 'AppList',
       meta: { title: 'App', icon: 'component', permissions: ['advertise.app'] },
     },
+    {
+      path: 'app/:app_id(\\d+)/channel',
+      component: () => import('@/views/app/channel/List'),
+      name: 'AppChannelList',
+      meta: { title: 'Channel By App', icon: 'user', permissions: ['advertise.app'] },
+      hidden: true,
+    },
     /** Campaign managements */
     {
       path: 'campaign',
@@ -65,7 +72,7 @@ const acquisitionRoutes = {
       path: 'channel/:channel_id(\\d+)/app',
       component: () => import('@/views/channel/app/List'),
       name: 'ChannelAppList',
-      meta: { title: 'App By Channel', icon: 'user', permissions: ['advertise.campaign'] },
+      meta: { title: 'App By Channel', icon: 'user', permissions: ['advertise.channel'] },
       hidden: true,
     },
   ],

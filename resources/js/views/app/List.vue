@@ -52,6 +52,11 @@
       <el-table-column prop="name" align="center" label="Name" />
       <el-table-column prop="bundle_id" align="center" label="Package" />
       <el-table-column prop="advertiser.realname" align="center" label="Advertiser" />
+      <el-table-column align="center" label="Status">
+        <template slot-scope="scope">
+          <el-icon :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}" size="small" :name="scope.row.status ? 'video-play' : 'video-pause'" />
+        </template>
+      </el-table-column>
 
       <el-table-column prop="kpi.requests" :formatter="numberFormat" align="center" label="Requests" sortable="custom" />
       <el-table-column prop="kpi.impressions" :formatter="numberFormat" align="center" label="Impressions" sortable="custom" />
@@ -64,17 +69,14 @@
       <el-table-column prop="kpi.ecpi" :formatter="moneyFormat" align="center" label="eCpi" sortable="custom" />
       <el-table-column prop="kpi.ecpm" :formatter="moneyFormat" align="center" label="eCpm" sortable="custom" />
 
-      <el-table-column align="center" label="Status">
-        <template slot-scope="scope">
-          <el-icon :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}" size="small" :name="scope.row.status ? 'video-play' : 'video-pause'" />
-        </template>
-      </el-table-column>
-
       <el-table-column align="center" label="Actions" width="200">
         <template slot-scope="scope">
           <!--<el-button v-permission="['advertise.app.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />-->
           <!--<el-button v-permission="['advertise.auth.token']" type="normal" size="small" icon="el-icon-key " @click="handleToken(scope.row)" />-->
           <el-button v-permission="['advertise.app.edit']" :type="scope.row.is_admin_disable ? 'danger' : 'info'" size="small" icon="el-icon-remove" @click="handleStatus(scope.row)" />
+          <el-button type="normal" size="small" icon="el-icon-menu">
+            <router-link :to="'/acquisition/app/'+scope.row.id+'/channel'">Channels</router-link>
+          </el-button>
           <!--<el-button v-permission="['advertise.app.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
         </template>
       </el-table-column>

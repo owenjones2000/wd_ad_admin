@@ -69,7 +69,7 @@ Route::group(['middleware' => 'api'], function () {
             Route::post('{id?}', 'ChannelController@save')->name('channel.save')->middleware('permission:advertise.channel.edit');
 
             // 买量APP数据
-            Route::get('{channel_id}/app', 'ChannelController@app')->name('campaign.channel.app')->middleware('permission:advertise.campaign');
+            Route::get('{channel_id}/app', 'ChannelController@app')->name('campaign.channel.app')->middleware('permission:advertise.channel');
 
         });
 
@@ -77,6 +77,9 @@ Route::group(['middleware' => 'api'], function () {
         Route::group(['prefix'=>'app', 'middleware' => 'permission:advertise.app'], function () {
             Route::get('', 'AppController@list')->name('app');
             Route::get('data', 'AppController@data')->name('app.data');
+
+            // 卖量Channel数据
+            Route::get('{app_id}/channel', 'AppController@channel')->name('campaign.app.channel')->middleware('permission:advertise.app');
 
             //编辑
 //            Route::post('{id?}', 'AppController@save')->name('app.save')->middleware('permission:advertise.app.edit');
