@@ -116,7 +116,7 @@ class ChannelController extends Controller
 
         $app_base_query = App::query();
         if(!empty($request->get('keyword'))){
-            $app_base_query->where('name', 'like', '%'.$request->get('name').'%');
+            $app_base_query->where('name', 'like', '%'.$request->get('keyword').'%');
         }
         $app_id_query = clone $app_base_query;
         $app_id_query->select('id');
