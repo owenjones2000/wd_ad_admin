@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <title>Invoice</title>
     <style>
-        body{
+        .invoice{
             font-family: 'NSTRTE+Roboto-Regular';
         }
-        table th{
+        .invoice table th{
             text-align: left;
         }
-        h1, h3, hr{
+        .invoice h1, h3, hr{
             color: #666666;
         }
         .resume td{
@@ -33,7 +33,7 @@
     </style>
 </head>
 <body>
-<div>
+<div class="invoice">
     <div style="height: 10px; background: #f6993f;" ></div>
     <div>
         <h3 style="font-size: 1.38125em; color: #666666;">
