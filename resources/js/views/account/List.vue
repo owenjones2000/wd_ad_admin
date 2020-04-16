@@ -16,13 +16,37 @@
     <el-table
       v-loading="loading"
       :data="list"
-      row-key="rowKey"
       border
       fit
       highlight-current-row
       style="width: 100%"
-      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
+      <el-table-column align="center" label="" width="80" type="expand">
+        <template slot-scope="scope">
+          <el-table v-loading="scope.row.loading" :data="scope.row.subAccounts" border fit highlight-current-row style="width: 100%">
+            <el-table-column prop="email" align="left" label="Email" />
+            <el-table-column prop="realname" align="center" label="Real Name" />
+            <el-table-column prop="phone" align="center" label="Phone" />
+
+            <el-table-column align="center" label="Status">
+              <template slot-scope="subScope">
+                <el-link :type="scope.row.status ? 'success' : 'info'" size="small" icon="el-icon-s-custom" :underline="false" @click="handleStatus(subScope.row)" />
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="Actions" width="200">
+              <!--<template slot-scope="subScope">-->
+              <!--<el-button v-permission="['advertise.account.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(subScope.row)">-->
+              <!--Edit-->
+              <!--</el-button>-->
+              <!--<el-button v-permission="['advertise.account.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">-->
+              <!--  Delete-->
+              <!--</el-button>-->
+              <!--</template>-->
+            </el-table-column>
+
+          </el-table>
+        </template>
+      </el-table-column>
       <el-table-column prop="email" align="left" label="Email" />
       <el-table-column prop="realname" align="center" label="Real Name" />
       <el-table-column prop="phone" align="center" label="Phone" />
@@ -196,13 +220,8 @@ export default {
       this.loading = true;
       const { data, meta } = await accountResource.list(this.query);
       this.list = data;
-      var rowKey = 1;
       this.list.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
-        element['rowKey'] = rowKey++;
-        element.children.forEach((child) => {
-          child['rowKey'] = rowKey++;
-        });
       });
       this.total = meta.total;
       this.loading = false;
@@ -210,6 +229,21 @@ export default {
     handleFilter() {
       this.query.page = 1;
       this.getList();
+    },
+    async handleExpandChange(row) {
+      if (!row.hasOwnProperty('children')) {
+        const { limit, page } = this.query;
+        row.loading = true;
+        const query = { ...this.query };
+        query['id'] = row.id;
+        query['grouping'] = 'date';
+        const { data } = await accountResource.data(query);
+        row['children'] = data;
+        row['children'].forEach((element, index) => {
+          element['index'] = (page - 1) * limit + index + 1;
+        });
+      }
+      row.loading = false;
     },
     handleCreate() {
       this.resetNewAccount();
