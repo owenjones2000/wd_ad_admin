@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\MakeAccountRequest;
 use App\Http\Resources\AccountResource;
+use App\Http\Resources\PermissionTreeResource;
 use App\Models\Advertise\Account;
 use App\Http\Controllers\Controller;
-use App\Models\Advertise\BillSet;
+use App\Models\Advertise\UaPermission;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
 
 class AccountController extends Controller
@@ -35,6 +37,42 @@ class AccountController extends Controller
         }
         $accountQuery->orderBy('isAdvertiseEnabled', 'desc');
         return AccountResource::collection($accountQuery->paginate($limit));
+    }
+
+    public function allPermission(){
+        return PermissionTreeResource::collection(UaPermission::query()->where('parent_id', 0)->get());
+    }
+
+    public function permissions($id, $main_user_id = null){
+        /** @var Account $account */
+        $account = Account::query()->findOrFail($id);
+        return JsonResource::make($account->permissions($main_user_id)->pluck('name'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param Request $request
+     * @param Account    $account
+     */
+    public function updatePermissions(Request $request, Account $account, $main_account_id)
+    {
+        if ($account === null) {
+            return response()->json(['error' => 'Account not found'], 404);
+        }
+
+        $permissionIds = $request->get('permissions', []);
+
+        $permissions = UaPermission::query()->whereIn('name', $permissionIds)->pluck('id')->toArray();
+        $permissions = array_fill_keys($permissions,
+            [
+                'main_user_id' => $main_account_id,
+                'model_type' => 'App\User',
+            ]
+        );
+        $account->permissions($main_account_id)->sync($permissions);
+
+        return response()->json(['code'=>0,'msg'=>'permission updated']);
     }
 
     /**

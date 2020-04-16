@@ -6,6 +6,28 @@ class AccountResource extends Resource {
     super('account');
   }
 
+  allPermission(){
+    return request({
+      url: '/' + this.uri + '/permissions',
+      method: 'get',
+    });
+  }
+
+  permissions(account_id, main_account_id){
+    return request({
+      url: '/' + this.uri + '/' + account_id + '/permission/to/' + main_account_id,
+      method: 'get',
+    });
+  }
+
+  updatePermission(account_id, main_account_id, permissions) {
+    return request({
+      url: '/' + this.uri + '/' + account_id + '/permission/to/' + main_account_id,
+      method: 'post',
+      data: permissions,
+    });
+  }
+
   enable(id){
     return request({
       url: '/' + this.uri + '/' + id + '/enable',

@@ -13,4 +13,8 @@ class UaPermission extends Model
     use SoftDeletes;
 
     protected $table = 'ua_permissions';
+
+    public function children(){
+        return $this->hasMany(UaPermission::class, 'parent_id', 'id');
+    }
 }

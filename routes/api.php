@@ -32,6 +32,10 @@ Route::group(['middleware' => 'api'], function () {
             Route::get('','AccountController@list')->name('account')->middleware('permission:advertise.account');
             // 子账号
             //Route::get('{main_user_id?}/subs','AccountController@list')->name('account')->middleware('permission:advertise.account');
+            Route::get('permissions','AccountController@allPermission')->name('account.permission')->middleware('permission:advertise.account');
+            Route::get('{id}/permission/to/{main_user_id?}','AccountController@permissions')->name('account.permission')->middleware('permission:advertise.account');
+            Route::post('{account}/permission/to/{main_account_id}','AccountController@updatePermissions')->name('account.permission.update')->middleware('permission:advertise.account.edit');
+
             //编辑
             Route::post('{id?}','AccountController@save')->name('account.save')->middleware('permission:advertise.account.edit');
             Route::post('{id}/enable', 'AccountController@enable')->name('account.enable')->middleware('permission:advertise.account.edit');

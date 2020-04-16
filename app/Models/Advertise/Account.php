@@ -204,14 +204,18 @@ class Account extends Model
         );
     }
 
-    public function permissions(){
-        return $this->belongsToMany(
+    public function permissions($main_user_id = null){
+        $query = $this->belongsToMany(
             UaPermission::class,
             'ua_model_has_permissions',
             'model_id',
             'permission_id');
+        if($main_user_id){
+            $query->wherePivot('main_user_id', $main_user_id);
+        }
+        return $query;
     }
-    
+
     public static function rules($request_params = [])
     {
         return [

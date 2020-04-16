@@ -34,14 +34,11 @@
               </template>
             </el-table-column>
             <el-table-column align="center" label="Actions" width="200">
-              <!--<template slot-scope="subScope">-->
-              <!--<el-button v-permission="['advertise.account.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(subScope.row)">-->
-              <!--Edit-->
-              <!--</el-button>-->
-              <!--<el-button v-permission="['advertise.account.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">-->
-              <!--  Delete-->
-              <!--</el-button>-->
-              <!--</template>-->
+              <template slot-scope="subScope">
+                <el-button v-permission="['system.user.permission']" type="warning" size="small" icon="el-icon-edit" @click="handleEditPermissions(subScope.row, scope.row);">
+                  Permissions
+                </el-button>
+              </template>
             </el-table-column>
 
           </el-table>
@@ -69,10 +66,13 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Actions" width="200">
+      <el-table-column align="center" label="Actions" width="360">
         <template slot-scope="scope">
           <el-button v-permission="['advertise.account.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">
             Edit
+          </el-button>
+          <el-button v-permission="['system.user.permission']" type="warning" size="small" icon="el-icon-edit" @click="handleEditPermissions(scope.row, scope.row);">
+            Permissions
           </el-button>
           <el-button v-permission="['advertise.bill']" type="primary" size="small" icon="el-icon-edit" @click="handleBillSet(scope.row)">
             BillSet
@@ -134,6 +134,28 @@
       </div>
     </el-dialog>
 
+    <el-dialog :title="dialogPermission.title" :visible.sync="dialogPermission.visible">
+      <div v-loading="dialogPermission.Loading" class="form-container">
+        <el-tree
+          ref="permissionTree"
+          :data="dialogPermission.allPermission"
+          show-checkbox
+          check-strictly
+          node-key="name"
+          default-expand-all
+          :props="{children: 'children', label: 'display_name'}"
+        />
+      </div>
+      <div style="text-align:right;">
+        <el-button type="danger" @click="dialogPermission.visible=false">
+          {{ $t('permission.cancel') }}
+        </el-button>
+        <el-button type="primary" @click="confirmPermission">
+          {{ $t('permission.confirm') }}
+        </el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -177,6 +199,12 @@ export default {
         phone: '',
       },
       billDialogFormVisible: false,
+      dialogPermission: {
+        title: 'Permissions',
+        loading: false,
+        visible: false,
+        allPermission: null,
+      },
     };
   },
   computed: {
@@ -230,20 +258,42 @@ export default {
       this.query.page = 1;
       this.getList();
     },
-    async handleExpandChange(row) {
-      if (!row.hasOwnProperty('children')) {
-        const { limit, page } = this.query;
-        row.loading = true;
-        const query = { ...this.query };
-        query['id'] = row.id;
-        query['grouping'] = 'date';
-        const { data } = await accountResource.data(query);
-        row['children'] = data;
-        row['children'].forEach((element, index) => {
-          element['index'] = (page - 1) * limit + index + 1;
-        });
+    async handleEditPermissions(account, main_account) {
+      if (!this.dialogPermission.allPermission) {
+        const { data } = await accountResource.allPermission();
+        this.dialogPermission.allPermission = data;
       }
-      row.loading = false;
+      if (account === main_account) {
+        this.dialogPermission.title = 'Grant 【' + account.realname + '】 permissions';
+      } else {
+        this.dialogPermission.title = 'Grant 【' + account.realname + '】 permissions to serve 【' + main_account.realname + '】';
+      }
+      this.dialogPermission.account = account;
+      this.dialogPermission.mainAccount = main_account;
+      this.dialogPermission.loading = true;
+      this.dialogPermission.visible = true;
+      const { data } = await accountResource.permissions(account.id, main_account.id);
+      this.$refs.permissionTree.setCheckedKeys([]);
+      data.forEach((item, index, array) => {
+        this.$refs.permissionTree.setChecked(item, true);
+      });
+      this.dialogPermission.loading = false;
+    },
+    confirmPermission() {
+      const checkedPermissions = this.$refs.permissionTree.getCheckedKeys().concat(this.$refs.permissionTree.getHalfCheckedKeys());
+      this.dialogPermission.loading = true;
+      accountResource.updatePermission(
+        this.dialogPermission.account.id,
+        this.dialogPermission.mainAccount.id,
+        { permissions: checkedPermissions }).then(response => {
+        this.$message({
+          message: 'Permissions has been updated successfully',
+          type: 'success',
+          duration: 5 * 1000,
+        });
+        this.dialogPermission.loading = false;
+        this.dialogPermissionVisible = false;
+      });
     },
     handleCreate() {
       this.resetNewAccount();
