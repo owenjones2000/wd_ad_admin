@@ -297,15 +297,22 @@ export default {
       });
     },
     handleTreeCheck(node, checked) {
-      if (checked) {
-        var tree_node = this.$refs.permissionTree.getNode(node);
-        this.selectParentNode(tree_node);
-      }
+      var tree_node = this.$refs.permissionTree.getNode(node);
+      console.log(tree_node, checked);
+      this.recursionSelectTreeNode(tree_node, checked);
     },
-    selectParentNode(node){
-      node.checked = true;
-      if (node.parent && node.parent.id > 0) {
-        this.selectParentNode(node.parent);
+    recursionSelectTreeNode(node, checked, direction = ''){
+      if (!node.hasOwnProperty('checked')) {
+        return;
+      }
+      node.checked = checked;
+      if (direction !== 'down' && checked && node.parent && node.parent.id > 0) {
+        this.recursionSelectTreeNode(node.parent, checked, 'up');
+      }
+      if (direction !== 'up' && !checked && node.childNodes && node.childNodes.length > 0){
+        node.childNodes.forEach(function(item){
+          this.recursionSelectTreeNode(item, checked, 'down');
+        }, this);
       }
     },
     handleCreate() {
