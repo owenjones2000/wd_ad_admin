@@ -144,6 +144,7 @@
           node-key="name"
           default-expand-all
           :props="{children: 'children', label: 'display_name'}"
+          @check-change="handleTreeCheck"
         />
       </div>
       <div style="text-align:right;">
@@ -294,6 +295,18 @@ export default {
         this.dialogPermission.loading = false;
         this.dialogPermissionVisible = false;
       });
+    },
+    handleTreeCheck(node, checked) {
+      if (checked) {
+        var tree_node = this.$refs.permissionTree.getNode(node);
+        this.selectParentNode(tree_node);
+      }
+    },
+    selectParentNode(node){
+      node.checked = true;
+      if (node.parent && node.parent.id > 0) {
+        this.selectParentNode(node.parent);
+      }
     },
     handleCreate() {
       this.resetNewAccount();
