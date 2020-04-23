@@ -19,6 +19,13 @@ const acquisitionRoutes = {
       name: 'AccountList',
       meta: { title: 'Account', icon: 'peoples', permissions: ['advertise.account'] },
     },
+    {
+      path: 'account/oplog',
+      component: () => import('@/views/account/Oplog'),
+      name: 'OpLog',
+      meta: { title: 'Op Log', icon: 'tree-table', permissions: ['advertise.account.oplog'] },
+      hidden: true,
+    },
     /** Bill managements */
     {
       path: 'bill',

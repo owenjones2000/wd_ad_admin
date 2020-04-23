@@ -8,6 +8,7 @@ use App\Http\Resources\PermissionTreeResource;
 use App\Models\Advertise\Account;
 use App\Http\Controllers\Controller;
 use App\Models\Advertise\UaPermission;
+use App\Models\Advertise\UaOperationLog;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
@@ -28,7 +29,6 @@ class AccountController extends Controller
         $accountQuery = Account::query()->with('bill', 'advertisers', 'advertisers.bill');
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
         $keyword = Arr::get($searchParams, 'keyword', '');
-
         if (!empty($keyword)) {
             $accountQuery->where(function($query) use($keyword) {
                 $query->where('realname', 'LIKE', '%' . $keyword . '%');
@@ -37,6 +37,38 @@ class AccountController extends Controller
         }
         $accountQuery->orderBy('isAdvertiseEnabled', 'desc');
         return AccountResource::collection($accountQuery->paginate($limit));
+    }
+
+    public function opLog(Request $request)
+    {
+        $searchParams = $request->all();
+        $opLogQuery = UaOperationLog::query()->with('account', 'mainAccount');
+        $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
+        $keyword = Arr::get($searchParams, 'keyword', '');
+
+        $range_date = Arr::get($searchParams, 'daterange');
+        $start_date = date('Y-m-d 00:00:00', strtotime($range_date[0]??'now'));
+        $end_date = date('Y-m-d 23:59:59', strtotime($range_date[1]??'now'));
+        $opLogQuery->whereBetween('created_at', [$start_date, $end_date]);
+
+        if(!empty($keyword)){
+            $like_keyword = '%'.$request->get('keyword').'%';
+            $opLogQuery->WhereHas('account', function($query) use($like_keyword) {
+                $query->where('realname', 'like', $like_keyword);
+                $query->orWhere('email', 'like', $like_keyword);
+            });
+            $opLogQuery->orWhereHas('mainAccount', function($query) use($like_keyword) {
+                $query->where('realname', 'like', $like_keyword);
+                $query->orWhere('email', 'like', $like_keyword);
+            });
+        }
+
+        if(!empty(Arr::get($searchParams, 'method'))){
+            $opLogQuery->where('method', Arr::get($searchParams, 'method'));
+        }
+
+        $opLogQuery->orderBy('created_at', 'desc');
+        return JsonResource::collection($opLogQuery->paginate($limit));
     }
 
     public function allPermission(){

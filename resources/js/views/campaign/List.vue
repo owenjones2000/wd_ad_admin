@@ -42,6 +42,7 @@
       <el-table-column prop="app.name" align="center" label="App" fixed />
       <el-table-column prop="advertiser.realname" align="center" label="Advertiser" fixed />
       <el-table-column prop="default_budget" align="center" label="Budget" />
+      <el-table-column prop="default_bid" align="center" label="Bid" />
       <el-table-column prop="created_at" :formatter="dateFormat" label="Created" align="center" width="100" />
       <el-table-column align="center" label="Status">
         <template slot-scope="scope">

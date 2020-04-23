@@ -30,6 +30,8 @@ Route::group(['middleware' => 'api'], function () {
         // Account
         Route::group(['prefix' => 'account'],function (){
             Route::get('','AccountController@list')->name('account')->middleware('permission:advertise.account');
+            Route::get('oplog','AccountController@opLog')->name('account.oplog')->middleware('permission:advertise.account');
+
             // 子账号
             //Route::get('{main_user_id?}/subs','AccountController@list')->name('account')->middleware('permission:advertise.account');
             Route::get('permissions','AccountController@allPermission')->name('account.permission')->middleware('permission:advertise.account');

@@ -6,6 +6,14 @@ class AccountResource extends Resource {
     super('account');
   }
 
+  opLog(query){
+    return request({
+      url: '/' + this.uri + '/oplog',
+      method: 'get',
+      params: query,
+    });
+  }
+
   allPermission(){
     return request({
       url: '/' + this.uri + '/permissions',
