@@ -209,7 +209,7 @@ class Campaign extends Model
      * @return int
      */
     public function getDefaultBidAttribute(){
-        $default_bid = $this->bids()->where('country', 'ALL')->first();
+        $default_bid = $this->bids->where('country', 'ALL')->first();
         if(empty($default_bid)){
             return 0;
         }else{
