@@ -301,9 +301,6 @@ export default {
       this.recursionSelectTreeNode(tree_node, checked);
     },
     recursionSelectTreeNode(node, checked, direction = ''){
-      if (!node.hasOwnProperty('checked')) {
-        return;
-      }
       node.checked = checked;
       if (direction !== 'down' && checked && node.parent && node.parent.id > 0) {
         this.recursionSelectTreeNode(node.parent, checked, 'up');
