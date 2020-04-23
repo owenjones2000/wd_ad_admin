@@ -298,7 +298,6 @@ export default {
     },
     handleTreeCheck(node, checked) {
       var tree_node = this.$refs.permissionTree.getNode(node);
-      console.log(tree_node, checked);
       this.recursionSelectTreeNode(tree_node, checked);
     },
     recursionSelectTreeNode(node, checked, direction = ''){
