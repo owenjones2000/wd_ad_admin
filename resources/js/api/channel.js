@@ -6,6 +6,14 @@ class ChannelResource extends Resource {
     super('channel');
   }
 
+  data(query) {
+    return request({
+      url: '/' + this.uri + '/data',
+      method: 'get',
+      params: query,
+    });
+  }
+
   appList(channel_id, query) {
     return request({
       url: '/' + this.uri + '/' + channel_id + '/app',

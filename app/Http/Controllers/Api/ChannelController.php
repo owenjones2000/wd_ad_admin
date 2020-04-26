@@ -108,6 +108,60 @@ class ChannelController extends Controller
         return JsonResource::collection($channel_list);
     }
 
+    public function data(Request $request)
+    {
+        $range_date = $request->get('daterange');
+        $start_date = date('Ymd', strtotime($range_date[0]??'now'));
+        $end_date = date('Ymd', strtotime($range_date[1]??'now'));
+        $group_by = $request->get('grouping');
+
+        $channel_base_query = App::query();
+        if(!empty($request->get('keyword'))){
+            $channel_base_query->where('name', 'like', '%'.$request->get('name').'%');
+        }
+        if(!empty($request->get('id'))){
+            $channel_base_query->where('id', $request->get('id'));
+        }
+        $channel_id_query = clone $channel_base_query;
+        $channel_id_query->select('id');
+        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function($query) use($start_date, $end_date, $channel_id_query){
+            $query->whereBetween('date', [$start_date, $end_date])
+                ->whereIn('target_app_id', $channel_id_query)
+                ->select(['date', 'requests', 'impressions', 'clicks', 'installations', 'spend',
+                    'target_app_id',
+                ])
+            ;
+            return $query;
+        }, $start_date, $end_date);
+
+        $advertise_kpi_query->select([
+            DB::raw('sum(requests) as requests'),
+            DB::raw('sum(impressions) as impressions'),
+            DB::raw('sum(clicks) as clicks'),
+            DB::raw('sum(installations) as installs'),
+            DB::raw('round(sum(clicks) * 100 / sum(impressions), 2) as ctr'),
+            DB::raw('round(sum(installations) * 100 / sum(clicks), 2) as cvr'),
+            DB::raw('round(sum(installations) * 100 / sum(impressions), 2) as ir'),
+            DB::raw('round(sum(spend), 2) as spend'),
+            DB::raw('round(sum(spend) / sum(installations), 2) as ecpi'),
+            DB::raw('round(sum(spend) * 1000 / sum(impressions), 2) as ecpm'),
+            'target_app_id',
+        ]);
+        if ($group_by == 'date') {
+            $advertise_kpi_query->addSelect('date');
+            $advertise_kpi_query->groupBy($group_by);
+            $advertise_kpi_query->orderByDesc('date');
+        } else {
+            $advertise_kpi_query->groupBy('target_app_id');
+        }
+
+        $advertise_kpi_list = $advertise_kpi_query
+            ->orderBy('spend','desc')
+            ->get();
+
+        return JsonResource::collection($advertise_kpi_list);
+    }
+
     public function app(Request $request, $channel_id)
     {
         $range_date = $request->get('daterange');

@@ -72,6 +72,8 @@ Route::group(['middleware' => 'api'], function () {
         // 渠道
         Route::group(['prefix' => 'channel'], function () {
             Route::get('', 'ChannelController@list')->name('channel.list')->middleware('permission:advertise.channel');
+            Route::get('data', 'ChannelController@data')->name('channel.data');
+
             Route::post('{id?}', 'ChannelController@save')->name('channel.save')->middleware('permission:advertise.channel.edit');
 
             // 买量APP数据

@@ -25,9 +25,31 @@
       <!--</el-button>-->
     </div>
 
-    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%" @sort-change="handleSort">
+    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%" @expand-change="handleExpandChange" @sort-change="handleSort">
       <!--<el-table-column prop="id" align="center" label="ID" width="80" fixed />-->
 
+      <el-table-column align="center" label="" width="80" type="expand" fixed>
+        <template slot-scope="scope">
+          <el-table v-loading="scope.row.loading" :data="scope.row.children" border fit highlight-current-row style="width: 100%">
+            <el-table-column align="center" label="Date" width="100">
+              <template slot-scope="children">
+                <span>{{ children.row.date }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="requests" :formatter="numberFormat" align="center" label="Requests" />
+            <el-table-column prop="impressions" :formatter="numberFormat" align="center" label="Impressions" />
+            <el-table-column prop="clicks" :formatter="numberFormat" align="center" label="Clicks" />
+            <el-table-column prop="installs" :formatter="numberFormat" align="center" label="Installs" />
+            <el-table-column prop="ctr" :formatter="percentageFormat" align="center" label="CTR" />
+            <el-table-column prop="cvr" :formatter="percentageFormat" align="center" label="CVR" />
+            <el-table-column prop="ir" :formatter="percentageFormat" align="center" label="IR" />
+            <el-table-column prop="spend" :formatter="moneyFormat" align="center" label="Revenue" />
+            <el-table-column prop="ecpi" :formatter="moneyFormat" align="center" label="eCpi" />
+            <el-table-column prop="ecpm" :formatter="moneyFormat" align="center" label="eCpm" />
+
+          </el-table>
+        </template>
+      </el-table-column>
       <el-table-column prop="name" align="center" label="Name" fixed />
       <el-table-column prop="bundle_id" align="center" label="Package" fixed />
       <el-table-column prop="platform" align="center" label="Platform" fixed />
@@ -205,10 +227,11 @@ export default {
       const { limit, page } = this.query;
       this.loading = true;
       const { data, meta } = await channelResource.list(this.query);
-      this.list = data;
-      this.list.forEach((element, index) => {
+      data.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
+        element['loading'] = false;
       });
+      this.list = data;
       this.total = meta.total;
       this.loading = false;
     },
@@ -232,6 +255,22 @@ export default {
       }
       this.query.page = 1;
       this.getList();
+    },
+    async handleExpandChange(row) {
+      if (!row.hasOwnProperty('children')) {
+        const { limit, page } = this.query;
+        row.loading = true;
+        const query = { ...this.query };
+        query['id'] = row.id;
+        query['grouping'] = 'date';
+        const { data } = await channelResource.data(query);
+        row['children'] = data;
+        row['children'].forEach((element, index) => {
+          element['index'] = (page - 1) * limit + index + 1;
+        });
+      }
+      console.log(row);
+      row.loading = false;
     },
     handleCreate() {
       this.resetNewChannel();
