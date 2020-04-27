@@ -68,7 +68,7 @@
       <el-table-column prop="kpi.ecpi" :formatter="moneyFormat" align="center" label="eCpi" sortable="custom" />
       <el-table-column prop="kpi.ecpm" :formatter="moneyFormat" align="center" label="eCpm" sortable="custom" />
 
-      <el-table-column align="center" label="Actions" width="200" fixed="right">
+      <el-table-column align="center" label="Actions" width="300" fixed="right">
         <template slot-scope="scope">
           <el-button v-permission="['advertise.channel.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">
             Edit
