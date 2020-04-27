@@ -23,6 +23,10 @@
     >
       <el-table-column align="center" label="" width="80" type="expand">
         <template slot-scope="scope">
+          <el-button v-permission="['advertise.account.edit']" type="primary" size="small" icon="el-icon-plus" @click="handleAssign(scope.row)">
+            Assign
+          </el-button>
+          <el-divider />
           <el-table v-loading="scope.row.loading" :data="scope.row.subAccounts" border fit highlight-current-row style="width: 100%">
             <el-table-column prop="email" align="left" label="Email" />
             <el-table-column prop="realname" align="center" label="Real Name" />
@@ -33,10 +37,13 @@
                 <el-link :type="scope.row.status ? 'success' : 'info'" size="small" icon="el-icon-s-custom" :underline="false" @click="handleStatus(subScope.row)" />
               </template>
             </el-table-column>
-            <el-table-column align="center" label="Actions" width="200">
+            <el-table-column align="center" label="Actions" width="270">
               <template slot-scope="subScope">
-                <el-button v-permission="['system.user.permission']" type="warning" size="small" icon="el-icon-edit" @click="handleEditPermissions(subScope.row, scope.row);">
+                <el-button v-permission="['advertise.account.edit']" type="warning" size="small" icon="el-icon-edit" @click="handleEditPermissions(subScope.row, scope.row);">
                   Permissions
+                </el-button>
+                <el-button v-permission="['advertise.account.edit']" type="danger" size="small" icon="el-icon-delete" @click="handleRemoveSubAccount(subScope.row, scope.row);">
+                  Remove
                 </el-button>
               </template>
             </el-table-column>
@@ -107,6 +114,24 @@
             {{ $t('table.cancel') }}
           </el-button>
           <el-button type="primary" @click="saveAccount()">
+            {{ $t('table.confirm') }}
+          </el-button>
+        </div>
+      </div>
+    </el-dialog>
+
+    <el-dialog title="Assign" :visible.sync="dialogAssign.visible">
+      <div v-loading="dialogAssign.loading" class="form-container">
+        <el-form ref="assignForm" :rules="assignRules" :model="dialogAssign.form" label-position="left" label-width="150px" style="max-width: 500px;">
+          <el-form-item :label="$t('email')" prop="email">
+            <el-input v-model="dialogAssign.form.email" />
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogAssign.visible = false">
+            {{ $t('table.cancel') }}
+          </el-button>
+          <el-button type="primary" @click="assignAccount()">
             {{ $t('table.confirm') }}
           </el-button>
         </div>
@@ -200,6 +225,15 @@ export default {
         phone: '',
       },
       billDialogFormVisible: false,
+      dialogAssign: {
+        title: 'Assign',
+        loading: false,
+        visible: false,
+        account: null,
+        form: {
+          email: '',
+        },
+      },
       dialogPermission: {
         title: 'Permissions',
         loading: false,
@@ -234,6 +268,14 @@ export default {
           { max: 255 },
         ],
         phone: [{ max: 13 }],
+      };
+    },
+    assignRules() {
+      return {
+        email: [
+          { required: true, message: 'Email is required', trigger: 'blur' },
+          { type: 'email', message: 'Please input correct email address', trigger: ['blur', 'change'] },
+        ],
       };
     },
   },
@@ -293,7 +335,7 @@ export default {
           duration: 5 * 1000,
         });
         this.dialogPermission.loading = false;
-        this.dialogPermissionVisible = false;
+        this.dialogPermission.visible = false;
       });
     },
     handleTreeCheck(node, checked) {
@@ -349,6 +391,54 @@ export default {
         this.$message({
           type: 'info',
           message: 'Delete canceled',
+        });
+      });
+    },
+    handleAssign(account) {
+      this.dialogAssign.account = account;
+      this.dialogAssign.visible = true;
+      this.$nextTick(() => {
+        this.$refs['assignForm'].clearValidate();
+      });
+    },
+    assignAccount() {
+      this.dialogAssign.loading = true;
+      accountResource.assign(
+        this.dialogAssign.account.id,
+        this.dialogAssign.form
+      ).then(response => {
+        this.$message({
+          message: this.dialogAssign.form.email + ' assigned to ' + this.dialogAssign.account.realname,
+          type: 'success',
+          duration: 5 * 1000,
+        });
+        this.handleFilter();
+        this.dialogAssign.loading = false;
+        this.dialogAssign.visible = false;
+      }).catch(error => {
+        this.dialogAssign.loading = false;
+        console.log(error);
+      });
+    },
+    handleRemoveSubAccount(account, main_account) {
+      this.$confirm('This will remove account ' + account.realname + ' from ' + main_account.realname + '. Continue?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }).then(() => {
+        accountResource.detach(main_account.id, account.id).then(response => {
+          this.$message({
+            type: 'success',
+            message: 'Detach completed',
+          });
+          this.handleFilter();
+        }).catch(error => {
+          console.log(error);
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: 'Detach canceled',
         });
       });
     },

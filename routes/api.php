@@ -33,6 +33,9 @@ Route::group(['middleware' => 'api'], function () {
             Route::get('oplog','AccountController@opLog')->name('account.oplog')->middleware('permission:advertise.account');
 
             // 子账号
+            Route::post('{main_user_id}/assign','AccountController@assign')->name('account.assign')->middleware('permission:advertise.account.edit');
+            Route::post('{main_user_id}/detach/{account_id}','AccountController@detach')->name('account.detach')->middleware('permission:advertise.account.edit');
+
             //Route::get('{main_user_id?}/subs','AccountController@list')->name('account')->middleware('permission:advertise.account');
             Route::get('permissions','AccountController@allPermission')->name('account.permission')->middleware('permission:advertise.account');
             Route::get('{id}/permission/to/{main_user_id?}','AccountController@permissions')->name('account.permission')->middleware('permission:advertise.account');

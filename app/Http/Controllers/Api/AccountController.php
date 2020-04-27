@@ -71,6 +71,27 @@ class AccountController extends Controller
         return JsonResource::collection($opLogQuery->paginate($limit));
     }
 
+    public function assign(Request $request, $main_user_id){
+        $main_account = Account::query()->findOrFail($main_user_id);
+        $account = Account::query()->where('email', $request->input('email'))->firstOrFail();
+        if($main_account['email'] != $account['email']){
+            $main_account->advertisers()->syncWithoutDetaching($account);
+        }
+        return response()->json(['code'=>0,'msg'=>'Successful']);
+    }
+
+    public function detach($main_user_id, $account_id){
+        /** @var Account $main_account */
+        $main_account = Account::query()->findOrFail($main_user_id);
+        /** @var Account $account */
+        $account = Account::query()->findOrFail($account_id);
+        if($main_account['email'] != $account['email']){
+            $account->permissions($main_user_id)->detach();
+            $main_account->advertisers()->detach($account);
+        }
+        return response()->json(['code'=>0,'msg'=>'Successful']);
+    }
+
     public function allPermission(){
         return PermissionTreeResource::collection(UaPermission::query()->where('parent_id', 0)->get());
     }

@@ -28,6 +28,21 @@ class AccountResource extends Resource {
     });
   }
 
+  assign(main_account_id, params) {
+    return request({
+      url: '/' + this.uri + '/' + main_account_id + '/assign',
+      method: 'post',
+      data: params,
+    });
+  }
+
+  detach(main_account_id, account_id) {
+    return request({
+      url: '/' + this.uri + '/' + main_account_id + '/detach/' + account_id,
+      method: 'post',
+    });
+  }
+
   updatePermission(account_id, main_account_id, permissions) {
     return request({
       url: '/' + this.uri + '/' + account_id + '/permission/to/' + main_account_id,
