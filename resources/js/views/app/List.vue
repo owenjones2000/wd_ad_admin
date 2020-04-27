@@ -51,6 +51,7 @@
 
       <el-table-column prop="name" align="center" label="Name" />
       <el-table-column prop="bundle_id" align="center" label="Package" />
+      <el-table-column prop="os" align="center" label="Platform" />
       <el-table-column prop="advertiser.realname" align="center" label="Advertiser" />
       <el-table-column align="center" label="Status">
         <template slot-scope="scope">
