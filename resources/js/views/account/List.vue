@@ -32,11 +32,6 @@
             <el-table-column prop="realname" align="center" label="Real Name" />
             <el-table-column prop="phone" align="center" label="Phone" />
 
-            <el-table-column align="center" label="Status">
-              <template slot-scope="subScope">
-                <el-link :type="scope.row.status ? 'success' : 'info'" size="small" icon="el-icon-s-custom" :underline="false" @click="handleStatus(subScope.row)" />
-              </template>
-            </el-table-column>
             <el-table-column align="center" label="Actions" width="270">
               <template slot-scope="subScope">
                 <el-button v-permission="['advertise.account.edit']" type="warning" size="small" icon="el-icon-edit" @click="handleEditPermissions(subScope.row, scope.row);">
