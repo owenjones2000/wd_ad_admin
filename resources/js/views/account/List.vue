@@ -71,7 +71,7 @@
           <el-button v-permission="['advertise.account.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">
             Edit
           </el-button>
-          <el-button v-permission="['system.user.permission']" type="warning" size="small" icon="el-icon-edit" @click="handleEditPermissions(scope.row, scope.row);">
+          <el-button v-permission="['advertise.account.edit']" type="warning" size="small" icon="el-icon-edit" @click="handleEditPermissions(scope.row, scope.row);">
             Permissions
           </el-button>
           <el-button v-permission="['advertise.bill']" type="primary" size="small" icon="el-icon-edit" @click="handleBillSet(scope.row)">
