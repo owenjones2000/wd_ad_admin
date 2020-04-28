@@ -72,7 +72,7 @@
 
       <el-table-column align="center" label="Actions" width="270" fixed="right">
         <template slot-scope="scope">
-          <el-button v-permission="['advertise.app.edit']" type="primary" size="small" icon="el-icon-info" @click="handleEdit(scope.row)" />
+          <el-button v-permission="['advertise.app']" type="primary" size="small" icon="el-icon-info" @click="handleEdit(scope.row)" />
           <!--<el-button v-permission="['advertise.auth.token']" type="normal" size="small" icon="el-icon-key " @click="handleToken(scope.row)" />-->
           <el-button v-permission="['advertise.app.edit']" :type="scope.row.is_admin_disable ? 'danger' : 'info'" size="small" icon="el-icon-remove" @click="handleStatus(scope.row)" />
           <el-button type="normal" size="small" icon="el-icon-menu">
