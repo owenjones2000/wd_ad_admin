@@ -158,6 +158,10 @@ export default {
   },
   app: {
     bundle_id: 'Package',
+    icon: 'Icon',
+    description: 'Description',
+    track_platform: 'Track Platform',
+    track_code: 'Track Code',
   },
   token: {
     expired_at: 'Expired Date',

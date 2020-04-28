@@ -70,14 +70,14 @@
 
       <el-table-column align="center" label="Actions" width="300" fixed="right">
         <template slot-scope="scope">
+          <el-button type="normal" size="small" icon="el-icon-menu">
+            <router-link :to="'/acquisition/channel/'+scope.row.id+'/app'">Sources</router-link>
+          </el-button>
           <el-button v-permission="['advertise.channel.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">
             Edit
           </el-button>
           <el-button v-permission="['basic.auth.token']" type="normal" size="small" icon="el-icon-key " @click="handleToken(scope.row)">
             Token
-          </el-button>
-          <el-button type="normal" size="small" icon="el-icon-menu">
-            <router-link :to="'/acquisition/channel/'+scope.row.id+'/app'">Sources</router-link>
           </el-button>
           <!--<el-button v-permission="['advertise.channel.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">-->
           <!--  Delete-->

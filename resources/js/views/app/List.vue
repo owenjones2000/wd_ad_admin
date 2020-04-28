@@ -70,9 +70,9 @@
       <el-table-column prop="kpi.ecpi" :formatter="moneyFormat" align="center" label="eCpi" sortable="custom" />
       <el-table-column prop="kpi.ecpm" :formatter="moneyFormat" align="center" label="eCpm" sortable="custom" />
 
-      <el-table-column align="center" label="Actions" width="200">
+      <el-table-column align="center" label="Actions" width="270" fixed="right">
         <template slot-scope="scope">
-          <!--<el-button v-permission="['advertise.app.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />-->
+          <el-button v-permission="['advertise.app.edit']" type="primary" size="small" icon="el-icon-info" @click="handleEdit(scope.row)" />
           <!--<el-button v-permission="['advertise.auth.token']" type="normal" size="small" icon="el-icon-key " @click="handleToken(scope.row)" />-->
           <el-button v-permission="['advertise.app.edit']" :type="scope.row.is_admin_disable ? 'danger' : 'info'" size="small" icon="el-icon-remove" @click="handleStatus(scope.row)" />
           <el-button type="normal" size="small" icon="el-icon-menu">
@@ -85,9 +85,9 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
-    <el-dialog :title="'Edit new app'" :visible.sync="dialogFormVisible">
+    <el-dialog :title="'App Info'" :visible.sync="dialogFormVisible">
       <div v-loading="appCreating" class="form-container">
-        <el-form ref="appForm" :rules="rules" :model="currentApp" label-position="left" label-width="150px" style="max-width: 500px;">
+        <el-form ref="appForm" :rules="rules" :model="currentApp" disabled label-position="left" label-width="150px" style="max-width: 500px;">
           <el-form-item :label="$t('name')" prop="name">
             <el-input v-model="currentApp.name" />
           </el-form-item>
@@ -100,14 +100,29 @@
               <el-option label="Android" value="android" />
             </el-select>
           </el-form-item>
+          <el-form-item :label="$t('app.icon')" prop="icon_url">
+            <el-avatar shape="square" :size="50" :src="currentApp.icon_url" />
+          </el-form-item>
+          <el-form-item :label="$t('app.description')" prop="description">
+            <el-input v-model="currentApp.description" />
+          </el-form-item>
+          <el-form-item :label="$t('app.track_platform')" prop="track_platform_id">
+            <el-select v-model="currentApp.track_platform_id" placeholder="please select track platform">
+              <el-option label="AppsFlyer" :value="1" />
+              <el-option label="Adjust" :value="2" />
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('app.track_code')" prop="track_code">
+            <el-input v-model="currentApp.track_code" />
+          </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">
             {{ $t('table.cancel') }}
           </el-button>
-          <el-button type="primary" @click="saveApp()">
-            {{ $t('table.confirm') }}
-          </el-button>
+          <!--<el-button type="primary" @click="saveApp()">-->
+          <!--{{ $t('table.confirm') }}-->
+          <!--</el-button>-->
         </div>
       </div>
     </el-dialog>
