@@ -17,9 +17,9 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         {{ $t('table.search') }}
       </el-button>
-      <!--<el-button v-permission="['advertise.channel.edit']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">-->
-      <!--{{ $t('table.add') }}-->
-      <!--</el-button>-->
+      <el-button v-permission="['advertise.channel.edit']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">
+        {{ $t('table.add') }}
+      </el-button>
       <!--<el-button v-waves :loading="downloading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">-->
       <!--  {{ $t('table.export') }}-->
       <!--</el-button>-->
