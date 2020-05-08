@@ -146,7 +146,7 @@ class Account extends Model
      * 生成账单
      */
     public function generateBill(){
-        $last_month_timestamp = strtotime('-2 month');
+        $last_month_timestamp = strtotime('-1 month');
         $start_date = date('Y-m-01', $last_month_timestamp);
         $end_date = date('Y-m-t', $last_month_timestamp);
         $due_date = date('Y-m-t');
