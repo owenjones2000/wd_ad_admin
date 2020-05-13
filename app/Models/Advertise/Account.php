@@ -164,7 +164,9 @@ class Account extends Model
 //            return $query->select(['spend'])->whereIn('app_id', $this->apps()->select('id')->getQuery());
 //        }, $start_date, $end_date);
         $table = 'y_installations_' . date('Ym', $last_month_timestamp);
-        $fee_amount_query = Install::query()->from($table)->whereBetween('created_at', [$start_date, $end_date]);
+        $fee_amount_query = Install::query()->from($table)
+            ->whereBetween('created_at', [$start_date, $end_date])
+            ->whereIn('app_id', $this->apps()->select('id')->getQuery());
         $fee_amount = $fee_amount_query->sum('spend');
         if ($fee_amount > 0) {
             DB::transaction(function () use ($start_date, $end_date, $fee_amount, $due_date, $last_month_timestamp) {
