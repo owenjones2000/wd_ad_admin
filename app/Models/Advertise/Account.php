@@ -8,6 +8,8 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class Account extends Model
 {
@@ -163,7 +165,11 @@ class Account extends Model
 //        $fee_amount_query = Install::multiTableQuery(function($query){
 //            return $query->select(['spend'])->whereIn('app_id', $this->apps()->select('id')->getQuery());
 //        }, $start_date, $end_date);
-        $table = 'y_installations_' . date('Ym', $last_month_timestamp);
+        $table = 'y_sub_tasks_' . date('Ym', $last_month_timestamp);
+        if (!Schema::hasTable($table)) {
+            Log::error("monthly table is not exist!table:" . $table);
+            return false;
+        }
         $fee_amount_query = Install::query()->from($table)
             ->whereBetween('created_at', [$start_date, $end_date])
             ->whereIn('app_id', $this->apps()->select('id')->getQuery());
