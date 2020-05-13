@@ -162,6 +162,8 @@ class Account extends Model
         $start_date = date('Y-m-01', $last_month_timestamp);
         $end_date = date('Y-m-t', $last_month_timestamp);
         $due_date = date('Y-m-t');
+        $date_begin = date('Ym01', $last_month_timestamp);
+        $date_end = date('Ymt', $last_month_timestamp);
 //        $fee_amount_query = Install::multiTableQuery(function($query){
 //            return $query->select(['spend'])->whereIn('app_id', $this->apps()->select('id')->getQuery());
 //        }, $start_date, $end_date);
@@ -171,7 +173,7 @@ class Account extends Model
             return false;
         }
         $fee_amount_query = Install::query()->from($table)
-            ->whereBetween('date', [$start_date, $end_date])
+            ->whereBetween('date', [$date_begin, $date_end])
             ->whereIn('app_id', $this->apps()->select('id')->getQuery());
         $fee_amount = $fee_amount_query->sum('spend');
         if ($fee_amount > 0) {
