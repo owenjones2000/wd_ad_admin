@@ -34,6 +34,9 @@
                 <span>{{ children.row.date }}</span>
               </template>
             </el-table-column>
+            <el-table-column prop="spend" :formatter="moneyFormat" align="center" label="Spend" />
+            <el-table-column prop="ecpi" :formatter="moneyFormat" align="center" label="eCpi" />
+            <el-table-column prop="ecpm" :formatter="moneyFormat" align="center" label="eCpm" />
             <el-table-column prop="requests" :formatter="numberFormat" align="center" label="Requests" />
             <el-table-column prop="impressions" :formatter="numberFormat" align="center" label="Impressions" />
             <el-table-column prop="clicks" :formatter="numberFormat" align="center" label="Clicks" />
@@ -41,9 +44,6 @@
             <el-table-column prop="ctr" :formatter="percentageFormat" align="center" label="CTR" />
             <el-table-column prop="cvr" :formatter="percentageFormat" align="center" label="CVR" />
             <el-table-column prop="ir" :formatter="percentageFormat" align="center" label="IR" />
-            <el-table-column prop="spend" :formatter="moneyFormat" align="center" label="Spend" />
-            <el-table-column prop="ecpi" :formatter="moneyFormat" align="center" label="eCpi" />
-            <el-table-column prop="ecpm" :formatter="moneyFormat" align="center" label="eCpm" />
 
           </el-table>
         </template>
@@ -52,13 +52,10 @@
       <el-table-column prop="name" align="center" label="Name" />
       <el-table-column prop="bundle_id" align="center" label="Package" />
       <el-table-column prop="os" align="center" label="Platform" />
-      <el-table-column prop="advertiser.realname" align="center" label="Advertiser" />
-      <el-table-column align="center" label="Status">
-        <template slot-scope="scope">
-          <el-icon :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}" size="small" :name="scope.row.status ? 'video-play' : 'video-pause'" />
-        </template>
-      </el-table-column>
 
+      <el-table-column prop="kpi.spend" :formatter="moneyFormat" align="center" label="Spend" sortable="custom" />
+      <el-table-column prop="kpi.ecpi" :formatter="moneyFormat" align="center" label="eCpi" sortable="custom" />
+      <el-table-column prop="kpi.ecpm" :formatter="moneyFormat" align="center" label="eCpm" sortable="custom" />
       <el-table-column prop="kpi.requests" :formatter="numberFormat" align="center" label="Requests" sortable="custom" />
       <el-table-column prop="kpi.impressions" :formatter="numberFormat" align="center" label="Impressions" sortable="custom" />
       <el-table-column prop="kpi.clicks" :formatter="numberFormat" align="center" label="Clicks" sortable="custom" />
@@ -66,9 +63,13 @@
       <el-table-column prop="kpi.ctr" :formatter="percentageFormat" align="center" label="CTR" sortable="custom" />
       <el-table-column prop="kpi.cvr" :formatter="percentageFormat" align="center" label="CVR" sortable="custom" />
       <el-table-column prop="kpi.ir" :formatter="percentageFormat" align="center" label="IR" sortable="custom" />
-      <el-table-column prop="kpi.spend" :formatter="moneyFormat" align="center" label="Spend" sortable="custom" />
-      <el-table-column prop="kpi.ecpi" :formatter="moneyFormat" align="center" label="eCpi" sortable="custom" />
-      <el-table-column prop="kpi.ecpm" :formatter="moneyFormat" align="center" label="eCpm" sortable="custom" />
+
+      <el-table-column prop="advertiser.realname" align="center" label="Advertiser" />
+      <el-table-column align="center" label="Status">
+        <template slot-scope="scope">
+          <el-icon :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}" size="small" :name="scope.row.status ? 'video-play' : 'video-pause'" />
+        </template>
+      </el-table-column>
 
       <el-table-column align="center" label="Actions" width="270" fixed="right">
         <template slot-scope="scope">
