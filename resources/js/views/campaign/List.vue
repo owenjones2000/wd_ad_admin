@@ -40,7 +40,9 @@
         </template>
       </el-table-column>
       <el-table-column prop="app.name" align="center" label="App" fixed />
-      <el-table-column prop="advertiser.realname" align="center" label="Advertiser" fixed />
+      <el-table-column prop="kpi.spend" :formatter="moneyFormat" align="center" label="Spend" sortable="custom" />
+      <el-table-column prop="kpi.ecpi" :formatter="moneyFormat" align="center" label="eCpi" sortable="custom" />
+      <el-table-column prop="kpi.ecpm" :formatter="moneyFormat" align="center" label="eCpm" sortable="custom" />
       <el-table-column prop="default_budget" align="center" label="Budget" />
       <el-table-column prop="default_bid" align="center" label="Bid" />
       <el-table-column prop="created_at" :formatter="dateFormat" label="Created" align="center" width="100" />
@@ -58,10 +60,7 @@
       <el-table-column prop="kpi.ctr" :formatter="percentageFormat" align="center" label="CTR" sortable="custom" />
       <el-table-column prop="kpi.cvr" :formatter="percentageFormat" align="center" label="CVR" sortable="custom" />
       <el-table-column prop="kpi.ir" :formatter="percentageFormat" align="center" label="IR" sortable="custom" />
-      <el-table-column prop="kpi.spend" :formatter="moneyFormat" align="center" label="Spend" sortable="custom" />
-      <el-table-column prop="kpi.ecpi" :formatter="moneyFormat" align="center" label="eCpi" sortable="custom" />
-      <el-table-column prop="kpi.ecpm" :formatter="moneyFormat" align="center" label="eCpm" sortable="custom" />
-
+      <el-table-column prop="advertiser.realname" align="center" label="Advertiser" />
       <el-table-column align="center" label="Actions" width="100" fixed="right">
         <template slot-scope="scope">
           <router-link class="link-type" :to="'/acquisition/campaign/'+scope.row.id+'/channel'">Sources</router-link>

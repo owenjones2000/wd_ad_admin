@@ -50,13 +50,12 @@
           </el-table>
         </template>
       </el-table-column>
+      <el-table-column prop="kpi.spend" :formatter="moneyFormat" align="center" label="Revenue" sortable="custom" />
+      <el-table-column prop="kpi.ecpi" :formatter="moneyFormat" align="center" label="eCpi" sortable="custom" />
+      <el-table-column prop="kpi.ecpm" :formatter="moneyFormat" align="center" label="eCpm" sortable="custom" />
       <el-table-column prop="name" align="center" label="Name" fixed />
       <el-table-column prop="bundle_id" align="center" label="Package" fixed />
       <el-table-column prop="platform" align="center" label="Platform" fixed />
-      <el-table-column prop="publisher.realname" align="center" label="Publisher" fixed />
-      <el-table-column prop="put_mode" :formatter="putModeFormat" align="center" label="Put Mode" fixed />
-      <el-table-column prop="rate" :formatter="percentageFormat" align="center" label="Rate" fixed />
-
       <el-table-column prop="kpi.requests" :formatter="numberFormat" align="center" label="Requests" sortable="custom" />
       <el-table-column prop="kpi.impressions" :formatter="numberFormat" align="center" label="Impressions" sortable="custom" />
       <el-table-column prop="kpi.clicks" :formatter="numberFormat" align="center" label="Clicks" sortable="custom" />
@@ -64,10 +63,9 @@
       <el-table-column prop="kpi.ctr" :formatter="percentageFormat" align="center" label="CTR" sortable="custom" />
       <el-table-column prop="kpi.cvr" :formatter="percentageFormat" align="center" label="CVR" sortable="custom" />
       <el-table-column prop="kpi.ir" :formatter="percentageFormat" align="center" label="IR" sortable="custom" />
-      <el-table-column prop="kpi.spend" :formatter="moneyFormat" align="center" label="Revenue" sortable="custom" />
-      <el-table-column prop="kpi.ecpi" :formatter="moneyFormat" align="center" label="eCpi" sortable="custom" />
-      <el-table-column prop="kpi.ecpm" :formatter="moneyFormat" align="center" label="eCpm" sortable="custom" />
-
+      <el-table-column prop="publisher.realname" align="center" label="Publisher" />
+      <el-table-column prop="put_mode" :formatter="putModeFormat" align="center" label="Put Mode" />
+      <el-table-column prop="rate" :formatter="percentageFormat" align="center" label="Rate" />
       <el-table-column align="center" label="Actions" width="300" fixed="right">
         <template slot-scope="scope">
           <el-button type="normal" size="small" icon="el-icon-menu">
