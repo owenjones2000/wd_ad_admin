@@ -55,7 +55,7 @@ class SubTaskMonthSum extends Command
             if (Schema::connection('mysql')->hasTable($storeName) == false) {
                 DB::connection()->statement("create table $storeName like $templateName");
             }
-            DB::connection()->statement("INSERT INTO $storeName SELECT $columns FROM $tableName");
+            DB::connection()->statement("INSERT INTO $storeName($columns) SELECT $columns FROM $tableName");
         }
     }
 }
