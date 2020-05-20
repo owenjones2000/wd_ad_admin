@@ -50,6 +50,7 @@ class SubTaskMonthSum extends Command
             $res = DB::connection()->select("SHOW COLUMNS FROM $templateName");
             $columns = array_column($res, 'Field');
             unset($columns[0]);
+            $columns = implode(',', $columns);
             // dd($columns = implode(',',$columns));
             if (Schema::connection('mysql')->hasTable($storeName) == false) {
                 DB::connection()->statement("create table $storeName like $templateName");
