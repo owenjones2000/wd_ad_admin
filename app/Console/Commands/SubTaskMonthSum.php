@@ -47,10 +47,14 @@ class SubTaskMonthSum extends Command
             $tableName = 'z_sub_tasks_'.$i;
             $storeName = 'y_sub_tasks_'.Carbon::now()->subMonth()->format('Ym');
             $templateName = 'zz_sub_tasks';
+            $res = DB::connection()->select("SHOW COLUMNS FROM $templateName");
+            $columns = array_column($res, 'Field');
+            unset($columns[0]);
+            // dd($columns = implode(',',$columns));
             if (Schema::connection('mysql')->hasTable($storeName) == false) {
                 DB::connection()->statement("create table $storeName like $templateName");
             }
-            DB::connection()->statement("INSERT INTO $storeName SELECT * FROM $tableName");
+            DB::connection()->statement("INSERT INTO $storeName SELECT $columns FROM $tableName");
         }
     }
 }
