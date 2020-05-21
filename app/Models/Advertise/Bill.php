@@ -9,8 +9,18 @@ class Bill extends Model
 {
     protected $table = 'a_bill';
 
-    protected $fillable = ['start_date', 'end_date', 'fee_amount', 'due_date', 'paid_at'];
+    protected $fillable = [
+        'start_date', 
+        'end_date', 
+        'fee_amount', 
+        'due_date', 
+        'paid_at',
+        // 'extra_data'
+    ];
 
+    // protected $casts = [
+    //     'extra_data'=> 'array',
+    // ];
     public function account(){
         return $this->belongsTo(Account::class,'main_user_id','id');
     }
@@ -22,4 +32,11 @@ class Bill extends Model
         }
         return true;
     }
+
+    // public function getBillInfo()
+    // {
+    //     $query = 
+    // }
+
+    
 }

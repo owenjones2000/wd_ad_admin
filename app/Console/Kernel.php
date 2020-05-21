@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\SubTaskMonthSum;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -27,6 +28,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('bill:generate')
             ->runInBackground()
             ->monthlyOn(8, '00:50');
+        $schedule->command(SubTaskMonthSum::class)->runInBackground()->monthlyOn(8, '00:50');
     }
 
     /**

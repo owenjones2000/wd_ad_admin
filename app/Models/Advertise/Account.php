@@ -171,13 +171,22 @@ class Account extends Model
         if (!Schema::hasTable($table)) {
             Log::error("monthly table is not exist!table:" . $table);
             return false;
-        }
-        $fee_amount_query = Install::query()->from($table)
+        }    
+        $fee_amount_query = AdvertiseKpi::query()->from($table)
             ->whereBetween('date', [$date_begin, $date_end])
             ->whereIn('app_id', $this->apps()->select('id')->getQuery());
         $fee_amount = $fee_amount_query->sum('spend');
+        $billInfo = $fee_amount_query->with(['campaign:id,name'])
+        ->select([
+            'campaign_id',
+            'app_id',
+            DB::raw('sum(spend) as spend'),
+            DB::raw('sum(installations) as installations'),
+        ])
+        ->groupBy('campaign_id')
+        ->get()->toArray();
         if ($fee_amount > 0) {
-            DB::transaction(function () use ($start_date, $end_date, $fee_amount, $due_date, $last_month_timestamp) {
+            DB::transaction(function () use ($start_date, $end_date, $fee_amount, $due_date, $billInfo, $last_month_timestamp) {
                 $bill = $this->bills()->firstOrNew(
                     [
                         'start_date' => $start_date,
@@ -195,6 +204,16 @@ class Account extends Model
                         . '-' . date('md') . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT);
                 }
                 $bill->saveOrFail();
+                foreach ($billInfo as $key => $value) {
+                    BillInfo::firstOrCreate([
+                        'bill_id' => $bill->id,
+                        'campaign_id' => $value['campaign_id'],
+                    ],[
+                        'campagin_name' => $value['campaign']['name']??'',
+                        'spend' => $value['spend']??0,
+                        'installations' => $value['installations']??0,
+                    ]);
+                }
             }, 3);
         }
     }
