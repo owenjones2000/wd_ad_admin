@@ -88,16 +88,26 @@
     <hr />
     <table class="detail" style="width: 100%">
         <tr>
-            <th style="width: 80%;">Description</th>
-            <th style="text-align: right;">Fee Amount</th>
+            <th >Campaign</th>
+            <th >Install</th>
+            <th >Spend</th>
+            {{-- <th style="width: 80%;">Description</th> --}}
+            {{-- <th style="text-align: right;">Fee Amount</th> --}}
         </tr>
+        @foreach ($billInfo as $item)
         <tr class="odd-row">
+        <td>{{$item['campagin_name']}}</td>
+        <td>{{$item['installations']}}</td>
+        <td>{{$item['spend']}}</td>
+        </tr>
+        @endforeach
+        {{-- <tr class="odd-row">
             <td>Service Fee</td>
             <td style="text-align: right;">${{ number_format($bill['fee_amount'], 2) }}</td>
-        </tr>
-        <tr>
+        </tr> --}}
+        {{-- <tr>
             <td>(See attached for invoice details.)</td><td></td>
-        </tr>
+        </tr> --}}
     </table>
     <hr />
     <p style="color: #E01B84;text-align: right"><strong>Subtotal: ${{ number_format($bill['fee_amount'], 2) }}</strong></p>

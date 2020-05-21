@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\BillResource;
 use App\Models\Advertise\Account;
 use App\Models\Advertise\Bill;
+use App\Models\Advertise\BillInfo;
 use PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -57,12 +58,14 @@ class BillController extends Controller
 
     public function invoice($id){
         $bill = Bill::query()->where('id', $id)->with('account')->firstOrFail();
-        return view('bill.invoice', ['bill' => $bill]);
+        $billInfo = BillInfo::query()->where('bill_id', $id)->get();
+        return view('bill.invoice', ['bill' => $bill, 'billInfo'=> $billInfo]);
     }
 
     public function invoicePdf($id){
         $bill = Bill::query()->where('id', $id)->with('account')->firstOrFail();
-        $pdf = PDF::loadView('bill.invoice', ['bill' => $bill]);
+        $billInfo = BillInfo::query()->where('bill_id', $id)->get();
+        $pdf = PDF::loadView('bill.invoice', ['bill' => $bill, 'billInfo' => $billInfo]);
         $invoice_name = 'Invoice_' . $bill['start_date'] . '~' . $bill['end_date'];
         return $pdf->download($invoice_name.'.pdf');
     }
