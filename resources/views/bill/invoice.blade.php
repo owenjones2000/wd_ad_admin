@@ -98,7 +98,7 @@
         <tr class="odd-row">
         <td>{{$item['campagin_name']}}</td>
         <td>{{$item['installations']}}</td>
-        <td>{{$item['spend']}}</td>
+        <td>${{$item['spend']}}</td>
         </tr>
         @endforeach
         {{-- <tr class="odd-row">
