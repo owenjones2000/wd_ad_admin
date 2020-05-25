@@ -54,6 +54,10 @@ class ChannelController extends Controller
                 $query->where('realname', 'like', $like_keyword);
             });
         }
+        if ($request->input('os')) {
+            $os = $request->input('os');
+            $channel_base_query->where('platform', $os);
+        }
         $channel_id_query = clone $channel_base_query;
         $channel_id_query->select('id');
         $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function($query) use($start_date, $end_date, $channel_id_query){

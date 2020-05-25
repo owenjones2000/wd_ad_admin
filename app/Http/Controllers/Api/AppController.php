@@ -28,6 +28,10 @@ class AppController extends Controller
                 $query->where('realname', 'like', $like_keyword);
             });
         }
+        if ($request->input('os')){
+            $os = $request->input('os');
+            $app_base_query->where('os',$os);
+        }
         $app_id_query = clone $app_base_query;
         $app_id_query->select('id');
         $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function($query) use($start_date, $end_date, $app_id_query){
