@@ -11,7 +11,7 @@
       <el-select
         v-model="query.os"
         clearable
-        placeholder="select"
+        placeholder="platform"
         style="width: 200px;"
         class="filter-item"
       >
