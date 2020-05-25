@@ -43,10 +43,13 @@ class SubTaskMonthSum extends Command
     {
         $lastmonthday = Carbon::now()->subMonth()->lastOfMonth()->format('Ymd');
         $firstmonthday = Carbon::now()->subMonth()->firstOfMonth()->format('Ymd');
+        $bar = $this->output->createProgressBar($lastmonthday- $firstmonthday);
+
+        $bar->start();
+        $storeName = 'y_sub_tasks_' . Carbon::now()->subMonth()->format('Ym');
+        $templateName = 'zz_sub_tasks';
         for ($i= $firstmonthday; $i <= $lastmonthday; $i++) { 
             $tableName = 'z_sub_tasks_'.$i;
-            $storeName = 'y_sub_tasks_'.Carbon::now()->subMonth()->format('Ym');
-            $templateName = 'zz_sub_tasks';
             $res = DB::connection()->select("SHOW COLUMNS FROM $templateName");
             $columns = array_column($res, 'Field');
             unset($columns[0]);
@@ -56,6 +59,8 @@ class SubTaskMonthSum extends Command
                 DB::connection()->statement("create table $storeName like $templateName");
             }
             DB::connection()->statement("INSERT INTO $storeName($columns) SELECT $columns FROM $tableName");
+            $bar->advance();
         }
+        $bar->finish();
     }
 }

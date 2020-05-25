@@ -62,7 +62,7 @@
           <el-button v-if="scope.row.paid_at==null" v-permission="['advertise.bill.pay']" type="danger" size="small" icon="el-icon-finished" @click="handlePay(scope.row)">
             Confirm Paid
           </el-button>
-          <el-button v-if="scope.row.fee_amount>0" v-permission="['advertise.bill']" type="success" size="small" icon="fa fa-eye" @click="handleInvoice(scope.row)">
+          <el-button v-if="scope.row.fee_amount>0" v-permission="['advertise.bill']" type="success" size="small" icon="fa fa-eye" @click="`handleInvoice`(scope.row)">
             Invoice
           </el-button>
         </template>
