@@ -113,7 +113,7 @@ class ChannelController extends Controller
                     'cost',
                     'spend',
                     'target_app_id',
-                    
+
                 ]);
             return $query;
         }, $start_date, $end_date);
@@ -180,18 +180,35 @@ class ChannelController extends Controller
             DB::raw('round(sum(spend) * 1000 / sum(impressions), 2) as ecpm'),
             'target_app_id',
         ]);
+        $install_kpi_query = Install::multiTableQuery(function ($query) use ($start_date, $end_date, $channel_id_query) {
+            $query->whereBetween('date', [$start_date, $end_date])
+                ->whereIn('target_app_id', $channel_id_query)
+                ->select([
+                    'date', 'cost', 'spend',
+                    'target_app_id',
+                ]);
+            return $query;
+        }, $start_date, $end_date)->select([
+            DB::raw('round(sum(cost), 2) as cost'),
+            'target_app_id',
+        ]);
+
         if ($group_by == 'date') {
             $advertise_kpi_query->addSelect('date');
             $advertise_kpi_query->groupBy($group_by);
             $advertise_kpi_query->orderByDesc('date');
+            $install_kpi_query ->addSelect('date');
+            $install_kpi_query->groupBy($group_by);
         } else {
             $advertise_kpi_query->groupBy('target_app_id');
         }
-
+        $install_kpi_list = $install_kpi_query->get()->keyBy('date');
         $advertise_kpi_list = $advertise_kpi_query
             ->orderBy('spend', 'desc')
             ->get();
-
+        foreach ($advertise_kpi_list as $key => $kpi) {
+            $kpi->cost = $install_kpi_list[$kpi->date]['cost'];
+        }
         return JsonResource::collection($advertise_kpi_list);
     }
 

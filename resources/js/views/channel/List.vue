@@ -81,6 +81,10 @@
                 <span>{{ children.row.date }}</span>
               </template>
             </el-table-column>
+            <el-table-column prop="spend" :formatter="moneyFormat" align="center" label="Cpi_Revenue" />
+            <el-table-column prop="cost" :formatter="moneyFormat" align="center" label="Bid_Revenue" />
+            <el-table-column prop="ecpi" :formatter="moneyFormat" align="center" label="eCpi" />
+            <el-table-column prop="ecpm" :formatter="moneyFormat" align="center" label="eCpm" />
             <el-table-column
               prop="requests"
               :formatter="numberFormat"
@@ -103,9 +107,6 @@
             <el-table-column prop="ctr" :formatter="percentageFormat" align="center" label="CTR" />
             <el-table-column prop="cvr" :formatter="percentageFormat" align="center" label="CVR" />
             <el-table-column prop="ir" :formatter="percentageFormat" align="center" label="IR" />
-            <el-table-column prop="spend" :formatter="moneyFormat" align="center" label="Revenue" />
-            <el-table-column prop="ecpi" :formatter="moneyFormat" align="center" label="eCpi" />
-            <el-table-column prop="ecpm" :formatter="moneyFormat" align="center" label="eCpm" />
           </el-table>
         </template>
       </el-table-column>
