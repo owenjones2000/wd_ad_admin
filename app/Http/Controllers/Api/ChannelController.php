@@ -206,8 +206,10 @@ class ChannelController extends Controller
         $advertise_kpi_list = $advertise_kpi_query
             ->orderBy('spend', 'desc')
             ->get();
+        // dump($advertise_kpi_list->toArray());
+        // dd($install_kpi_list->toArray());
         foreach ($advertise_kpi_list as $key => $kpi) {
-            $kpi->cost = $install_kpi_list[$kpi->date]['cost'];
+            $kpi->cost = $install_kpi_list[$kpi->date]['cost']??0;
         }
         return JsonResource::collection($advertise_kpi_list);
     }
