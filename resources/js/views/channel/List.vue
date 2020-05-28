@@ -113,8 +113,14 @@
         prop="kpi.spend"
         :formatter="moneyFormat"
         align="center"
-        label="Revenue"
+        label="Cpi_Revenue"
         sortable="custom"
+      />
+      <el-table-column
+        prop="kpi.cost"
+        :formatter="moneyFormat"
+        align="center"
+        label="Bid_Revenue"
       />
       <el-table-column
         prop="kpi.ecpi"
