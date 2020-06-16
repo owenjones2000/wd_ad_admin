@@ -183,7 +183,7 @@ class AdController extends Controller
     public function clearRedis($campaign_id, $id)
     {
         $ad = Ad::query()->where(['id' => $id, 'campaign_id' => $campaign_id])->firstOrFail();
-        $ad->resart();
+        $ad->restart();
         return response()->json(['code' => 0, 'msg' => 'Restart']);
     }
     /**

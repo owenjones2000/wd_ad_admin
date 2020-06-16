@@ -3,6 +3,7 @@ namespace App\Models\Advertise;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 
 class Ad extends Model
@@ -44,9 +45,18 @@ class Ad extends Model
         }
     }
 
-    public function resart(){
+    public function restart(){
         Redis::connection("feature")->hdel("wudiads_ad_total_impression", $this->id);
         Redis::connection("feature")->hdel("wudiads_ad_total_installation", $this->id);
+        $table = 'z_sub_tasks_' . date('Ymd');
+        $subtasks = DB::table($table)->where('ad_id', $this->id)
+        ->select("ad_id", "target_app_id")
+        ->distinct()
+        ->get();
+        foreach ($subtasks as $item) {
+            $unique_key = $item->ad_id . "_" . $item->target_app_id;
+            Redis::connection("feature")->del(["ad_install_" . $unique_key, "ad_impression_" . $unique_key]);
+        }
     }
 
     /**

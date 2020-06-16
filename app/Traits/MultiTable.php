@@ -45,12 +45,11 @@ trait MultiTable{
         if($queries->count() == 0){
             throw new \Exception('multi table not exists');
         }
-
         $unionQuery = $queries->shift();
         $queries->each(function ($item, $key) use ($unionQuery) {
             $unionQuery->unionAll($item);
         });
-
+        
         $multi_table_query = (new self())->setTable('union_table')
             ->from(DB::raw("({$unionQuery->toSql()}) as {$base_table_name}"))
             ->mergeBindings($unionQuery);

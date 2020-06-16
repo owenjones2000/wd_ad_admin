@@ -222,11 +222,9 @@ class CampaignController extends Controller
 
     public function clearRedis($id)
     {
-        $ads = Ad::query()->where('campaign_id', $id)->pluck('id')->toArray();
-        foreach ($ads as $item) {
-            Redis::connection("feature")->hdel("wudiads_ad_total_impression", $item);
-            Redis::connection("feature")->hdel("wudiads_ad_total_installation", $item);
-        }
+        $campaign = Campaign::findOrFail($id);
+        $campaign->restart();
+        
         return response()->json(['code' => 0, 'msg' => 'Restart']);
     }
     /**
