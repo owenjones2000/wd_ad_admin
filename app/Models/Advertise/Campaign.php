@@ -139,18 +139,20 @@ class Campaign extends Model
 
     public function restart()
     {
-        $ads = Ad::query()->where('campaign_id', $this->id)->pluck('id')->toArray();
-        foreach ($ads as $item) {
-            Redis::connection("feature")->hdel("wudiads_ad_total_impression", $item);
-            Redis::connection("feature")->hdel("wudiads_ad_total_installation", $item);
+        $ads = Ad::query()->where('campaign_id', $this->id)->get();
+        foreach ($ads as $ad) {
+            $ad->is_cold = 1;
+            $ad->save();
+            Redis::connection("feature")->hdel("wudiads_ad_total_impression", $ad->id);
+            Redis::connection("feature")->hdel("wudiads_ad_total_installation", $ad->id);
         }
         $table = 'z_sub_tasks_' . date('Ymd');
         $subtasks = DB::table($table)->where('campaign_id', $this->id)
         ->select("ad_id", "target_app_id")
         ->distinct()
         ->get();
-        foreach ($subtasks as $item) {
-            $unique_key = $item->ad_id . "_" . $item->target_app_id;
+        foreach ($subtasks as $subtask) {
+            $unique_key = $subtask->ad_id . "_" . $subtask->target_app_id;
             Redis::connection("feature")->del(["ad_install_" . $unique_key, "ad_impression_" . $unique_key]);
         }
     }

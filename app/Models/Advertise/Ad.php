@@ -46,6 +46,8 @@ class Ad extends Model
     }
 
     public function restart(){
+        $this->is_cold = 1;
+        $this->save();
         Redis::connection("feature")->hdel("wudiads_ad_total_impression", $this->id);
         Redis::connection("feature")->hdel("wudiads_ad_total_installation", $this->id);
         $table = 'z_sub_tasks_' . date('Ymd');
@@ -53,8 +55,8 @@ class Ad extends Model
         ->select("ad_id", "target_app_id")
         ->distinct()
         ->get();
-        foreach ($subtasks as $item) {
-            $unique_key = $item->ad_id . "_" . $item->target_app_id;
+        foreach ($subtasks as $subtask) {
+            $unique_key = $subtask->ad_id . "_" . $subtask->target_app_id;
             Redis::connection("feature")->del(["ad_install_" . $unique_key, "ad_impression_" . $unique_key]);
         }
     }
