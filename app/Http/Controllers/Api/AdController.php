@@ -114,6 +114,7 @@ class AdController extends Controller
         return view('advertise.campaign.ad.edit',compact('ad'));
     }
     
+    
     /**
      * Update the specified resource in storage.
      *
@@ -179,6 +180,12 @@ class AdController extends Controller
         return response()->json(['code'=>0,'msg'=>'Disabled']);
     }
 
+    public function clearRedis($campaign_id, $id)
+    {
+        $ad = Ad::query()->where(['id' => $id, 'campaign_id' => $campaign_id])->firstOrFail();
+        $ad->resart();
+        return response()->json(['code' => 0, 'msg' => 'Restart']);
+    }
     /**
      * 通过审核
      * @param $id

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Advertise\Ad;
 use App\Models\Advertise\AdvertiseKpi;
 use App\Models\Advertise\Campaign;
 use App\Models\Advertise\Channel;
@@ -11,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class CampaignController extends Controller
 {
@@ -218,6 +220,15 @@ class CampaignController extends Controller
         return response()->json(['code'=>0,'msg'=>'Disabled']);
     }
 
+    public function clearRedis($id)
+    {
+        $ads = Ad::query()->where('campaign_id', $id)->pluck('id')->toArray();
+        foreach ($ads as $item) {
+            Redis::connection("feature")->hdel("wudiads_ad_total_impression", $item);
+            Redis::connection("feature")->hdel("wudiads_ad_total_installation", $item);
+        }
+        return response()->json(['code' => 0, 'msg' => 'Restart']);
+    }
     /**
      * Remove the specified resource from storage.
      *

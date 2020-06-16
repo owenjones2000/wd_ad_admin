@@ -108,6 +108,7 @@ Route::group(['middleware' => 'api'], function () {
             Route::post('{id?}', 'CampaignController@save')->name('campaign.save')->middleware('permission:campaign.advertise.edit');
             Route::post('{id}/enable', 'CampaignController@enable')->name('campaign.enable')->middleware('permission:advertise.campaign.edit');
             Route::post('{id}/disable', 'CampaignController@disable')->name('campaign.disable')->middleware('permission:advertise.campaign.edit');
+            Route::post('{id}/restart', 'CampaignController@clearRedis')->name('campaign.clear')->middleware('permission:advertise.campaign.restart');
             //删除
 //        Route::delete('destroy', 'CampaignController@destroy')->name('campaign.destroy')->middleware('permission:campaign.destroy');
 
@@ -121,6 +122,7 @@ Route::group(['middleware' => 'api'], function () {
                 Route::post('{id?}', 'AdController@save')->name('campaign.ad.save')->middleware('permission:advertise.campaign.ad.edit');
                 Route::post('{id}/enable', 'AdController@enable')->name('campaign.ad.enable')->middleware('permission:advertise.campaign.ad.edit');
                 Route::post('{id}/disable', 'AdController@disable')->name('campaign.ad.disable')->middleware('permission:advertise.campaign.ad.edit');
+                Route::post('{id}/restart', 'AdController@clearRedis')->name('campaign.ad.clear')->middleware('permission:advertise.campaign.ad.restart');
                 Route::post('{id}/pass', 'AdController@passReview')->name('campaign.ad.review.pass')->middleware('permission:advertise.campaign.ad.edit');
 
                 //删除

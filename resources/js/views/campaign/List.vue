@@ -61,9 +61,10 @@
       <el-table-column prop="kpi.cvr" :formatter="percentageFormat" align="center" label="CVR" sortable="custom" />
       <el-table-column prop="kpi.ir" :formatter="percentageFormat" align="center" label="IR" sortable="custom" />
       <el-table-column prop="advertiser.realname" align="center" label="Advertiser" />
-      <el-table-column align="center" label="Actions" width="100" fixed="right">
+      <el-table-column align="center" label="Actions" fixed="right">
         <template slot-scope="scope">
           <router-link class="link-type" :to="'/acquisition/campaign/'+scope.row.id+'/channel'">Sources</router-link>
+          <el-link v-permission="['advertise.campaign.restart']" type="danger" size="small" icon="el-icon-refresh-left" :underline="false" @click="handleRestart(scope.row)" />
           <!--<el-link v-permission="['advertise.campaign.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />-->
           <!--<el-link v-permission="['advertise.campaign.destroy']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
         </template>
@@ -288,6 +289,25 @@ export default {
             console.log(error);
           });
         }
+      }).catch(error => {
+        console.log(error);
+      });
+    },
+    handleRestart(campaign) {
+      this.$confirm('This will resart campaign ' + campaign.name + ' all ad. Continue?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }).then(() => {
+        campaignResource.restart(campaign.id).then(response => {
+          this.$message({
+            type: 'success',
+            message: 'Campaign ' + campaign.name + 'resart',
+          });
+          this.getList();
+        }).catch(error => {
+          console.log(error);
+        });
       }).catch(error => {
         console.log(error);
       });

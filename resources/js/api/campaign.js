@@ -20,6 +20,13 @@ class CampaignResource extends Resource {
     });
   }
 
+  restart(campaign_id){
+    return request({
+      url: '/' + this.uri + '/' + campaign_id + '/restart',
+      method: 'post',
+    });
+  }
+
   adList(campaign_id, query) {
     return request({
       url: '/' + this.uri + '/' + campaign_id + '/ad',
@@ -39,6 +46,13 @@ class CampaignResource extends Resource {
   enableAd(campaign_id, ad_id){
     return request({
       url: '/' + this.uri + '/' + campaign_id + '/ad/' + ad_id + '/enable',
+      method: 'post',
+    });
+  }
+
+  restartAd(campaign_id, ad_id){
+    return request({
+      url: '/' + this.uri + '/' + campaign_id + '/ad/' + ad_id + '/restart',
       method: 'post',
     });
   }

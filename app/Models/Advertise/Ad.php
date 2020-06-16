@@ -3,6 +3,7 @@ namespace App\Models\Advertise;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Redis;
 
 class Ad extends Model
 {
@@ -41,6 +42,11 @@ class Ad extends Model
             $this->is_admin_disable = true;
             $this->saveOrFail();
         }
+    }
+
+    public function resart(){
+        Redis::connection("feature")->hdel("wudiads_ad_total_impression", $this->id);
+        Redis::connection("feature")->hdel("wudiads_ad_total_installation", $this->id);
     }
 
     /**
