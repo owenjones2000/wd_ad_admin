@@ -242,6 +242,12 @@
           <el-form-item :label="$t('app.bundle_id')" prop="bundle_id">
             <el-input v-model="currentChannel.bundle_id" />
           </el-form-item>
+          <el-form-item label="access_key" prop="access_key">
+            <el-input v-model="currentChannel.access_key" :disabled="true" />
+          </el-form-item>
+          <el-form-item label="access_secret" prop="access_secret">
+            <el-input v-model="currentChannel.access_secret" :disabled="true" />
+          </el-form-item>
           <el-form-item :label="$t('platform.name')" prop="platform">
             <el-select v-model="currentChannel.platform" placeholder="please select platform">
               <el-option label="iOS" value="ios" />

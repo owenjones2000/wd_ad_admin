@@ -22,6 +22,8 @@ use App\Rules\AdvertiseName;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -300,6 +302,8 @@ class ChannelController extends Controller
         }
         if (empty($id)) {
             $channel = new Channel();
+            $channel->access_key = Str::random(8);
+            $channel->access_secret = Str::random(16);
         } else {
             $channel = Channel::query()->where([
                 'id' => $id
