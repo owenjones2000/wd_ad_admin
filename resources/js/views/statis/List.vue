@@ -2,6 +2,20 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-select
+        v-model="query.os"
+        clearable
+        placeholder="platform"
+        style="width: 200px;"
+        class="filter-item"
+      >
+        <el-option
+          v-for="item in options"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        />
+      </el-select>
       <el-date-picker
         v-model="query.daterange"
         type="daterange"
@@ -166,11 +180,16 @@ export default {
       listByGroup: null,
       totalListByGroup: 0,
       loading: true,
+      options: [
+        { value: 'ios', label: 'ios' },
+        { value: 'android', label: 'android' },
+      ],
       downloading: false,
       appCreating: false,
       query: {
         page: 1,
         limit: 15,
+        os: '',
         keyword: '',
         daterange: [new Date(new Date().setDate(new Date().getDate() - 7)), new Date()],
       },

@@ -6,6 +6,7 @@ use App\Models\Advertise\AdvertiseKpi;
 use App\Models\Advertise\Device;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Advertise\Channel;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 
@@ -18,13 +19,20 @@ class StatisController extends Controller
         $end_date = date('Ymd', strtotime($range_date[1]??'now'));
         $group_by = $request->get('grouping');
         $order = $request->get('order', 'desc');
-
-        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function($query) use($start_date, $end_date){
+        $os = $request->input('os');
+        $channelIds = null;
+        if ($os) {
+            $channelIds = Channel::where('platform', $os)->select('id');
+        }
+        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function($query) use($start_date, $end_date, $channelIds){
             $query->whereBetween('date', [$start_date, $end_date])
                 ->select(['date', 'requests', 'impressions', 'clicks', 'installations', 'spend',
                     'app_id', 'campaign_id', 'ad_id', 'target_app_id', 'country'
                 ])
             ;
+            if ($channelIds){
+                $query->whereIn('target_app_id', $channelIds);
+            }
             return $query;
         }, $start_date, $end_date);
 
