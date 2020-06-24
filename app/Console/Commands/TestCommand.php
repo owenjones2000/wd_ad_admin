@@ -3,13 +3,14 @@
 namespace App\Console\Commands;
 
 use App\Admin\Service\OceanengineService;
-use App\Models\Ad;
 use App\Models\Advertise\Account;
+use App\Models\Advertise\Ad;
 use App\Models\Advertiser;
 use App\Models\Campaign;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Redis;
 
 class TestCommand extends Command
 {
@@ -71,5 +72,13 @@ class TestCommand extends Command
     {
         dd(public_path());
         app()->make('files')->link('/e/material', public_path('material'));
+    }
+
+    public function  test2()
+    {
+        $ad = Ad::find(927);
+        $imp = Redis::connection('feature')->hget('wudiads_ad_total_impression', $ad->id);
+        $ins = Redis::connection('feature')->hget('wudiads_ad_total_installation', $ad->id);
+        dump($imp, $ins);
     }
 }
