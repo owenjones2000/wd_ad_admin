@@ -77,7 +77,8 @@ class TestCommand extends Command
     public function  test2()
     {
         $ad = Ad::find(927);
-        $imp = Redis::connection('feature')->select(1)->hget('wudiads_ad_total_impression', $ad->id);
+        Redis::connection('feature')->select(1);
+        $imp = Redis::connection('feature')->hget('wudiads_ad_total_impression', $ad->id);
         $ins = Redis::connection('feature')->hget('wudiads_ad_total_installation', $ad->id);
         dump($imp, $ins);
     }
