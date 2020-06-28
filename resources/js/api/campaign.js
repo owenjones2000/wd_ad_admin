@@ -57,6 +57,31 @@ class CampaignResource extends Resource {
     });
   }
 
+  removeBlack(campaign_id, channel_id){
+    return request({
+      url: '/' + this.uri + '/' + campaign_id + '/channel/' + channel_id + '/removeblack',
+      method: 'post',
+    });
+  }
+  joinBlack(campaign_id, channel_id){
+    return request({
+      url: '/' + this.uri + '/' + campaign_id + '/channel/' + channel_id + '/joinblack',
+      method: 'post',
+    });
+  }
+  removewhite(campaign_id, channel_id){
+    return request({
+      url: '/' + this.uri + '/' + campaign_id + '/channel/' + channel_id + '/removewhite',
+      method: 'post',
+    });
+  }
+  joinwhite(campaign_id, channel_id){
+    return request({
+      url: '/' + this.uri + '/' + campaign_id + '/channel/' + channel_id + '/joinwhite',
+      method: 'post',
+    });
+  }
+
   disableAd(campaign_id, ad_id){
     return request({
       url: '/' + this.uri + '/' + campaign_id + '/ad/' + ad_id + '/disable',

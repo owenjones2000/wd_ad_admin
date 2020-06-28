@@ -137,6 +137,7 @@ class CampaignController extends Controller
 
         $advertise_kpi_list = $advertise_kpi_query
             ->orderBy('spend','desc')
+            // ->with(['campaign.disableChannels', 'campaign.whiteListChannels'])
             ->get()
             ->keyBy('target_app_id')
             ->toArray();
@@ -150,12 +151,16 @@ class CampaignController extends Controller
         if($order_by[0] !== 'kpi'){
             $channel_query->orderBy($order_by[0], $order_sort);
         }
+        $campaign = Campaign::find($campaign_id);
+        $blacklist  = $campaign->disableChannels()->get();
+        $whitelist  = $campaign->whiteListChannels()->get();
         $channel_list = $channel_query->paginate($request->get('limit',30));
-
         foreach($channel_list as $index => &$channel){
             if(isset($advertise_kpi_list[$channel['id']])){
                 $channel->kpi = $advertise_kpi_list[$channel['id']];
             }
+            $channel->is_black = $blacklist->contains($channel['id']);
+            $channel->is_white = $whitelist->contains($channel['id']);
         }
         return JsonResource::collection($channel_list);
     }
@@ -226,6 +231,36 @@ class CampaignController extends Controller
         $campaign->restart();
         
         return response()->json(['code' => 0, 'msg' => 'Restart']);
+    }
+
+    public function joinBlack($campaign_id, $channel_id)
+    {
+        // dd($campaign_id, $channel_id);
+        $campaign = Campaign::findOrFail($campaign_id);
+        $campaign->disableChannels()->attach($channel_id);
+        return response()->json(['code' => 0, 'msg' => 'join black']);
+    }
+    public function removeBlack($campaign_id, $channel_id)
+    {
+        // dd($campaign_id, $channel_id);
+        $campaign = Campaign::findOrFail($campaign_id);
+        $campaign->disableChannels()->detach($channel_id);
+        return response()->json(['code' => 0, 'msg' => 'remove black']);
+    }
+
+    public function joinWhite($campaign_id, $channel_id)
+    {
+        // dd($campaign_id, $channel_id);
+        $campaign = Campaign::findOrFail($campaign_id);
+        $campaign->whiteListChannels()->attach($channel_id);
+        return response()->json(['code' => 0, 'msg' => 'join White']);
+    }
+    public function removeWhite($campaign_id, $channel_id)
+    {
+        // dd($campaign_id, $channel_id);
+        $campaign = Campaign::findOrFail($campaign_id);
+        $campaign->whiteListChannels()->detach($channel_id);
+        return response()->json(['code' => 0, 'msg' => 'remove White']);
     }
     /**
      * Remove the specified resource from storage.

@@ -114,7 +114,14 @@ Route::group(['middleware' => 'api'], function () {
 
             // 子渠道数据
             Route::get('{campaign_id}/channel', 'CampaignController@channel')->name('campaign.channel')->middleware('permission:advertise.campaign');
-
+            
+            Route::group(['prefix'=> '{campaign_id}/channel/{channel_id}', 'middleware' => 'permission:advertise.campaign.edit'], function(){
+                Route::post('joinblack', 'CampaignController@joinBlack')->name('campaign.channel.joinblack');
+                Route::post('removeblack', 'CampaignController@removeBlack')->name('campaign.channel.removeblack');
+                Route::post('joinwhite', 'CampaignController@joinWhite')->name('campaign.channel.joinwhite');
+                Route::post('removewhite', 'CampaignController@removeWhite')->name('campaign.channel.removewhite');
+            });
+            
             // 广告
             Route::group(['prefix'=>'{campaign_id}/ad', 'middleware' => 'permission:advertise.campaign'], function () {
                 Route::get('', 'AdController@list')->name('campaign.ad');

@@ -48,6 +48,18 @@
       <el-table-column prop="kpi.spend" :formatter="moneyFormat" align="center" label="Spend" sortable="custom" />
       <el-table-column prop="kpi.ecpi" :formatter="moneyFormat" align="center" label="eCpi" sortable="custom" />
       <el-table-column prop="kpi.ecpm" :formatter="moneyFormat" align="center" label="eCpm" sortable="custom" />
+      <el-table-column align="center" label="Blacklist">
+        <template slot-scope="scope">
+          <i :style="{color: scope.row.is_black ? '#67C23A' : '#F56C6C'}" :class="scope.row.is_black ? 'el-icon-check' : 'el-icon-close'" />
+          <el-link v-permission="['advertise.campaign.ad.edit']" :type="scope.row.is_black ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleBlack(scope.row)" />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Whitelist">
+        <template slot-scope="scope">
+          <i :style="{color: scope.row.is_white ? '#67C23A' : '#F56C6C'}" :class="scope.row.is_white ? 'el-icon-check' : 'el-icon-close'" />
+          <el-link v-permission="['advertise.campaign.ad.edit']" :type="scope.row.is_white ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleWhite(scope.row)" />
+        </template>
+      </el-table-column>
       <!--<el-table-column align="center" label="Status">-->
       <!--<template slot-scope="scope">-->
       <!--<el-icon :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}" size="small" :name="scope.row.status ? 'video-play' : 'video-pause'" />-->
@@ -277,6 +289,68 @@ export default {
             this.$message({
               type: 'success',
               message: 'Ad ' + ad.name + ' disabled',
+            });
+            this.getList();
+          }).catch(error => {
+            console.log(error);
+          });
+        }
+      }).catch(error => {
+        console.log(error);
+      });
+    },
+    handleBlack(channel) {
+      this.$confirm('This will ' + (channel.is_black ? 'remove blacklist' : 'join in blacklist') + ' channel ' + channel.name + '. Continue?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }).then(() => {
+        if (channel.is_black) {
+          campaignResource.removeBlack(this.campaign_id, channel.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'Channel ' + channel.name + ' remove blacklist',
+            });
+            this.getList();
+          }).catch(error => {
+            console.log(error);
+          });
+        } else {
+          campaignResource.joinBlack(this.campaign_id, channel.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'Channel ' + channel.name + ' join blacklist',
+            });
+            this.getList();
+          }).catch(error => {
+            console.log(error);
+          });
+        }
+      }).catch(error => {
+        console.log(error);
+      });
+    },
+    handleWhite(channel) {
+      this.$confirm('This will ' + (channel.is_white ? 'remove whitelist' : 'join in whitelist') + ' channel ' + channel.name + '. Continue?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }).then(() => {
+        if (channel.is_white) {
+          campaignResource.removewhite(this.campaign_id, channel.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'Channel ' + channel.name + ' remove whitelist',
+            });
+            this.getList();
+          }).catch(error => {
+            console.log(error);
+          });
+        } else {
+          campaignResource.joinwhite(this.campaign_id, channel.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'Channel ' + channel.name + ' join whitelist',
             });
             this.getList();
           }).catch(error => {

@@ -292,4 +292,36 @@ class Campaign extends Model
     public function bids(){
         return $this->hasMany(CampaignBid::class, 'campaign_id', 'id');
     }
+
+    /**
+     * 投放渠道黑名单
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function disableChannels()
+    {
+        return $this->belongsToMany(
+            Channel::class,
+            'a_campaign_target_app_disabled',
+            'campaign_id',
+            'target_app_id',
+            'id',
+            'id'
+        );
+    }
+
+    /**
+     * 投放渠道白名单
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function whiteListChannels()
+    {
+        return $this->belongsToMany(
+            Channel::class,
+            'a_campaign_target_app_whitelist',
+            'campaign_id',
+            'target_app_id',
+            'id',
+            'id'
+        );
+    }
 }
