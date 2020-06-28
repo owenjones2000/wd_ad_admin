@@ -51,13 +51,13 @@
       <el-table-column align="center" label="Blacklist">
         <template slot-scope="scope">
           <i :style="{color: scope.row.is_black ? '#67C23A' : '#F56C6C'}" :class="scope.row.is_black ? 'el-icon-check' : 'el-icon-close'" />
-          <el-link v-permission="['advertise.campaign.ad.edit']" :type="scope.row.is_black ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleBlack(scope.row)" />
+          <el-link v-permission="['advertise.campaign.edit']" :type="scope.row.is_black ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleBlack(scope.row)" />
         </template>
       </el-table-column>
       <el-table-column align="center" label="Whitelist">
         <template slot-scope="scope">
           <i :style="{color: scope.row.is_white ? '#67C23A' : '#F56C6C'}" :class="scope.row.is_white ? 'el-icon-check' : 'el-icon-close'" />
-          <el-link v-permission="['advertise.campaign.ad.edit']" :type="scope.row.is_white ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleWhite(scope.row)" />
+          <el-link v-permission="['advertise.campaign.edit']" :type="scope.row.is_white ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleWhite(scope.row)" />
         </template>
       </el-table-column>
       <!--<el-table-column align="center" label="Status">-->
