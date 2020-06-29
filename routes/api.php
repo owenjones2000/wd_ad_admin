@@ -96,7 +96,8 @@ Route::group(['middleware' => 'api'], function () {
 //            Route::post('{id?}', 'AppController@save')->name('app.save')->middleware('permission:advertise.app.edit');
             Route::post('{id}/enable', 'AppController@enable')->name('app.enable')->middleware('permission:advertise.app.edit');
             Route::post('{id}/disable', 'AppController@disable')->name('app.disable')->middleware('permission:advertise.app.edit');
-
+            Route::post('{id}/enableaudi', 'AppController@enableAudi')->name('app.enableaudi')->middleware('permission:advertise.app.edit');
+            Route::post('{id}/disableaudi', 'AppController@disableAudi')->name('app.disableaudi')->middleware('permission:advertise.app.edit');
             //删除
 //        Route::delete('destroy', 'AppController@destroy')->name('app.destroy')->middleware('permission:app.destroy');
         });

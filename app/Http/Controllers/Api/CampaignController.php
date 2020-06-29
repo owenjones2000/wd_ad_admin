@@ -7,6 +7,7 @@ use App\Models\Advertise\Ad;
 use App\Models\Advertise\AdvertiseKpi;
 use App\Models\Advertise\Campaign;
 use App\Models\Advertise\Channel;
+use App\Models\Advertise\State;
 use App\Rules\AdvertiseName;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -69,7 +70,7 @@ class CampaignController extends Controller
             ->toArray();
         $order_by_ids = implode(',', array_reverse(array_keys($advertise_kpi_list)));
         $campaign_query = clone $campaign_base_query;
-        $campaign_query->with('app', 'advertiser');
+        $campaign_query->with('app', 'advertiser',  'audience');
         if(!empty($order_by_ids)){
             $campaign_query->orderByRaw(DB::raw("FIELD(id,{$order_by_ids}) desc"));
         }
@@ -77,11 +78,17 @@ class CampaignController extends Controller
             $campaign_query->orderBy($order_by[0], $order_sort);
         }
         $campaign_list = $campaign_query->paginate($request->get('limit',30));
-
+        $all_states = State::query()->pluck('code', 'id')->toArray();
         foreach($campaign_list as &$campaign){
             if(isset($advertise_kpi_list[$campaign['id']])){
                 $campaign->kpi = $advertise_kpi_list[$campaign['id']];
             }
+            $states = array_values(array_filter(explode(',', $campaign->audience->states)));
+            foreach ($states as $key => $value) {
+                $states[$key] = $all_states[$value];
+            }
+            $campaign->audience->states = $states;
+            $campaign->audience->all_states = $all_states;
         }
         return JsonResource::collection($campaign_list);
     }

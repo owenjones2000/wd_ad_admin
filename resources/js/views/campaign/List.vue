@@ -1,3 +1,4 @@
+/* eslint-disable vue/no-parsing-error */
 <template>
   <div class="app-container">
     <div class="filter-container">
@@ -61,8 +62,15 @@
       <el-table-column prop="kpi.cvr" :formatter="percentageFormat" align="center" label="CVR" sortable="custom" />
       <el-table-column prop="kpi.ir" :formatter="percentageFormat" align="center" label="IR" sortable="custom" />
       <el-table-column prop="advertiser.realname" align="center" label="Advertiser" />
-      <el-table-column align="center" label="Actions" fixed="right">
+      <el-table-column align="center" label="Actions" fixed="right" width="270">
         <template slot-scope="scope">
+          <el-button
+            v-permission="['advertise.campaign']"
+            type="primary"
+            size="small"
+            icon="el-icon-info"
+            @click="handleEdit(scope.row)"
+          />
           <router-link class="link-type" :to="'/acquisition/campaign/'+scope.row.id+'/channel'">Sources</router-link>
           <el-link v-permission="['advertise.campaign.restart']" type="danger" size="small" icon="el-icon-refresh-left" :underline="false" @click="handleRestart(scope.row)" />
           <!--<el-link v-permission="['advertise.campaign.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />-->
@@ -73,20 +81,43 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
-    <el-dialog :title="'Edit campaign'" :visible.sync="dialogFormVisible">
+    <el-dialog :title="'campaign info'" :visible.sync="dialogFormVisible">
       <div v-loading="campaignCreating" class="form-container">
         <el-form ref="campaignForm" :rules="rules" :model="currentCampaign" label-position="left" label-width="150px" style="max-width: 500px;">
           <el-form-item :label="$t('name')" prop="name">
             <el-input v-model="currentCampaign.name" />
+          </el-form-item>
+          <el-form-item label="Gender">
+            <el-radio-group v-model="currentCampaign.audience.gender">
+              <el-radio :label="0" /> All
+              <el-radio :label="1" /> Male
+              <el-radio :label="2" /> Female
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="Adult">
+            <el-radio-group v-model="currentCampaign.audience.adult">
+              <el-radio :label="0" />All
+              <el-radio :label="1" />Adult
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="States">
+            <el-select v-model="currentCampaign.audience.states" multiple placeholder="select">
+              <el-option
+                v-for="(item,i) in currentCampaign.audience.all_states"
+                :key="i"
+                :label="item"
+                :value="i"
+              />
+            </el-select>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">
             {{ $t('table.cancel') }}
           </el-button>
-          <el-button type="primary" @click="saveCampaign()">
+          <!-- <el-button type="primary" @click="saveCampaign()">
             {{ $t('table.confirm') }}
-          </el-button>
+          </el-button> -->
         </div>
       </div>
     </el-dialog>
@@ -125,6 +156,7 @@ export default {
       currentCampaign: {
         name: '',
         tokens: [],
+        audience: {},
       },
       rules: {
         name: [{ required: true, message: 'Name is required', trigger: 'blur' }],
@@ -235,6 +267,9 @@ export default {
     },
     handleEdit(campaign) {
       this.currentCampaign = campaign;
+      console.log(campaign);
+      console.log(this.currentCampaign.audience.gender);
+      console.log(this.currentCampaign.audience.adult);
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['campaignForm'].clearValidate();

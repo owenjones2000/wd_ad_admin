@@ -294,6 +294,15 @@ class Campaign extends Model
     }
 
     /**
+     * 受众
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function audience()
+    {
+        return $this->hasOne(Audience::class, 'campaign_id', 'id');
+    }
+    
+    /**
      * 投放渠道黑名单
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */

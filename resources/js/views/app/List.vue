@@ -189,7 +189,12 @@
           />
         </template>
       </el-table-column>
-
+      <el-table-column align="center" label="Audience">
+        <template slot-scope="scope">
+          <i :style="{color: scope.row.is_audience ? '#67C23A' : '#F56C6C'}" :class="scope.row.is_audience ? 'el-icon-check' : 'el-icon-close'" />
+          <el-link v-permission="['advertise.app.edit']" :type="scope.row.is_audience ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleAudience(scope.row)" />
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="Actions" width="270" fixed="right">
         <template slot-scope="scope">
           <el-button
@@ -555,6 +560,37 @@ export default {
         .catch(error => {
           console.log(error);
         });
+    },
+    handleAudience(campaign) {
+      this.$confirm('This will change app display audience ' + campaign.name + '. Continue?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }).then(() => {
+        if (campaign.is_audience) {
+          appResource.disableAudi(campaign.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'Campaign ' + campaign.name + ' released',
+            });
+            this.getList();
+          }).catch(error => {
+            console.log(error);
+          });
+        } else {
+          appResource.enableAudi(campaign.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'Campaign ' + campaign.name + ' disabled',
+            });
+            this.getList();
+          }).catch(error => {
+            console.log(error);
+          });
+        }
+      }).catch(error => {
+        console.log(error);
+      });
     },
     saveApp() {
       this.$refs['appForm'].validate(valid => {

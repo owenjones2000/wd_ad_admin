@@ -262,6 +262,24 @@ class AppController extends Controller
         return response()->json(['code'=>0,'msg'=>'Successful']);
     }
 
+    public function enableAudi($id)
+    {
+        /** @var App $apps */
+        $apps = App::findOrFail($id);
+        $apps->is_audience = 1;
+        $apps->save();
+        return response()->json(['code' => 0, 'msg' => 'Enabled']);
+    }
+
+    public function disableAudi($id)
+    {
+        /** @var App $apps */
+        $apps = App::findOrFail($id);
+        $apps->is_audience = 0;
+        $apps->save();
+        return response()->json(['code' => 0, 'msg' => 'Enabled']);
+    }
+
     /**
      * Remove the specified resource from storage.
      *

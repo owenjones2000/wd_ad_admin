@@ -35,6 +35,20 @@ class AppResource extends Resource {
       method: 'post',
     });
   }
+
+  enableAudi(app_id) {
+    return request({
+      url: '/' + this.uri + '/' + app_id + '/enableaudi',
+      method: 'post',
+    });
+  }
+
+  disableAudi(app_id) {
+    return request({
+      url: '/' + this.uri + '/' + app_id + '/disableaudi',
+      method: 'post',
+    });
+  }
 }
 
 export { AppResource as default };
