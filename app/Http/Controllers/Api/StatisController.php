@@ -6,7 +6,11 @@ use App\Models\Advertise\AdvertiseKpi;
 use App\Models\Advertise\Device;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Advertise\Ad;
+use App\Models\Advertise\App;
+use App\Models\Advertise\Campaign;
 use App\Models\Advertise\Channel;
+use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 
@@ -15,8 +19,8 @@ class StatisController extends Controller
     public function total(Request $request)
     {
         $range_date = $request->get('daterange');
-        $start_date = date('Ymd', strtotime($range_date[0]??'now'));
-        $end_date = date('Ymd', strtotime($range_date[1]??'now'));
+        $start_date = date('Ymd', strtotime($range_date[0] ?? 'now'));
+        $end_date = date('Ymd', strtotime($range_date[1] ?? 'now'));
         $group_by = $request->get('grouping');
         $order = $request->get('order', 'desc');
         $os = $request->input('os');
@@ -24,13 +28,13 @@ class StatisController extends Controller
         if ($os) {
             $channelIds = Channel::where('platform', $os)->select('id');
         }
-        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function($query) use($start_date, $end_date, $channelIds){
+        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use ($start_date, $end_date, $channelIds) {
             $query->whereBetween('date', [$start_date, $end_date])
-                ->select(['date', 'requests', 'impressions', 'clicks', 'installations', 'spend',
+                ->select([
+                    'date', 'requests', 'impressions', 'clicks', 'installations', 'spend',
                     'app_id', 'campaign_id', 'ad_id', 'target_app_id', 'country'
-                ])
-            ;
-            if ($channelIds){
+                ]);
+            if ($channelIds) {
                 $query->whereIn('target_app_id', $channelIds);
             }
             return $query;
@@ -65,31 +69,52 @@ class StatisController extends Controller
         return JsonResource::collection($advertise_kpi_list);
     }
 
+    public function newAdd(Request $request)
+    {
+        $range_date = $request->get('daterange');
+        $begin = Carbon::parse($range_date[0] ?? 'now')->startOfDay();
+        $end = Carbon::parse($range_date[1] ?? 'now')->endOfDay();
+        $newapp = App::query()->whereBetween('created_at', [$begin, $end])->count();
+        $newchannel = Channel::query()->whereBetween('created_at', [$begin, $end])->count();
+        $newcampaign = Campaign::query()->whereBetween('created_at', [$begin, $end])->count();
+        $newad = Ad::query()->whereBetween('created_at', [$begin, $end])->count();
+
+        return response()->json([
+            'newapp'  => $newapp,
+            'newchannel' => $newchannel, 
+            'newcampaign' => $newcampaign,
+            'newad' => $newad,
+            // 'newapp'  => 100,
+            // 'newchannel' => 80, 
+            // 'newcampaign' => 1000,
+            // 'newad' => 46,
+        ]);
+    }
+
     public function group(Request $request)
     {
         $range_date = $request->get('daterange');
-        $start_date = date('Ymd', strtotime($range_date[0]??'now'));
-        $end_date = date('Ymd', strtotime($range_date[1]??'now'));
+        $start_date = date('Ymd', strtotime($range_date[0] ?? 'now'));
+        $end_date = date('Ymd', strtotime($range_date[1] ?? 'now'));
 
-//        $start_time = date('Y-m-d 00:00:00', strtotime($range_date[0]??'now'));
-//        $end_time = date('Y-m-d 23:59:59', strtotime($range_date[1]??'now'));
+        //        $start_time = date('Y-m-d 00:00:00', strtotime($range_date[0]??'now'));
+        //        $end_time = date('Y-m-d 23:59:59', strtotime($range_date[1]??'now'));
 
         // Device
-//        $device_query = Device::query()
-//            // ->whereBetween('created_at', [$start_time, $end_time])
-//        ;
-//
-//        $total_device = $device_query->select([
-//            DB::raw('count(1) as total_device_count'),
-//        ])->first()->toArray();
+        //        $device_query = Device::query()
+        //            // ->whereBetween('created_at', [$start_time, $end_time])
+        //        ;
+        //
+        //        $total_device = $device_query->select([
+        //            DB::raw('count(1) as total_device_count'),
+        //        ])->first()->toArray();
 
         // Request
-        $count_request_query = \App\Models\Advertise\Request::multiTableQuery(function($query) use($start_date, $end_date){
+        $count_request_query = \App\Models\Advertise\Request::multiTableQuery(function ($query) use ($start_date, $end_date) {
             $query_table = $query->from;
             $query->leftJoin('p_devices', "{$query_table}.idfa", '=', 'p_devices.idfa');
             $query->select("{$query_table}.idfa", 'ending_frame_group');
-            $query->whereBetween('date', [$start_date, $end_date])
-            ;
+            $query->whereBetween('date', [$start_date, $end_date]);
             return $query;
         }, $start_date, $end_date)
             ->select([
@@ -101,12 +126,11 @@ class StatisController extends Controller
 
         $count_request_list = $count_request_query->paginate();
         // Impression
-        $count_impression_query = \App\Models\Advertise\Impression::multiTableQuery(function($query) use($start_date, $end_date){
+        $count_impression_query = \App\Models\Advertise\Impression::multiTableQuery(function ($query) use ($start_date, $end_date) {
             $query_table = $query->from;
             $query->leftJoin('p_devices', "{$query_table}.idfa", '=', 'p_devices.idfa');
             $query->select("{$query_table}.idfa", 'ending_frame_group');
-            $query->whereBetween('date', [$start_date, $end_date])
-            ;
+            $query->whereBetween('date', [$start_date, $end_date]);
             return $query;
         }, $start_date, $end_date)
             ->select([
@@ -117,12 +141,11 @@ class StatisController extends Controller
 
         $count_impression_list = $count_impression_query->pluck('impression_count', 'ending_frame_group')->toArray();
         // Clicks
-        $count_click_query = \App\Models\Advertise\Click::multiTableQuery(function($query) use($start_date, $end_date){
+        $count_click_query = \App\Models\Advertise\Click::multiTableQuery(function ($query) use ($start_date, $end_date) {
             $query_table = $query->from;
             $query->leftJoin('p_devices', "{$query_table}.idfa", '=', 'p_devices.idfa');
             $query->select("{$query_table}.idfa", 'ending_frame_group');
-            $query->whereBetween('date', [$start_date, $end_date])
-            ;
+            $query->whereBetween('date', [$start_date, $end_date]);
             return $query;
         }, $start_date, $end_date)
             ->select([
@@ -133,12 +156,11 @@ class StatisController extends Controller
 
         $count_click_list = $count_click_query->pluck('click_count', 'ending_frame_group')->toArray();
         // Installs
-        $count_install_query = \App\Models\Advertise\Install::multiTableQuery(function($query) use($start_date, $end_date){
+        $count_install_query = \App\Models\Advertise\Install::multiTableQuery(function ($query) use ($start_date, $end_date) {
             $query_table = $query->from;
             $query->leftJoin('p_devices', "{$query_table}.idfa", '=', 'p_devices.idfa');
             $query->select("{$query_table}.idfa", 'ending_frame_group', 'target_app_id', 'spend');
-            $query->whereBetween('date', [$start_date, $end_date])
-            ;
+            $query->whereBetween('date', [$start_date, $end_date]);
             return $query;
         }, $start_date, $end_date)
             ->select([
@@ -150,7 +172,7 @@ class StatisController extends Controller
 
         $count_install_list = $count_install_query->get()->keyBy('ending_frame_group')->toArray();
 
-        foreach($count_request_list as &$count_request){
+        foreach ($count_request_list as &$count_request) {
             $count_request['impression_count'] = $count_impression_list[$count_request['ending_frame_group']] ?? 0;
             $count_request['click_count'] = $count_click_list[$count_request['ending_frame_group']] ?? 0;
             $count_request['install_count'] = $count_install_list[$count_request['ending_frame_group']]['install_count'] ?? 0;
@@ -162,28 +184,27 @@ class StatisController extends Controller
     public function groupByChannel(Request $request)
     {
         $range_date = $request->get('daterange');
-        $start_date = date('Ymd', strtotime($range_date[0]??'now'));
-        $end_date = date('Ymd', strtotime($range_date[1]??'now'));
+        $start_date = date('Ymd', strtotime($range_date[0] ?? 'now'));
+        $end_date = date('Ymd', strtotime($range_date[1] ?? 'now'));
 
-//        $start_time = date('Y-m-d 00:00:00', strtotime($range_date[0]??'now'));
-//        $end_time = date('Y-m-d 23:59:59', strtotime($range_date[1]??'now'));
+        //        $start_time = date('Y-m-d 00:00:00', strtotime($range_date[0]??'now'));
+        //        $end_time = date('Y-m-d 23:59:59', strtotime($range_date[1]??'now'));
 
         // Device
-//        $device_query = Device::query()
-//            // ->whereBetween('created_at', [$start_time, $end_time])
-//        ;
-//
-//        $total_device = $device_query->select([
-//            DB::raw('count(1) as total_device_count'),
-//        ])->first()->toArray();
+        //        $device_query = Device::query()
+        //            // ->whereBetween('created_at', [$start_time, $end_time])
+        //        ;
+        //
+        //        $total_device = $device_query->select([
+        //            DB::raw('count(1) as total_device_count'),
+        //        ])->first()->toArray();
 
         // Request
-        $count_request_query = \App\Models\Advertise\Request::multiTableQuery(function($query) use($start_date, $end_date){
+        $count_request_query = \App\Models\Advertise\Request::multiTableQuery(function ($query) use ($start_date, $end_date) {
             $query_table = $query->from;
             $query->leftJoin('p_devices', "{$query_table}.idfa", '=', 'p_devices.idfa');
             $query->select("{$query_table}.idfa", 'ending_frame_group', 'target_app_id');
-            $query->whereBetween('date', [$start_date, $end_date])
-            ;
+            $query->whereBetween('date', [$start_date, $end_date]);
             return $query;
         }, $start_date, $end_date)
             ->select([
@@ -200,15 +221,14 @@ class StatisController extends Controller
         $count_request_list = $count_request_query->paginate();
         $target_app_id_list = array_column($count_request_list->items(), 'target_app_id');
         // Impression
-        $count_impression_query = \App\Models\Advertise\Impression::multiTableQuery(function($query) use($start_date, $end_date){
+        $count_impression_query = \App\Models\Advertise\Impression::multiTableQuery(function ($query) use ($start_date, $end_date) {
             $query_table = $query->from;
             $query->leftJoin('p_devices', "{$query_table}.idfa", '=', 'p_devices.idfa');
             $query->select("{$query_table}.idfa", 'ending_frame_group', 'target_app_id');
-            $query->whereBetween('date', [$start_date, $end_date])
-            ;
+            $query->whereBetween('date', [$start_date, $end_date]);
             return $query;
         }, $start_date, $end_date)
-            ->where(function($query) use($target_app_id_list) {
+            ->where(function ($query) use ($target_app_id_list) {
                 $query->whereIn('target_app_id', $target_app_id_list)
                     ->orWhereNull('target_app_id');
             })
@@ -224,15 +244,14 @@ class StatisController extends Controller
 
         $count_impression_list = $count_impression_query->pluck('impression_count', 'primaryKey')->toArray();
         // Clicks
-        $count_click_query = \App\Models\Advertise\Click::multiTableQuery(function($query) use($start_date, $end_date){
+        $count_click_query = \App\Models\Advertise\Click::multiTableQuery(function ($query) use ($start_date, $end_date) {
             $query_table = $query->from;
             $query->leftJoin('p_devices', "{$query_table}.idfa", '=', 'p_devices.idfa');
             $query->select("{$query_table}.idfa", 'ending_frame_group', 'target_app_id');
-            $query->whereBetween('date', [$start_date, $end_date])
-            ;
+            $query->whereBetween('date', [$start_date, $end_date]);
             return $query;
         }, $start_date, $end_date)
-            ->where(function($query) use($target_app_id_list) {
+            ->where(function ($query) use ($target_app_id_list) {
                 $query->whereIn('target_app_id', $target_app_id_list)
                     ->orWhereNull('target_app_id');
             })
@@ -248,15 +267,14 @@ class StatisController extends Controller
 
         $count_click_list = $count_click_query->pluck('click_count', 'primaryKey')->toArray();
         // Installs
-        $count_install_query = \App\Models\Advertise\Install::multiTableQuery(function($query) use($start_date, $end_date){
+        $count_install_query = \App\Models\Advertise\Install::multiTableQuery(function ($query) use ($start_date, $end_date) {
             $query_table = $query->from;
             $query->leftJoin('p_devices', "{$query_table}.idfa", '=', 'p_devices.idfa');
             $query->select("{$query_table}.idfa", 'ending_frame_group', 'target_app_id', 'spend');
-            $query->whereBetween('date', [$start_date, $end_date])
-            ;
+            $query->whereBetween('date', [$start_date, $end_date]);
             return $query;
         }, $start_date, $end_date)
-            ->where(function($query) use($target_app_id_list) {
+            ->where(function ($query) use ($target_app_id_list) {
                 $query->whereIn('target_app_id', $target_app_id_list)
                     ->orWhereNull('target_app_id');
             })
@@ -273,7 +291,7 @@ class StatisController extends Controller
 
         $count_install_list = $count_install_query->get()->keyBy('primaryKey')->toArray();
 
-        foreach($count_request_list as &$count_request){
+        foreach ($count_request_list as &$count_request) {
             $count_request['impression_count'] = $count_impression_list[$count_request['primaryKey']] ?? 0;
             $count_request['click_count'] = $count_click_list[$count_request['primaryKey']] ?? 0;
             $count_request['install_count'] = $count_install_list[$count_request['primaryKey']]['install_count'] ?? 0;
@@ -285,25 +303,24 @@ class StatisController extends Controller
     public function device(Request $request)
     {
         $range_date = $request->get('daterange');
-        $start_date = date('Ymd', strtotime($range_date[0]??'now'));
-        $end_date = date('Ymd', strtotime($range_date[1]??'now'));
+        $start_date = date('Ymd', strtotime($range_date[0] ?? 'now'));
+        $end_date = date('Ymd', strtotime($range_date[1] ?? 'now'));
 
-//        $start_time = date('Y-m-d 00:00:00', strtotime($range_date[0]??'now'));
-//        $end_time = date('Y-m-d 23:59:59', strtotime($range_date[1]??'now'));
+        //        $start_time = date('Y-m-d 00:00:00', strtotime($range_date[0]??'now'));
+        //        $end_time = date('Y-m-d 23:59:59', strtotime($range_date[1]??'now'));
 
         // Device
-//        $device_query = Device::query()
-//            // ->whereBetween('created_at', [$start_time, $end_time])
-//        ;
-//
-//        $total_device = $device_query->select([
-//            DB::raw('count(1) as total_device_count'),
-//        ])->first()->toArray();
+        //        $device_query = Device::query()
+        //            // ->whereBetween('created_at', [$start_time, $end_time])
+        //        ;
+        //
+        //        $total_device = $device_query->select([
+        //            DB::raw('count(1) as total_device_count'),
+        //        ])->first()->toArray();
 
         // Request
-        $request_query = \App\Models\Advertise\Request::multiTableQuery(function($query) use($start_date, $end_date){
-            $query->whereBetween('date', [$start_date, $end_date])
-            ;
+        $request_query = \App\Models\Advertise\Request::multiTableQuery(function ($query) use ($start_date, $end_date) {
+            $query->whereBetween('date', [$start_date, $end_date]);
             return $query;
         }, $start_date, $end_date);
 
@@ -313,9 +330,8 @@ class StatisController extends Controller
         ])->first()->toArray();
 
         // Impression
-        $impression_query = \App\Models\Advertise\Impression::multiTableQuery(function($query) use($start_date, $end_date){
-            $query->whereBetween('date', [$start_date, $end_date])
-            ;
+        $impression_query = \App\Models\Advertise\Impression::multiTableQuery(function ($query) use ($start_date, $end_date) {
+            $query->whereBetween('date', [$start_date, $end_date]);
             return $query;
         }, $start_date, $end_date);
 
@@ -323,9 +339,8 @@ class StatisController extends Controller
             DB::raw('count(1) / count(DISTINCT idfa) as impression_avg'),
         ])->first()->toArray();
         // Clicks
-        $click_query = \App\Models\Advertise\Click::multiTableQuery(function($query) use($start_date, $end_date){
-            $query->whereBetween('date', [$start_date, $end_date])
-            ;
+        $click_query = \App\Models\Advertise\Click::multiTableQuery(function ($query) use ($start_date, $end_date) {
+            $query->whereBetween('date', [$start_date, $end_date]);
             return $query;
         }, $start_date, $end_date);
 
@@ -333,9 +348,8 @@ class StatisController extends Controller
             DB::raw('count(1) / count(DISTINCT idfa) as click_avg'),
         ])->first()->toArray();
         // Installs
-        $install_query = \App\Models\Advertise\Install::multiTableQuery(function($query) use($start_date, $end_date){
-            $query->whereBetween('date', [$start_date, $end_date])
-            ;
+        $install_query = \App\Models\Advertise\Install::multiTableQuery(function ($query) use ($start_date, $end_date) {
+            $query->whereBetween('date', [$start_date, $end_date]);
             return $query;
         }, $start_date, $end_date);
 
@@ -343,31 +357,30 @@ class StatisController extends Controller
             DB::raw('count(1) / count(DISTINCT idfa) as install_avg'),
         ])->first()->toArray();
 
-        return new JsonResource([array_merge(/*$total_device,*/ $total_request, $total_impression, $total_click, $total_install)]);
+        return new JsonResource([array_merge(/*$total_device,*/$total_request, $total_impression, $total_click, $total_install)]);
     }
 
     public function deviceByChannel(Request $request)
     {
         $range_date = $request->get('daterange');
-        $start_date = date('Ymd', strtotime($range_date[0]??'now'));
-        $end_date = date('Ymd', strtotime($range_date[1]??'now'));
+        $start_date = date('Ymd', strtotime($range_date[0] ?? 'now'));
+        $end_date = date('Ymd', strtotime($range_date[1] ?? 'now'));
 
-//        $start_time = date('Y-m-d 00:00:00', strtotime($range_date[0]??'now'));
-//        $end_time = date('Y-m-d 23:59:59', strtotime($range_date[1]??'now'));
+        //        $start_time = date('Y-m-d 00:00:00', strtotime($range_date[0]??'now'));
+        //        $end_time = date('Y-m-d 23:59:59', strtotime($range_date[1]??'now'));
 
         // Device
-//        $device_query = Device::query()
-//            // ->whereBetween('created_at', [$start_time, $end_time])
-//        ;
-//
-//        $total_device = $device_query->select([
-//            DB::raw('count(1) as total_device_count'),
-//        ])->first()->toArray();
+        //        $device_query = Device::query()
+        //            // ->whereBetween('created_at', [$start_time, $end_time])
+        //        ;
+        //
+        //        $total_device = $device_query->select([
+        //            DB::raw('count(1) as total_device_count'),
+        //        ])->first()->toArray();
 
         // Request
-        $avg_request_query = \App\Models\Advertise\Request::multiTableQuery(function($query) use($start_date, $end_date){
-            $query->whereBetween('date', [$start_date, $end_date])
-            ;
+        $avg_request_query = \App\Models\Advertise\Request::multiTableQuery(function ($query) use ($start_date, $end_date) {
+            $query->whereBetween('date', [$start_date, $end_date]);
             return $query;
         }, $start_date, $end_date)
             ->select([
@@ -380,12 +393,11 @@ class StatisController extends Controller
         $avg_request_list = $avg_request_query->paginate();
         $target_app_id_list = array_column($avg_request_list->items(), 'target_app_id');
         // Impression
-        $avg_impression_query = \App\Models\Advertise\Impression::multiTableQuery(function($query) use($start_date, $end_date){
-            $query->whereBetween('date', [$start_date, $end_date])
-            ;
+        $avg_impression_query = \App\Models\Advertise\Impression::multiTableQuery(function ($query) use ($start_date, $end_date) {
+            $query->whereBetween('date', [$start_date, $end_date]);
             return $query;
         }, $start_date, $end_date)
-            ->where(function($query) use($target_app_id_list) {
+            ->where(function ($query) use ($target_app_id_list) {
                 $query->whereIn('target_app_id', $target_app_id_list)
                     ->orWhereNull('target_app_id');
             })
@@ -397,12 +409,11 @@ class StatisController extends Controller
 
         $avg_impression_list = $avg_impression_query->pluck('impression_avg', 'target_app_id')->toArray();
         // Clicks
-        $avg_click_query = \App\Models\Advertise\Click::multiTableQuery(function($query) use($start_date, $end_date){
-            $query->whereBetween('date', [$start_date, $end_date])
-            ;
+        $avg_click_query = \App\Models\Advertise\Click::multiTableQuery(function ($query) use ($start_date, $end_date) {
+            $query->whereBetween('date', [$start_date, $end_date]);
             return $query;
         }, $start_date, $end_date)
-            ->where(function($query) use($target_app_id_list) {
+            ->where(function ($query) use ($target_app_id_list) {
                 $query->whereIn('target_app_id', $target_app_id_list)
                     ->orWhereNull('target_app_id');
             })
@@ -414,12 +425,11 @@ class StatisController extends Controller
 
         $avg_click_list = $avg_click_query->pluck('click_avg', 'target_app_id')->toArray();
         // Installs
-        $avg_install_query = \App\Models\Advertise\Install::multiTableQuery(function($query) use($start_date, $end_date){
-            $query->whereBetween('date', [$start_date, $end_date])
-            ;
+        $avg_install_query = \App\Models\Advertise\Install::multiTableQuery(function ($query) use ($start_date, $end_date) {
+            $query->whereBetween('date', [$start_date, $end_date]);
             return $query;
         }, $start_date, $end_date)
-            ->where(function($query) use($target_app_id_list) {
+            ->where(function ($query) use ($target_app_id_list) {
                 $query->whereIn('target_app_id', $target_app_id_list)
                     ->orWhereNull('target_app_id');
             })
@@ -431,11 +441,10 @@ class StatisController extends Controller
 
         $avg_install_list = $avg_install_query->pluck('install_avg', 'target_app_id')->toArray();
 
-        foreach($avg_request_list as &$avg_request){
+        foreach ($avg_request_list as &$avg_request) {
             $avg_request['impression_avg'] = $avg_impression_list[$avg_request['target_app_id']] ?? 0;
             $avg_request['click_avg'] = $avg_click_list[$avg_request['target_app_id']] ?? 0;
             $avg_request['install_avg'] = $avg_install_list[$avg_request['target_app_id']] ?? 0;
-
         }
         return new JsonResource($avg_request_list);
     }
@@ -443,25 +452,24 @@ class StatisController extends Controller
     public function deviceByApp(Request $request)
     {
         $range_date = $request->get('daterange');
-        $start_date = date('Ymd', strtotime($range_date[0]??'now'));
-        $end_date = date('Ymd', strtotime($range_date[1]??'now'));
+        $start_date = date('Ymd', strtotime($range_date[0] ?? 'now'));
+        $end_date = date('Ymd', strtotime($range_date[1] ?? 'now'));
 
-//        $start_time = date('Y-m-d 00:00:00', strtotime($range_date[0]??'now'));
-//        $end_time = date('Y-m-d 23:59:59', strtotime($range_date[1]??'now'));
+        //        $start_time = date('Y-m-d 00:00:00', strtotime($range_date[0]??'now'));
+        //        $end_time = date('Y-m-d 23:59:59', strtotime($range_date[1]??'now'));
 
         // Device
-//        $device_query = Device::query()
-//            // ->whereBetween('created_at', [$start_time, $end_time])
-//        ;
-//
-//        $total_device = $device_query->select([
-//            DB::raw('count(1) as total_device_count'),
-//        ])->first()->toArray();
+        //        $device_query = Device::query()
+        //            // ->whereBetween('created_at', [$start_time, $end_time])
+        //        ;
+        //
+        //        $total_device = $device_query->select([
+        //            DB::raw('count(1) as total_device_count'),
+        //        ])->first()->toArray();
 
         // Request
-        $avg_request_query = \App\Models\Advertise\Request::multiTableQuery(function($query) use($start_date, $end_date){
-            $query->whereBetween('date', [$start_date, $end_date])
-            ;
+        $avg_request_query = \App\Models\Advertise\Request::multiTableQuery(function ($query) use ($start_date, $end_date) {
+            $query->whereBetween('date', [$start_date, $end_date]);
             return $query;
         }, $start_date, $end_date)
             ->select([
@@ -474,12 +482,11 @@ class StatisController extends Controller
         $avg_request_list = $avg_request_query->paginate();
         $app_id_list = array_column($avg_request_list->items(), 'app_id');
         // Impression
-        $avg_impression_query = \App\Models\Advertise\Impression::multiTableQuery(function($query) use($start_date, $end_date){
-            $query->whereBetween('date', [$start_date, $end_date])
-            ;
+        $avg_impression_query = \App\Models\Advertise\Impression::multiTableQuery(function ($query) use ($start_date, $end_date) {
+            $query->whereBetween('date', [$start_date, $end_date]);
             return $query;
         }, $start_date, $end_date)
-            ->where(function($query) use($app_id_list) {
+            ->where(function ($query) use ($app_id_list) {
                 $query->whereIn('app_id', $app_id_list)
                     ->orWhereNull('app_id');
             })
@@ -491,47 +498,43 @@ class StatisController extends Controller
 
         $avg_impression_list = $avg_impression_query->pluck('impression_avg', 'app_id')->toArray();
         // Clicks
-        $avg_click_query = \App\Models\Advertise\Click::multiTableQuery(function($query) use($start_date, $end_date){
-            $query->whereBetween('date', [$start_date, $end_date])
-            ;
+        $avg_click_query = \App\Models\Advertise\Click::multiTableQuery(function ($query) use ($start_date, $end_date) {
+            $query->whereBetween('date', [$start_date, $end_date]);
             return $query;
         }, $start_date, $end_date)
-            ->where(function($query) use($app_id_list) {
+            ->where(function ($query) use ($app_id_list) {
                 $query->whereIn('app_id', $app_id_list)
                     ->orWhereNull('app_id');
             })
             ->select([
                 DB::raw('count(1) / count(DISTINCT idfa) as click_avg'),
-        ]);
+            ]);
 
         $avg_click_query->addSelect('app_id')->groupBy('app_id');
 
         $avg_click_list = $avg_click_query->pluck('click_avg', 'app_id')->toArray();
         // Installs
-        $avg_install_query = \App\Models\Advertise\Install::multiTableQuery(function($query) use($start_date, $end_date){
-            $query->whereBetween('date', [$start_date, $end_date])
-            ;
+        $avg_install_query = \App\Models\Advertise\Install::multiTableQuery(function ($query) use ($start_date, $end_date) {
+            $query->whereBetween('date', [$start_date, $end_date]);
             return $query;
         }, $start_date, $end_date)
-            ->where(function($query) use($app_id_list) {
+            ->where(function ($query) use ($app_id_list) {
                 $query->whereIn('app_id', $app_id_list)
                     ->orWhereNull('app_id');
             })
             ->select([
                 DB::raw('count(1) / count(DISTINCT idfa) as install_avg'),
-        ]);
+            ]);
 
         $avg_install_query->addSelect('app_id')->groupBy('app_id');
 
         $avg_install_list = $avg_install_query->pluck('install_avg', 'app_id')->toArray();
 
-        foreach($avg_request_list as &$avg_request){
+        foreach ($avg_request_list as &$avg_request) {
             $avg_request['impression_avg'] = $avg_impression_list[$avg_request['app_id']] ?? 0;
             $avg_request['click_avg'] = $avg_click_list[$avg_request['app_id']] ?? 0;
             $avg_request['install_avg'] = $avg_install_list[$avg_request['app_id']] ?? 0;
-
         }
         return new JsonResource($avg_request_list);
     }
-
 }

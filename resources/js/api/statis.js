@@ -8,6 +8,13 @@ class Statis {
       params: query,
     });
   }
+  newAdd(query){
+    return request({
+      url: '/statis/newadd',
+      method: 'get',
+      params: query,
+    });
+  }
   group(query){
     return request({
       url: '/statis/group',

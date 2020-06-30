@@ -113,6 +113,63 @@
         </div>
       </div>
     </el-col>
+
+    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+      <div class="card-panel">
+        <div class="card-panel-icon-wrapper icon-people">
+          <i class="fa fa-adn card-panel-icon" />
+          <!--<svg-icon icon-class="peoples" class-name="card-panel-icon" />-->
+        </div>
+        <div class="card-panel-description">
+          <div class="card-panel-text">
+            New App
+          </div>
+          <count-to :start-val="0" :end-val="total.newapp" :duration="60" class="card-panel-num" />
+        </div>
+      </div>
+    </el-col>
+    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+      <div class="card-panel">
+        <div class="card-panel-icon-wrapper icon-message">
+          <i class="fa fa-rocket card-panel-icon" />
+          <!--<svg-icon icon-class="user" class-name="card-panel-icon" />-->
+        </div>
+        <div class="card-panel-description">
+          <div class="card-panel-text">
+            New Channel
+          </div>
+          <count-to :start-val="0" :end-val="total.newchannel" :duration="30" class="card-panel-num" />
+        </div>
+      </div>
+    </el-col>
+    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+      <div class="card-panel">
+        <div class="card-panel-icon-wrapper icon-shopping">
+          <i class="fa fa-youtube-play card-panel-icon" />
+          <!--<svg-icon icon-class="people" class-name="card-panel-icon" />-->
+        </div>
+        <div class="card-panel-description">
+          <div class="card-panel-text">
+            New Campaign
+          </div>
+          <count-to :start-val="0" :end-val="total.newcampaign" :duration="60" class="card-panel-num" />
+        </div>
+      </div>
+    </el-col>
+    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+      <div class="card-panel">
+        <div class="card-panel-icon-wrapper icon-money">
+          <i class="fa fa-audio-description card-panel-icon" />
+          <!--<svg-icon icon-class="shopping" class-name="card-panel-icon" />-->
+        </div>
+        <div class="card-panel-description">
+          <div class="card-panel-text">
+            New Ad
+          </div>
+          <count-to :start-val="0" :end-val="total.newad" :duration="60" class="card-panel-num" />
+        </div>
+      </div>
+    </el-col>
   </el-row>
 </template>
 
@@ -139,11 +196,17 @@ export default {
         clicks: 0,
         installs: 0,
         spend: 0,
+        newapp: 0,
+        newchannel: 0,
+        newcampaign: 0,
+        newad: 0,
       },
     };
   },
   created() {
     this.getTotal();
+    this.getNewAdd();
+    // console.log(this.total);
   },
   methods: {
     async getTotal() {
@@ -154,6 +217,7 @@ export default {
         daterange: [new Date(), new Date()],
       };
       const { data } = await statis.total(query);
+      console.log(data);
       if (data.length > 0) {
         this.total.countries = Number(data[0].countries);
         this.total.apps = Number(data[0].apps);
@@ -166,6 +230,17 @@ export default {
         this.total.installs = Number(data[0].installs);
         this.total.spend = Number(data[0].spend);
       }
+    },
+    async getNewAdd(){
+      const query = {
+        daterange: [new Date(), new Date()],
+      };
+      const data = await statis.newAdd(query);
+      console.log(data);
+      this.total.newapp = Number(data.newapp);
+      this.total.newchannel = Number(data.newchannel);
+      this.total.newad = Number(data.newad);
+      this.total.newcampaign = Number(data.newcampaign);
     },
   },
 };
