@@ -110,6 +110,7 @@ class AudienceController extends Controller
             $idfas[]  = $value['IDFA'];
         }
         $idfas = array_unique($idfas);
+        Log::info(count($idfas));
         $insertdata = [];
         try {
             foreach ($idfas as $key => $value) {
