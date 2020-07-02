@@ -101,6 +101,7 @@ class AudienceController extends Controller
         $file_content = file_get_contents($realPath);
         $batchNo = $user->id.'-'.time();
         $data = static::strToCsvArray($file_content);
+        $idfas = [];
         foreach ($data as $key => $value) {
             if ($value['IDFA'] == '00000000-0000-0000-0000-000000000000'){
                 continue;
