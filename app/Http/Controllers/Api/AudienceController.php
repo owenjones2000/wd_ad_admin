@@ -113,7 +113,7 @@ class AudienceController extends Controller
         $insertdata = [];
         foreach ($idfas as $key => $value) {
             $insertdata[] = ['idfa' => $value, 'batch_no' => $batchNo, 'tag' => $appid ];
-            Redis::connection('default')->sadd('app_audience_blocklist_'. $appid , $value);
+            Redis::connection('feature')->sadd('app_audience_blocklist_'. $appid , $value);
         }
         $chunkdata =  array_chunk($insertdata, 10000);
         try{
