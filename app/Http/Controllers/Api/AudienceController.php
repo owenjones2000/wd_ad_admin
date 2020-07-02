@@ -115,14 +115,16 @@ class AudienceController extends Controller
         try {
             foreach ($idfas as $key => $value) {
                 $insertdata[] = ['idfa' => $value, 'batch_no' => $batchNo, 'tag' => $appid];
-                Redis::connection('feature')->sadd('app_audience_blocklist_'. $appid , $value);
+                
                 // Redis::sadd('app_audience_blocklist_' . $appid, $value);
             }
             $chunkdata =  array_chunk($insertdata, 10000);
 
             foreach ($chunkdata as $key => $value) {
-                $res = DB::table('a_idfa')->insert($value);
-                Log::info($res);
+                $dbRes = DB::table('a_idfa')->insert($value);
+                $redisRes = Redis::connection('feature')->sadd('app_audience_blocklist_' . $appid, array_column($value, 'idfa'));
+                Log::info($dbRes);
+                Log::info($redisRes);
             }
         } catch (\Exception $e) {
             Log::error($e);
