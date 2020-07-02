@@ -16,6 +16,7 @@ import Layout from '@/layout';
 import systemRoutes from './modules/system';
 import basicRoutes from './modules/basic';
 import acquisitionRoutes from './modules/acquisition';
+import aduienceRoutes from './modules/aduience';
 import statisRoutes from './modules/statis';
 
 /**
@@ -118,6 +119,7 @@ export const asyncRoutes = [
   systemRoutes,
   basicRoutes,
   acquisitionRoutes,
+  aduienceRoutes,
   statisRoutes,
   { path: '*', redirect: '/404', hidden: true },
 ];

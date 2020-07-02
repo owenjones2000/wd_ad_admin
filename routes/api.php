@@ -155,6 +155,9 @@ Route::group(['middleware' => 'api'], function () {
             Route::get('device/app', 'StatisController@deviceByApp')->name('statis.device');
         });
 
+        Route::group(['prefix' => 'audience', 'middleware' => 'permission:audience.manage'], function (){
+            Route::post('upload', 'AudienceController@upload')->name('audience.uplolad');
+        });
         //文件
         Route::post('Asset', 'AssetController@processMediaFiles')->name('asset.process');
     });
