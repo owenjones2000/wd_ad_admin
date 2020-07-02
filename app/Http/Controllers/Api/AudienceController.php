@@ -97,7 +97,7 @@ class AudienceController extends Controller
 
         $name = $file->getClientOriginalName();
         $patharr = explode('.', $name);
-
+        $appid = array_shift($patharr);
         $file_content = file_get_contents($realPath);
         $batchNo = $user->id.'-'.time();
         $data = static::strToCsvArray($file_content);
@@ -107,21 +107,25 @@ class AudienceController extends Controller
                 continue;
             }
             $idfas[]  = $value['IDFA'];
+            
         }
         $idfas = array_unique($idfas);
         $insertdata = [];
         foreach ($idfas as $key => $value) {
-            $insertdata[] = ['idfa' => $value, 'batch_no' => $batchNo, 'tag' => array_shift($patharr)];
-            Redis::connection('default')->sadd('app_audience_blocklist_'. array_shift($patharr), $value);
+            $insertdata[] = ['idfa' => $value, 'batch_no' => $batchNo, 'tag' => $appid ];
+            Redis::connection('default')->sadd('app_audience_blocklist_'. $appid , $value);
         }
         $chunkdata =  array_chunk($insertdata, 10000);
         try{
             foreach ($chunkdata as $key => $value) {
+                dd($value);
                 DB::table('a_idfa')->insert($value);
                 // Redis::connection('feature')->
             }
         } catch (\Exception $e) {
-            Log::error($e);     
+            Log::error($e);
+            return response()->json(['code' => 1000, 'msg' => 'Fail']);
+    
         }
         return response()->json(['code' => 0, 'msg' => 'Successful']);
 
