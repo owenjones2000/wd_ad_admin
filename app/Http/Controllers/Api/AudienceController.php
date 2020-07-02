@@ -118,7 +118,6 @@ class AudienceController extends Controller
         $chunkdata =  array_chunk($insertdata, 10000);
         try{
             foreach ($chunkdata as $key => $value) {
-                dd($value);
                 DB::table('a_idfa')->insert($value);
                 // Redis::connection('feature')->
             }
