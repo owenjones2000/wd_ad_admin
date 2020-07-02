@@ -5,7 +5,7 @@ import { getToken, setToken } from '@/utils/auth';
 // Create axios instance
 const service = axios.create({
   baseURL: process.env.MIX_BASE_API,
-  timeout: 60000, // Request timeout
+  timeout: 300000, // Request timeout
 });
 
 // Request intercepter
