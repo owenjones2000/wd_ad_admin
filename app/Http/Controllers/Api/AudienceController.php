@@ -122,12 +122,12 @@ class AudienceController extends Controller
                 $redisValue = array_column($value, 'idfa');
                 $dbRes = DB::table('a_idfa')->insert($value);
                 // $redisRes = Redis::connection('default')->sadd('app_audience_blocklist_' . $appid, $redisValue);
-                Redis::pipeline(function($pipe) use ($appid,$redisValue){
+                Redis::connection('feature')->pipeline(function($pipe) use ($appid,$redisValue){
                     foreach ($redisValue as $key => $value) {
                         $pipe->sadd('app_audience_blocklist_' . $appid, $value);
                     }
                 });
-                // Log::info($dbRes);
+                Log::info($dbRes);
                 // Log::info($redisRes);
             }
         } catch (\Exception $e) {
