@@ -91,6 +91,7 @@ class AudienceController extends Controller
 
     public function upload(Request $request)
     {
+        set_time_limit(0);
         $user = Auth::user();
         $file = $request->file('idfa_file');
         $realPath = $file->getRealPath();
@@ -99,38 +100,38 @@ class AudienceController extends Controller
         $patharr = explode('.', $name);
         $appid = array_shift($patharr);
         $file_content = file_get_contents($realPath);
-        $batchNo = $user->id.'-'.time();
+        $batchNo = $user->id . '-' . time();
         $data = static::strToCsvArray($file_content);
         $idfas = [];
         foreach ($data as $key => $value) {
-            if ($value['IDFA'] == '00000000-0000-0000-0000-000000000000'){
+            if ($value['IDFA'] == '00000000-0000-0000-0000-000000000000') {
                 continue;
             }
             $idfas[]  = $value['IDFA'];
-            
         }
         $idfas = array_unique($idfas);
         $insertdata = [];
-        foreach ($idfas as $key => $value) {
-            $insertdata[] = ['idfa' => $value, 'batch_no' => $batchNo, 'tag' => $appid ];
-            Redis::connection('feature')->sadd('app_audience_blocklist_'. $appid , $value);
-        }
-        $chunkdata =  array_chunk($insertdata, 10000);
-        try{
+        try {
+            foreach ($idfas as $key => $value) {
+                $insertdata[] = ['idfa' => $value, 'batch_no' => $batchNo, 'tag' => $appid];
+                Redis::connection('feature')->sadd('app_audience_blocklist_'. $appid , $value);
+                // Redis::sadd('app_audience_blocklist_' . $appid, $value);
+            }
+            $chunkdata =  array_chunk($insertdata, 10000);
+
             foreach ($chunkdata as $key => $value) {
-                DB::table('a_idfa')->insert($value);
-                // Redis::connection('feature')->
+                $res = DB::table('a_idfa')->insert($value);
+                Log::info($res);
             }
         } catch (\Exception $e) {
             Log::error($e);
             return response()->json(['code' => 1000, 'msg' => 'Fail']);
-    
         }
         return response()->json(['code' => 0, 'msg' => 'Successful']);
 
         // dd($request->all());
         // $allSheets = Excel::import($request->file('idfa_file'))->toArray();
-        
+
     }
 
     /**
