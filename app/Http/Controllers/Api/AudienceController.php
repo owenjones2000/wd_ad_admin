@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Audience;
 use App\Models\IdfaLog;
+use App\Models\IdfaTag;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Dcat\EasyExcel\Excel;
@@ -94,6 +95,7 @@ class AudienceController extends Controller
 
     public function upload(Request $request)
     {
+        ini_set('memory_limit', '1024M');
         $this->validate($request, [
             'idfa_file' => 'required|file
             ',
@@ -107,7 +109,8 @@ class AudienceController extends Controller
         // dd($file->getClientMimeType());
         // $patharr = explode('.', $name);
         // $appid = array_shift($patharr);
-        $tag = $request->input('tag');
+        $tagName = $request->input('tag');
+        $tag = IdfaTag::firstOrCreate(['name' => $tagName]);
         $count = 0;
         $idfas = [];
         try {
@@ -116,18 +119,20 @@ class AudienceController extends Controller
                     if ($data[0] == '00000000-0000-0000-0000-000000000000' || $data[0] == 'IDFA') {
                         continue;
                     }
+                    
                     $idfas[] = $data[0];
                     $num = count($idfas);
                     if ($num >= 10000) {
-                        $count += $this->insertInto($idfas, $batchNo, $tag);
+                        dd(1);
+                        $count += $this->insertInto($idfas, $batchNo, $tag->id);
                         $idfas = [];
                     }
                 }
                 fclose($handle);
             }
-            $count += $this->insertInto($idfas, $batchNo, $tag);
+            $count += $this->insertInto($idfas, $batchNo, $tag->id);
             DB::table('a_idfa_log')->insert([
-                'batch_no' => $batchNo, 'tag' => $tag, 'count' => $count,
+                'batch_no' => $batchNo, 'tag' => $tagName, 'count' => $count,
                 'created_at' => Carbon::now(),
             ]);
         } catch (\Exception $e) {
@@ -177,16 +182,17 @@ class AudienceController extends Controller
 
     }
 
-    public function insertInto($idfas, $batchNo, $tag)
+    public function insertInto($idfas, $batchNo, $tagId)
     {
         $idfas = array_unique($idfas);
         Log::info('count ' . count($idfas));
         $insertdata = [];
         $redisValue = [];
         foreach ($idfas as $key => $value) {
-            $insertdata[] = ['idfa' => $value, 'batch_no' => $batchNo, 'tag' => $tag];
+            $insertdata[] = ['idfa' => $value, 'batch_no' => $batchNo, 'tag_id' => $tagId];
             $redisValue[] = $value;
         }
+        
         $dbRes = DB::table('a_idfa')->insert($insertdata);
         // $redisRes = Redis::connection('feature')->sadd('app_audience_blocklist_' . $appid, ...$redisValue);
         // $redisRes = Redis::connection('default')->sadd('app_audience_blocklist_' . $tag, ...$redisValue);
