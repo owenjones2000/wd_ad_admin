@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Laravue\JsonResponse;
 use App\Models\Advertise\App;
 use App\Models\Audience;
+use App\Models\Idfa;
 use App\Models\IdfaLog;
 use App\Models\IdfaTag;
 use Carbon\Carbon;
@@ -125,7 +127,6 @@ class AudienceController extends Controller
                     $idfas[] = $data[0];
                     $num = count($idfas);
                     if ($num >= 10000) {
-                        dd(1);
                         $count += $this->insertInto($idfas, $batchNo, $tag->id);
                         $idfas = [];
                     }
@@ -230,7 +231,10 @@ class AudienceController extends Controller
 
     public function getApp(Request $request)
     {
-        $apps = App::query()->where('status', 1)->where('is_admin_disable', 0) ->get();
+        $apps = App::query()
+        // ->where('status', 1)
+        // ->where('is_admin_disable', 0) 
+        ->get();
         return JsonResource::collection($apps);
     }
 
@@ -245,5 +249,36 @@ class AudienceController extends Controller
         }
 
         return JsonResource::collection($query->paginate($limit));
+    }
+
+    public function tagApps(Request $request, $id)
+    {
+        $idfatag = IdfaTag::findOrFail($id);
+        return new JsonResponse([
+            'app' => $idfatag->apps,
+        ]);
+    }
+
+    public function updateTagApps(Request $request, $id)
+    {
+        $appIds = $request->get('apps', []);
+        $tag = IdfaTag::findOrFail($id);
+        $oldAppIds = $tag->apps->pluck('id')->toArray();
+        
+        $newappIds = array_diff($appIds, $oldAppIds);
+        if ($newappIds){
+            $idfas = Idfa::where('tag_id', $id)->chunk(10000, function($idfas) use ($newappIds){
+                $redisValue = $idfas->pluck('idfa');
+                foreach ($newappIds as $key => $id) {
+                    $redisRes = Redis::connection('default')->sadd('app_audience_blocklist_' . $id, ...$redisValue);
+                    Log::info('redisres  ' . $redisRes. '   appid '. $id);
+                }
+            });
+        }
+        $tag->apps()->sync($appIds);
+
+        return new JsonResponse([
+            'tag' => $tag
+        ]);
     }
 }

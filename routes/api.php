@@ -160,6 +160,8 @@ Route::group(['middleware' => 'api'], function () {
             Route::get('upload/log', 'AudienceController@idfaLog')->name('audience.uplolad.log');
             Route::get('app', 'AudienceController@getApp')->name('audience.app');
             Route::get('taglist', 'AudienceController@taglist')->name('audience.taglist');
+            Route::get('tag/{tag_id}/apps', 'AudienceController@tagApps')->name('audience.tagapps');
+            Route::put('tag/{tag_id}/apps', 'AudienceController@updateTagApps')->name('audience.tagapps');
         });
         //文件
         Route::post('Asset', 'AssetController@processMediaFiles')->name('asset.process');

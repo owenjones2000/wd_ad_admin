@@ -20,6 +20,21 @@ class AudienceResource extends Resource {
       params: query,
     });
   }
+
+  tagApps(id) {
+    return request({
+      url: '/' + this.uri + '/tag/' + id + '/apps',
+      method: 'get',
+    });
+  }
+
+  updateTagApps(id, apps) {
+    return request({
+      url: '/' + this.uri + '/tag/' + id + '/apps',
+      method: 'put',
+      data: apps,
+    });
+  }
 }
 
 export { AudienceResource as default };

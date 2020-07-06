@@ -32,12 +32,12 @@
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
 
     <el-dialog :visible.sync="dialogPermissionVisible">
-      <div v-if="currentUser.name" v-loading="dialogPermissionLoading" class="form-container">
+      <div v-if="currentTag.name" v-loading="dialogPermissionLoading" class="form-container">
         <div class="permissions-container">
           <div class="block">
-            <el-form :model="currentUser" label-width="80px" label-position="top">
+            <el-form :model="currentTag" label-width="80px" label-position="top">
               <el-form-item label="Apps">
-                <el-tree ref="permissions" :data="apps" :default-checked-keys="permissionKeys(userPermissions)" :props="permissionProps" show-checkbox node-key="id" class="permission-tree" />
+                <el-tree ref="apps" :data="apps" :default-checked-keys="appKeys(tagApps)" :props="permissionProps" show-checkbox node-key="id" class="permission-tree" />
               </el-form-item>
             </el-form>
           </div>
@@ -82,13 +82,13 @@ export default {
         limit: 15,
         keyword: '',
       },
-      user: {},
+      tag: {},
       passwordRequired: true,
       dialogFormVisible: false,
       dialogPermissionVisible: false,
       dialogPermissionLoading: false,
-      currentUserId: 0,
-      currentUser: {
+      currentTagId: 0,
+      currentTag: {
         name: '',
         permissions: [],
         rolePermissions: [],
@@ -102,8 +102,8 @@ export default {
     };
   },
   computed: {
-    userPermissions() {
-      return this.currentUser.permissions.user;
+    tagApps() {
+      return this.currentTag.apps.app;
     },
   },
   created() {
@@ -146,33 +146,33 @@ export default {
       });
     },
     async handleEditPermissions(id) {
-      this.currentUserId = id;
+      this.currentTagId = id;
       this.dialogPermissionLoading = true;
       this.dialogPermissionVisible = true;
-      const found = this.list.find(user => user.id === id);
-      const { data } = await audienceResource.permissions(id);
-      this.currentUser = {
+      const found = this.list.find(tag => tag.id === id);
+      const { data } = await audienceResource.tagApps(id);
+      this.currentTag = {
         id: found.id,
         name: found.name,
-        permissions: data,
+        apps: data,
       };
       this.dialogPermissionLoading = false;
       this.$nextTick(() => {
-        this.$refs.permissions.setCheckedKeys(this.permissionKeys(this.userPermissions));
+        this.$refs.apps.setCheckedKeys(this.appKeys(this.tagApps));
       });
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => v[j]));
     },
-    permissionKeys(permissions) {
-      return permissions.map(permission => permission.id);
+    appKeys(apps) {
+      return apps.map(apps => apps.id);
     },
 
     confirmPermission() {
-      const checkedPermissions = this.$refs.permissions.getCheckedKeys();
+      const checkedApps = this.$refs.apps.getCheckedKeys();
       this.dialogPermissionLoading = true;
 
-      audienceResource.updatePermission(this.currentUserId, { permissions: checkedPermissions }).then(response => {
+      audienceResource.updateTagApps(this.currentTagId, { apps: checkedApps }).then(response => {
         this.$message({
           message: 'Permissions has been updated successfully',
           type: 'success',
