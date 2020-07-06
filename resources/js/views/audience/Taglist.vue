@@ -19,6 +19,11 @@
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="Count">
+        <template slot-scope="scope">
+          <span>{{ scope.row.idfas_count }}</span>
+        </template>
+      </el-table-column>
 
       <el-table-column align="center" label="Actions" width="350">
         <template slot-scope="scope">

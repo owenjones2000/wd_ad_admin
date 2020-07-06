@@ -247,7 +247,7 @@ class AudienceController extends Controller
         if (!empty($keyword)) {
             $query->where('name', 'LIKE', '%' . $keyword . '%');
         }
-
+        $query->withCount('idfas');
         return JsonResource::collection($query->paginate($limit));
     }
 

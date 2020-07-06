@@ -17,4 +17,10 @@ class IdfaTag extends Model
     {
         return $this->belongsToMany(App::class, 'a_idfa_tag_app', 'tag_id', 'app_id', 'id', 'id');
     }
+
+    public function idfas()
+    {
+        return $this->hasMany(Idfa::class, 'tag_id', 'id');
+    }
+       
 }
