@@ -18,19 +18,11 @@ const acquisitionRoutes = {
       name: 'AudienceUpload',
       meta: { title: 'Audience Upload', icon: 'tab', permissions: ['audience.manage'] },
     },
-    /** App managements */
     {
-      path: 'app',
-      component: () => import('@/views/app/List'),
-      name: 'AppList',
-      meta: { title: 'App', icon: 'component', permissions: ['advertise.app'] },
-    },
-    {
-      path: 'app/:app_id(\\d+)/channel',
-      component: () => import('@/views/app/channel/List'),
-      name: 'AppChannelList',
-      meta: { title: 'Channel By App', icon: 'user', permissions: ['advertise.app'] },
-      hidden: true,
+      path: 'tag',
+      component: () => import('@/views/audience/Taglist'),
+      name: 'AudienceTag',
+      meta: { title: 'Tags', icon: 'user', permissions: ['audience.manage'] },
     },
   ],
 };

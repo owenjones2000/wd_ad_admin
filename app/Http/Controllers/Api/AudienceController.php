@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Advertise\App;
 use App\Models\Audience;
 use App\Models\IdfaLog;
 use App\Models\IdfaTag;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Dcat\EasyExcel\Excel;
+use Dcat\EasyExcel\Support\Arr;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -224,5 +226,24 @@ class AudienceController extends Controller
     {
         $list =  IdfaLog::orderBy('id', 'desc')->paginate($request->get('limit', 10));
         return JsonResource::collection($list);
+    }
+
+    public function getApp(Request $request)
+    {
+        $apps = App::query()->where('status', 1)->where('is_admin_disable', 0) ->get();
+        return JsonResource::collection($apps);
+    }
+
+    public function taglist(Request $request)
+    {
+        $searchParams = $request->all();
+        $limit = Arr::get($searchParams, 'limit', 30);
+        $keyword = Arr::get($searchParams, 'keyword', '');
+        $query = IdfaTag::query();
+        if (!empty($keyword)) {
+            $query->where('name', 'LIKE', '%' . $keyword . '%');
+        }
+
+        return JsonResource::collection($query->paginate($limit));
     }
 }

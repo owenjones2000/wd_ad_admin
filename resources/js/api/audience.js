@@ -12,6 +12,14 @@ class AudienceResource extends Resource {
       method: 'post',
     }, data);
   }
+
+  taglist(query) {
+    return request({
+      url: '/' + this.uri + '/taglist',
+      method: 'get',
+      params: query,
+    });
+  }
 }
 
 export { AudienceResource as default };

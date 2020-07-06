@@ -18,11 +18,12 @@
           <div slot="tip" class="el-upload__tip">只能上传csv文件</div>
         </el-upload>
       </el-form-item>
-      <el-form-item label="tag name">
+      <el-form-item label="tag name" required>
         <el-input v-model="form.tag" placeholder="tag" clearable />
       </el-form-item>
       <el-form-item>
         <el-button
+          v-permission="['audience.manage']"
           type="primary"
           style="width:100%"
           :loading="authLoading"
