@@ -53,6 +53,8 @@ class ChannelCpmTj extends Command
         } else {
             $end_date = date('Ymd', strtotime("-{$end_day} day"));
         }
+        dump('start_date' .$start_date);
+        dump('end_date' . $end_date);
         $impression_query = Impression::multiTableQuery(function ($query) use ($start_date, $end_date) {
             $query->whereBetween('date', [$start_date, $end_date])
                 ->select([
