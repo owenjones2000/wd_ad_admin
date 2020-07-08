@@ -17,6 +17,7 @@ use App\Models\Advertise\AdvertiseKpi;
 use App\Models\Advertise\ApiToken;
 use App\Models\Advertise\App;
 use App\Models\Advertise\Channel;
+use App\Models\Advertise\Impression;
 use App\Models\Advertise\Install;
 use App\Rules\AdvertiseName;
 use Illuminate\Http\Request;
@@ -107,7 +108,7 @@ class ChannelController extends Controller
             $channel_query->orderBy($order_by[0], $order_sort);
         }
         $channel_list = $channel_query->paginate($request->get('limit', 30));
-
+        //install表统计
         $install_query = Install::multiTableQuery(function ($query) use ($start_date, $end_date, $channel_id_query) {
             $query->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('target_app_id', $channel_id_query)
@@ -128,13 +129,29 @@ class ChannelController extends Controller
             ->keyBy('target_app_id')
             ->toArray();
         foreach ($advertise_kpi_list as $key => &$kpi) {
-            if (isset($install_list[$key])){
-                $kpi['cost'] = $install_list[$key]['cost'];
-                // $kpi['spend1'] = $install_list[$key]['spend'];
-            }else {
-                $kpi['cost'] = 0;
-            }
+            $kpi['cost'] = $install_list[$key]['cost'] ?? 0;
         }
+        //impression表
+        $impression_query = Impression::multiTableQuery(function ($query) use ($start_date, $end_date, $channel_id_query) {
+            $query->whereBetween('date', [$start_date, $end_date])
+                ->whereIn('target_app_id', $channel_id_query)
+                ->select([
+                    'ecpm',
+                    'target_app_id',
+                ]);
+            return $query;
+        }, $start_date, $end_date);
+        $impression_list = $impression_query->select([
+            DB::raw('round(sum(ecpm)/1000, 2) as cpm'),
+            'target_app_id',
+            ])->groupBy('target_app_id')
+            ->get()
+            ->keyBy('target_app_id')
+            ->toArray();
+        foreach ($advertise_kpi_list as $key => &$kpi) {
+            $kpi['cpm'] = $impression_list[$key]['cpm'] ?? 0;
+        }
+
         foreach ($channel_list as $channel) {
             if (isset($advertise_kpi_list[$channel['id']])) {
                 $channel->kpi = $advertise_kpi_list[$channel['id']];
@@ -199,7 +216,7 @@ class ChannelController extends Controller
             $advertise_kpi_query->addSelect('date');
             $advertise_kpi_query->groupBy($group_by);
             $advertise_kpi_query->orderByDesc('date');
-            $install_kpi_query ->addSelect('date');
+            $install_kpi_query->addSelect('date');
             $install_kpi_query->groupBy($group_by);
         } else {
             $advertise_kpi_query->groupBy('target_app_id');
@@ -211,7 +228,7 @@ class ChannelController extends Controller
         // dump($advertise_kpi_list->toArray());
         // dd($install_kpi_list->toArray());
         foreach ($advertise_kpi_list as $key => $kpi) {
-            $kpi->cost = $install_kpi_list[$kpi->date]['cost']??0;
+            $kpi->cost = $install_kpi_list[$kpi->date]['cost'] ?? 0;
         }
         return JsonResource::collection($advertise_kpi_list);
     }

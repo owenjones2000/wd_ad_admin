@@ -83,6 +83,7 @@
             </el-table-column>
             <el-table-column prop="spend" :formatter="moneyFormat" align="center" label="Cpi_Revenue" />
             <el-table-column prop="cost" :formatter="moneyFormat" align="center" label="Bid_Revenue" />
+            <el-table-column prop="cpm" :formatter="moneyFormat" align="center" label="Cpm_Revenue" />
             <el-table-column prop="ecpi" :formatter="moneyFormat" align="center" label="eCpi" />
             <el-table-column prop="ecpm" :formatter="moneyFormat" align="center" label="eCpm" />
             <el-table-column
@@ -122,6 +123,12 @@
         :formatter="moneyFormat"
         align="center"
         label="Bid_Revenue"
+      />
+      <el-table-column
+        prop="kpi.cpm"
+        :formatter="moneyFormat"
+        align="center"
+        label="Cpm_Revenue"
       />
       <el-table-column
         prop="kpi.ecpi"
