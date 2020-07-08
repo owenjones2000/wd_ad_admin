@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\ChannelCpmTj;
 use App\Console\Commands\SubTaskMonthSum;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -29,6 +30,7 @@ class Kernel extends ConsoleKernel
             ->runInBackground()
             ->monthlyOn(8, '00:50');
         $schedule->command(SubTaskMonthSum::class)->runInBackground()->monthlyOn(8);
+        $schedule->command(ChannelCpmTj::class, ["1", "1"])->runInBackground()->dailyAt("1:00");
     }
 
     /**
