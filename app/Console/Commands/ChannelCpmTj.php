@@ -48,7 +48,7 @@ class ChannelCpmTj extends Command
         } else {
             $start_date = date('Ymd', strtotime("-{$start_day} day"));
         }
-        if (empty($last_end_date_str)) {
+        if (empty($end_day)) {
             $end_date = date('Ymd');
         } else {
             $end_date = date('Ymd', strtotime("-{$end_day} day"));
