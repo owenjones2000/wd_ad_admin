@@ -78,7 +78,7 @@ class ChannelCpmTj extends Command
                 'date' => $value->date,
                 'target_app_id' => $value->target_app_id,
             ],[
-                'cpm_revenue' => $value->cpm,
+                'cpm_revenue' => $value->cpm ?? 0,
             ]);
         }
         dump('finish');
