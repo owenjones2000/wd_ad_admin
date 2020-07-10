@@ -8,6 +8,7 @@ use App\Models\Advertise\Ad;
 use App\Models\Advertiser;
 use App\Models\Campaign;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Redis;
@@ -82,5 +83,29 @@ class TestCommand extends Command
         $imp = Redis::connection('feature')->hget('wudiads_ad_total_impression', 927);
         $ins = Redis::connection('feature')->hget('wudiads_ad_total_installation', 927);
         dump($imp, $ins);
+    }
+
+    public function test3()
+    {
+        $code = mt_rand(10000, 99999);
+        dump($code);
+        $phone = "L8618581547568";
+        $params = [
+            "code"  => $code,
+            "phone" => $phone
+        ];
+        $client = new Client();
+
+        $res = $client->get("http://gocn.luckfun.vip/253code", [
+            'query' => $params
+        ]);
+        $content = $res->getBody()->getContents();
+        $data = json_decode($content, true);
+        dd($data);
+        $result = ["result" => false, "error" => $content];
+        if ($data && isset($data['result']) && $data['result'] === true) {
+            $result = ["result" => true, "message_id" => $data['message_id']];
+        }
+
     }
 }

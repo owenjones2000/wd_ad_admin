@@ -33,6 +33,13 @@ const acquisitionRoutes = {
       name: 'BillList',
       meta: { title: 'Billing', icon: 'dollar', permissions: ['advertise.bill'] },
     },
+    /** Advertiser managements */
+    {
+      path: 'advertiser',
+      component: () => import('@/views/advertiser/List'),
+      name: 'AdvertiserList',
+      meta: { title: 'Advertiser', icon: 'peoples', permissions: ['advertise.manage'] },
+    },
     /** App managements */
     {
       path: 'app',

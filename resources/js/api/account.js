@@ -6,6 +6,13 @@ class AccountResource extends Resource {
     super('account');
   }
 
+  adverlist(query) {
+    return request({
+      url: '/' + this.uri + '/advertiser',
+      method: 'get',
+      params: query,
+    });
+  }
   opLog(query){
     return request({
       url: '/' + this.uri + '/oplog',
