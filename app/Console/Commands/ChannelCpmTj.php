@@ -61,6 +61,7 @@ class ChannelCpmTj extends Command
                     'ecpm',
                     'target_app_id',
                     'date',
+                    'country',
                 ]);
             return $query;
         }, $start_date, $end_date);
@@ -68,7 +69,8 @@ class ChannelCpmTj extends Command
             DB::raw('round(sum(ecpm)/1000, 2) as cpm'),
             'target_app_id',
             'date',
-        ])->groupBy('target_app_id', 'date')
+            'country',
+        ])->groupBy('target_app_id', 'date', 'country')
         ->get();
             // ->keyBy('target_app_id')
             // ->toArray();
@@ -77,6 +79,7 @@ class ChannelCpmTj extends Command
             ChannelCpm::updateOrCreate([
                 'date' => $value->date,
                 'target_app_id' => $value->target_app_id,
+                'country' => $value->country,
             ],[
                 'cpm_revenue' => $value->cpm ?? 0,
             ]);
