@@ -13,7 +13,18 @@ class ChannelResource extends Resource {
       params: query,
     });
   }
-
+  removeBlack(channel_id, app_id) {
+    return request({
+      url: '/' + this.uri + '/' + channel_id + '/app/' + app_id + '/removeblack',
+      method: 'post',
+    });
+  }
+  joinBlack(channel_id, app_id) {
+    return request({
+      url: '/' + this.uri + '/' + channel_id + '/app/' + app_id + '/joinblack',
+      method: 'post',
+    });
+  }
   appList(channel_id, query) {
     return request({
       url: '/' + this.uri + '/' + channel_id + '/app',

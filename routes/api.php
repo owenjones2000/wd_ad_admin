@@ -82,7 +82,8 @@ Route::group(['middleware' => 'api'], function () {
 
             // 买量APP数据
             Route::get('{channel_id}/app', 'ChannelController@app')->name('campaign.channel.app')->middleware('permission:advertise.channel');
-
+            Route::post('{channel_id}/app/{app_id}/joinblack', 'ChannelController@joinBlack')->name('channel.app.joinblack')->middleware('permission:advertise.channel.edit');;
+            Route::post('{channel_id}/app/{app_id}/removeblack', 'ChannelController@removeBlack')->name('channel.app.removeblack')->middleware('permission:advertise.channel.edit');;
         });
 
         // 应用管理

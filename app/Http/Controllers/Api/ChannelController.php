@@ -306,11 +306,12 @@ class ChannelController extends Controller
         }
         $app_list = $app_query->orderBy($request->get('field', 'name'), $request->get('order', 'desc'))
             ->paginate($request->get('limit', 30));
-
+        $blacklist = Channel::findOrFail($channel_id)->disableApps;
         foreach ($app_list as $index => &$app) {
             if (isset($advertise_kpi_list[$app['id']])) {
                 $app->kpi = $advertise_kpi_list[$app['id']];
             }
+            $app->is_black = $blacklist->contains($app['id']);
         }
         return JsonResource::collection($app_list);
     }
@@ -356,6 +357,20 @@ class ChannelController extends Controller
         return new ChannelResource($channel);
     }
 
+    public function joinBlack($channel_id, $app_id)
+    {
+        // dd($channel_id, $app_id);
+        $channel = Channel::findOrFail($channel_id);
+        $channel->disableApps()->attach($app_id);
+        return response()->json(['code' => 0, 'msg' => 'join black']);
+    }
+    public function removeBlack($channel_id, $app_id)
+    {
+        // dd($channel_id, $app_id);
+        $channel = Channel::findOrFail($channel_id);
+        $channel->disableApps()->detach($app_id);
+        return response()->json(['code' => 0, 'msg' => 'remove black']);
+    }
     /**
      * Remove the specified resource from storage.
      *

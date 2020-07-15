@@ -15,4 +15,20 @@ class Channel extends Model
     public function tokens(){
         return $this->hasMany(ApiToken::class, 'bundle_id', 'bundle_id');
     }
+
+    /**
+     * app黑名单
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function disableApps()
+    {
+        return $this->belongsToMany(
+            App::class,
+            'a_target_app_app_disabled',
+            'target_app_id',
+            'app_id',
+            'id',
+            'id'
+        );
+    }
 }

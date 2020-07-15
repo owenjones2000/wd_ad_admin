@@ -85,19 +85,25 @@
           <span>${{ scope.row.kpi&&scope.row.kpi.ecpm ? scope.row.kpi.ecpm : '0.00' }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Status">
-        <!--<template slot-scope="scope">-->
-        <!--<el-icon :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}" size="small" :name="scope.row.status ? 'video-play' : 'video-pause'" />-->
-        <!--</template>-->
+      <el-table-column align="center" label="Blacklist">
+        <template slot-scope="scope">
+          <i :style="{color: scope.row.is_black ? '#67C23A' : '#F56C6C'}" :class="scope.row.is_black ? 'el-icon-check' : 'el-icon-close'" />
+          <el-link v-permission="['advertise.channel.edit']" :type="scope.row.is_black ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleBlack(scope.row)" />
+        </template>
       </el-table-column>
+      <!-- <el-table-column align="center" label="Status">
+        <template slot-scope="scope">
+        <el-icon :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}" size="small" :name="scope.row.status ? 'video-play' : 'video-pause'" />
+        </template>
+      </el-table-column> -->
 
-      <el-table-column align="center" label="Actions" width="100">
-        <!--<template slot-scope="scope">-->
-        <!--<el-link v-permission="['advertise.channel.ad.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />-->
-        <!--<el-link v-permission="['advertise.channel.ad.edit']" :type="scope.row.is_admin_disable ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleStatus(scope.row)" />-->
-        <!--<el-link v-permission="['advertise.channel.ad.destroy']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
-        <!--</template>-->
-      </el-table-column>
+      <!-- <el-table-column align="center" label="Actions" width="100">
+        <template slot-scope="scope">
+        <el-link v-permission="['advertise.channel.ad.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />
+        <el-link v-permission="['advertise.channel.ad.edit']" :type="scope.row.is_admin_disable ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleStatus(scope.row)" />
+        <el-link v-permission="['advertise.channel.ad.destroy']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />
+        </template>
+      </el-table-column> -->
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
@@ -245,6 +251,37 @@ export default {
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['channelForm'].clearValidate();
+      });
+    },
+    handleBlack(app) {
+      this.$confirm('This will ' + (app.is_black ? 'remove blacklist' : 'join in blacklist') + ' app ' + app.name + '. Continue?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }).then(() => {
+        if (app.is_black) {
+          channelResource.removeBlack(this.channel_id, app.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'app ' + app.name + ' remove blacklist',
+            });
+            this.getList();
+          }).catch(error => {
+            console.log(error);
+          });
+        } else {
+          channelResource.joinBlack(this.channel_id, app.id).then(response => {
+            this.$message({
+              type: 'success',
+              message: 'app ' + app.name + ' join blacklist',
+            });
+            this.getList();
+          }).catch(error => {
+            console.log(error);
+          });
+        }
+      }).catch(error => {
+        console.log(error);
       });
     },
     handleEdit(channel) {
