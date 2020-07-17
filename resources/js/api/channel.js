@@ -13,6 +13,13 @@ class ChannelResource extends Resource {
       params: query,
     });
   }
+  placementData(query) {
+    return request({
+      url: '/' + this.uri + '/placement-data',
+      method: 'get',
+      params: query,
+    });
+  }
   removeBlack(channel_id, app_id) {
     return request({
       url: '/' + this.uri + '/' + channel_id + '/app/' + app_id + '/removeblack',
@@ -28,6 +35,13 @@ class ChannelResource extends Resource {
   appList(channel_id, query) {
     return request({
       url: '/' + this.uri + '/' + channel_id + '/app',
+      method: 'get',
+      params: query,
+    });
+  }
+  placementList(query) {
+    return request({
+      url: '/' + this.uri + '/placement',
       method: 'get',
       params: query,
     });
