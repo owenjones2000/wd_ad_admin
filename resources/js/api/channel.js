@@ -13,6 +13,19 @@ class ChannelResource extends Resource {
       params: query,
     });
   }
+  countryList() {
+    return request({
+      url: '/' + this.uri + '/country-list',
+      method: 'get',
+    });
+  }
+  placementData(query) {
+    return request({
+      url: '/' + this.uri + '/placement-data',
+      method: 'get',
+      params: query,
+    });
+  }
   removeBlack(channel_id, app_id) {
     return request({
       url: '/' + this.uri + '/' + channel_id + '/app/' + app_id + '/removeblack',

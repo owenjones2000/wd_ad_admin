@@ -77,6 +77,9 @@ Route::group(['middleware' => 'api'], function () {
         Route::group(['prefix' => 'channel'], function () {
             Route::get('', 'ChannelController@list')->name('channel.list')->middleware('permission:advertise.channel');
             Route::get('data', 'ChannelController@data')->name('channel.data');
+            Route::get('country-list', 'ChannelController@countryList')->name('channel.country');
+            Route::get('placement-data', 'ChannelController@placementData')->name('channel.placement-data')->middleware('permission:placement.manage');
+            Route::get('placement', 'ChannelController@placement')->name('channel.placement')->middleware('permission:placement.manage');
 
             Route::post('{id?}', 'ChannelController@save')->name('channel.save')->middleware('permission:advertise.channel.edit');
 
