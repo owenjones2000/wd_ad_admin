@@ -644,4 +644,3 @@ class ChannelController extends Controller
         ];
     }
 }
-wget https://raw.githubusercontent.com/composer/getcomposer.org/ed106feacef086c1fe511f535ad3988d383493d9/web/installer -O - -q | php -- --quiet

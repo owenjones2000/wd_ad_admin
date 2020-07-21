@@ -22,7 +22,20 @@
           :value="item.value"
         />
       </el-select>
-
+      <el-select
+        v-model="query.country"
+        clearable
+        placeholder="ALL Country"
+        style="width: 200px;"
+        class="filter-item"
+      >
+        <el-option
+          v-for="item in countrys"
+          :key="item.code"
+          :label="item.name"
+          :value="item.code"
+        />
+      </el-select>
       <el-date-picker
         v-model="query.daterange"
         type="daterange"
@@ -351,12 +364,14 @@
 <script>
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
 import AppResource from '@/api/app';
+import ChannelResource from '@/api/channel';
 import waves from '@/directive/waves'; // Waves directive
 import permission from '@/directive/permission'; // Waves directive
 import checkPermission from '@/utils/permission'; // Permission checking
 import defaultDatePickerOptions from '@/utils/datepicker';
 
 const appResource = new AppResource();
+const channelResource = new ChannelResource();
 
 export default {
   name: 'AppList',
@@ -378,6 +393,7 @@ export default {
         page: 1,
         limit: 15,
         keyword: '',
+        country: '',
         os: '',
         daterange: [new Date(), new Date()],
       },
@@ -388,6 +404,9 @@ export default {
         name: '',
         tokens: [],
       },
+      countrys: [
+
+      ],
       currentAppTokens: [],
       rules: {
         name: [
@@ -416,6 +435,7 @@ export default {
   created() {
     this.resetNewApp();
     this.getList();
+    this.countryList();
   },
   methods: {
     checkPermission,
@@ -431,6 +451,10 @@ export default {
       this.list = data;
       this.total = meta.total;
       this.loading = false;
+    },
+    async countryList(){
+      const data = await channelResource.countryList();
+      this.countrys = data;
     },
     handleFilter() {
       this.query.page = 1;
