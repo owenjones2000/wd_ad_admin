@@ -14,13 +14,13 @@ const adtypeRoutes = {
   children: [
     {
       path: 'channel',
-      component: () => import('@/views/placement/List'),
+      component: () => import('@/views/adtype/List'),
       name: 'ChannelList',
       meta: { title: 'Channel', icon: 'tree', permissions: ['placement.manage'] },
     },
     {
       path: 'app',
-      component: () => import('@/views/placement/AppList'),
+      component: () => import('@/views/adtype/AppList'),
       name: 'AppList',
       meta: { title: 'App', icon: 'component', permissions: ['placement.manage'] },
     },
