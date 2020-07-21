@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class AdvertiseKpi extends Model
 {
     use MultiTable;
+    const Type_Reward_video = 1;
+    const Type_Interstitial_video = 2;
 
     protected $table = 'z_sub_tasks';
 

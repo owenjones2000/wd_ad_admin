@@ -45,6 +45,13 @@ class ChannelResource extends Resource {
       params: query,
     });
   }
+  placementList(query) {
+    return request({
+      url: '/' + this.uri + '/placement',
+      method: 'get',
+      params: query,
+    });
+  }
 }
 
 export { ChannelResource as default };

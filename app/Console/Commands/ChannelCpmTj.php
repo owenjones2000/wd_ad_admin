@@ -62,6 +62,7 @@ class ChannelCpmTj extends Command
                     'target_app_id',
                     'date',
                     'country',
+                    'type',
                 ]);
             return $query;
         }, $start_date, $end_date);
@@ -70,7 +71,8 @@ class ChannelCpmTj extends Command
             'target_app_id',
             'date',
             'country',
-        ])->groupBy('target_app_id', 'date', 'country')
+            'type',
+        ])->groupBy('target_app_id', 'date', 'country', 'type')
         ->get();
             // ->keyBy('target_app_id')
             // ->toArray();
@@ -80,6 +82,7 @@ class ChannelCpmTj extends Command
                 'date' => $value->date,
                 'target_app_id' => $value->target_app_id,
                 'country' => $value->country,
+                'type' => $value->type,
             ],[
                 'cpm_revenue' => $value->cpm ?? 0,
             ]);

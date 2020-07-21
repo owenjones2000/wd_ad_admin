@@ -141,26 +141,134 @@ class ChannelController extends Controller
             $kpi['cost'] = $install_list[$key]['cost'] ?? 0;
         }
         //impression表
-        // $impression_query = Impression::multiTableQuery(function ($query) use ($start_date, $end_date, $channel_id_query) {
-        //     $query->whereBetween('date', [$start_date, $end_date])
-        //         ->whereIn('target_app_id', $channel_id_query)
-        //         ->select([
-        //             'ecpm',
-        //             'target_app_id',
-        //         ]);
-        //     return $query;
-        // }, $start_date, $end_date);
-        // $impression_list = $impression_query->select([
-        //     DB::raw('round(sum(ecpm)/1000, 2) as cpm'),
-        //     'target_app_id',
-        //     ])->groupBy('target_app_id')
-        //     ->get()
-        //     ->keyBy('target_app_id')
-        //     ->toArray();
         $impression_list = ChannelCpm::whereBetween('date', [$start_date, $end_date])
             ->whereIn('target_app_id', $channel_id_query)
             ->when($country, function ($query) use ($country) {
                 $query->where('country', $country);
+            })
+            ->select([
+                DB::raw('sum(cpm_revenue) as cpm'),
+                'target_app_id',
+            ])->groupBy('target_app_id')
+            ->get()->keyBy('target_app_id')
+            ->toArray();;
+        foreach ($advertise_kpi_list as $key => &$kpi) {
+            $kpi['cpm'] = $impression_list[$key]['cpm'] ?? 0;
+        }
+
+        foreach ($channel_list as $channel) {
+            if (isset($advertise_kpi_list[$channel['id']])) {
+                $channel->kpi = $advertise_kpi_list[$channel['id']];
+            }
+        }
+        return JsonResource::collection($channel_list);
+    }
+
+    public function placement(Request $request)
+    {
+        $range_date = $request->get('daterange');
+        $adtype = $request->get('type');
+        $start_date = date('Ymd', strtotime($range_date[0] ?? 'now'));
+        $end_date = date('Ymd', strtotime($range_date[1] ?? 'now'));
+        $order_by = explode('.', $request->get('field', 'name'));
+        $order_sort = $request->get('order', 'desc');
+
+        $channel_base_query = Channel::query();
+        if (!empty($request->get('keyword'))) {
+            $like_keyword = '%' . $request->get('keyword') . '%';
+            $channel_base_query->where('name', 'like', $like_keyword);
+            $channel_base_query->orWhereHas('publisher', function ($query) use ($like_keyword) {
+                $query->where('realname', 'like', $like_keyword);
+            });
+        }
+        if ($request->input('os')) {
+            $os = $request->input('os');
+            $channel_base_query->where('platform', $os);
+        }
+        $channel_id_query = clone $channel_base_query;
+        $channel_id_query->select('id');
+        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use (
+            $start_date,
+            $end_date,
+            $adtype,
+            $channel_id_query
+        ) {
+            $query->whereBetween('date', [$start_date, $end_date])
+                ->whereIn('target_app_id', $channel_id_query)
+                ->select([
+                    'requests', 'impressions', 'clicks', 'installations', 'spend',
+                    'target_app_id',
+                ]);
+            if ($adtype) {
+                $query->where('type', $adtype);
+            }
+            return $query;
+        }, $start_date, $end_date);
+
+        $advertise_kpi_query->select([
+            DB::raw('sum(requests) as requests'),
+            DB::raw('sum(impressions) as impressions'),
+            DB::raw('sum(clicks) as clicks'),
+            DB::raw('sum(installations) as installs'),
+            DB::raw('round(sum(clicks) * 100 / sum(impressions), 2) as ctr'),
+            DB::raw('round(sum(installations) * 100 / sum(clicks), 2) as cvr'),
+            DB::raw('round(sum(installations) * 100 / sum(impressions), 2) as ir'),
+            DB::raw('round(sum(spend), 2) as spend'),
+            DB::raw('round(sum(spend) / sum(installations), 2) as ecpi'),
+            DB::raw('round(sum(spend) * 1000 / sum(impressions), 2) as ecpm'),
+            'target_app_id',
+        ]);
+        $advertise_kpi_query->groupBy('target_app_id');
+        if ($order_by[0] === 'kpi' && isset($order_by[1])) {
+            $advertise_kpi_query->orderBy($order_by[1], $order_sort);
+        }
+
+        $advertise_kpi_list = $advertise_kpi_query
+            ->orderBy('spend', 'desc')
+            ->get()
+            ->keyBy('target_app_id')
+            ->toArray();
+        $order_by_ids = implode(',', array_reverse(array_keys($advertise_kpi_list)));
+        $channel_query = clone $channel_base_query;
+        $channel_query->with('publisher');
+        if (!empty($order_by_ids)) {
+            $channel_query->orderByRaw(DB::raw("FIELD(id,{$order_by_ids}) desc"));
+        }
+        if ($order_by[0] !== 'kpi') {
+            $channel_query->orderBy($order_by[0], $order_sort);
+        }
+        $channel_list = $channel_query->paginate($request->get('limit', 30));
+        //install表统计
+        $install_query = Install::multiTableQuery(function ($query) use ($start_date, $end_date, $channel_id_query, $adtype) {
+            $query->whereBetween('date', [$start_date, $end_date])
+                ->whereIn('target_app_id', $channel_id_query)
+                ->select([
+                    'cost',
+                    'spend',
+                    'target_app_id',
+
+                ]);
+            if ($adtype) {
+                $query->where('type', $adtype);
+            }
+            return $query;
+        }, $start_date, $end_date);
+        $install_list = $install_query->select([
+            DB::raw('round(sum(spend), 2) as spend'),
+            DB::raw('round(sum(cost), 2) as cost'),
+            'target_app_id',
+        ])->groupBy('target_app_id')
+            ->get()
+            ->keyBy('target_app_id')
+            ->toArray();
+        foreach ($advertise_kpi_list as $key => &$kpi) {
+            $kpi['cost'] = $install_list[$key]['cost'] ?? 0;
+        }
+        //impression表
+        $impression_list = ChannelCpm::whereBetween('date', [$start_date, $end_date])
+            ->whereIn('target_app_id', $channel_id_query)
+            ->when($adtype, function ($query) use ($adtype) {
+                $query->where('type', $adtype);
             })
             ->select([
                 DB::raw('sum(cpm_revenue) as cpm'),
@@ -258,6 +366,98 @@ class ChannelController extends Controller
             ->get();
         // dump($advertise_kpi_list->toArray());
         // dd($install_kpi_list->toArray());
+        foreach ($advertise_kpi_list as $key => $kpi) {
+            $kpi->cost = $install_kpi_list[$kpi->date]['cost'] ?? 0;
+            $kpi->cpm = $impression_list[$kpi->date]['cpm'] ?? 0;
+        }
+        return JsonResource::collection($advertise_kpi_list);
+    }
+    public function placementData(Request $request)
+    {
+        $range_date = $request->get('daterange');
+        $start_date = date('Ymd', strtotime($range_date[0] ?? 'now'));
+        $end_date = date('Ymd', strtotime($range_date[1] ?? 'now'));
+        $group_by = $request->get('grouping');
+        $adtype = $request->get('type');
+
+        $channel_base_query = App::query();
+        if (!empty($request->get('keyword'))) {
+            $channel_base_query->where('name', 'like', '%' . $request->get('name') . '%');
+        }
+        if (!empty($request->get('id'))) {
+            $channel_base_query->where('id', $request->get('id'));
+        }
+        $channel_id_query = clone $channel_base_query;
+        $channel_id_query->select('id');
+        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use ($start_date, $end_date, $channel_id_query, $adtype) {
+            $query->whereBetween('date', [$start_date, $end_date])
+                ->whereIn('target_app_id', $channel_id_query)
+                ->when($adtype, function($query) use ($adtype){
+                    $query-> where('type', $adtype);
+                })
+                ->select([
+                    'date', 'requests', 'impressions', 'clicks', 'installations', 'spend',
+                    'target_app_id',
+                ]);
+            return $query;
+        }, $start_date, $end_date);
+
+        $advertise_kpi_query->select([
+            DB::raw('sum(requests) as requests'),
+            DB::raw('sum(impressions) as impressions'),
+            DB::raw('sum(clicks) as clicks'),
+            DB::raw('sum(installations) as installs'),
+            DB::raw('round(sum(clicks) * 100 / sum(impressions), 2) as ctr'),
+            DB::raw('round(sum(installations) * 100 / sum(clicks), 2) as cvr'),
+            DB::raw('round(sum(installations) * 100 / sum(impressions), 2) as ir'),
+            DB::raw('round(sum(spend), 2) as spend'),
+            DB::raw('round(sum(spend) / sum(installations), 2) as ecpi'),
+            DB::raw('round(sum(spend) * 1000 / sum(impressions), 2) as ecpm'),
+            'target_app_id',
+        ]);
+        $install_kpi_query = Install::multiTableQuery(function ($query) use ($start_date, $end_date, $channel_id_query, $adtype) {
+            $query->whereBetween('date', [$start_date, $end_date])
+                ->whereIn('target_app_id', $channel_id_query)
+                ->when($adtype, function ($query) use ($adtype) {
+                    $query->where('type', $adtype);
+                })
+                ->select([
+                    'date', 'cost', 'spend',
+                    'target_app_id',
+                ]);
+            return $query;
+        }, $start_date, $end_date)->select([
+            DB::raw('round(sum(cost), 2) as cost'),
+            'target_app_id',
+        ]);
+        //imp
+        $impression_query = ChannelCpm::whereBetween('date', [$start_date, $end_date])
+            ->whereIn('target_app_id', $channel_id_query)
+            ->when($adtype, function ($query) use ($adtype) {
+                $query->where('type', $adtype);
+            })
+            ->select([
+                DB::raw('sum(cpm_revenue) as cpm'),
+                'target_app_id',
+                'date'
+            ]);
+        if ($group_by == 'date') {
+            $advertise_kpi_query->addSelect('date');
+            $advertise_kpi_query->groupBy($group_by);
+            $advertise_kpi_query->orderByDesc('date');
+            $install_kpi_query->addSelect('date');
+            $install_kpi_query->groupBy($group_by);
+            $impression_query->groupBy($group_by);
+        } else {
+            $advertise_kpi_query->groupBy('target_app_id');
+        }
+
+        $install_kpi_list = $install_kpi_query->get()->keyBy('date');
+        $impression_list = $impression_query->get()->keyBy('date');
+
+        $advertise_kpi_list = $advertise_kpi_query
+            ->orderBy('spend', 'desc')
+            ->get();
         foreach ($advertise_kpi_list as $key => $kpi) {
             $kpi->cost = $install_kpi_list[$kpi->date]['cost'] ?? 0;
             $kpi->cpm = $impression_list[$kpi->date]['cpm'] ?? 0;
@@ -444,3 +644,4 @@ class ChannelController extends Controller
         ];
     }
 }
+wget https://raw.githubusercontent.com/composer/getcomposer.org/ed106feacef086c1fe511f535ad3988d383493d9/web/installer -O - -q | php -- --quiet
