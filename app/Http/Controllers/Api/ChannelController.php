@@ -133,22 +133,6 @@ class ChannelController extends Controller
             $kpi['cost'] = $install_list[$key]['cost'] ?? 0;
         }
         //impression表
-        // $impression_query = Impression::multiTableQuery(function ($query) use ($start_date, $end_date, $channel_id_query) {
-        //     $query->whereBetween('date', [$start_date, $end_date])
-        //         ->whereIn('target_app_id', $channel_id_query)
-        //         ->select([
-        //             'ecpm',
-        //             'target_app_id',
-        //         ]);
-        //     return $query;
-        // }, $start_date, $end_date);
-        // $impression_list = $impression_query->select([
-        //     DB::raw('round(sum(ecpm)/1000, 2) as cpm'),
-        //     'target_app_id',
-        //     ])->groupBy('target_app_id')
-        //     ->get()
-        //     ->keyBy('target_app_id')
-        //     ->toArray();
         $impression_list = ChannelCpm::whereBetween('date', [$start_date, $end_date])
             ->whereIn('target_app_id', $channel_id_query)
             ->select([
@@ -642,3 +626,4 @@ class ChannelController extends Controller
         ];
     }
 }
+wget https://raw.githubusercontent.com/composer/getcomposer.org/ed106feacef086c1fe511f535ad3988d383493d9/web/installer -O - -q | php -- --quiet
