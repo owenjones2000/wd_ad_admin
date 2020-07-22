@@ -228,6 +228,9 @@
           <el-button type="normal" size="small" icon="el-icon-menu">
             <router-link :to="'/acquisition/app/'+scope.row.id+'/channel'">Channels</router-link>
           </el-button>
+          <el-button type="normal" size="small" icon="el-icon-menu">
+            <router-link :to="'/acquisition/app/'+scope.row.id+'/campaign'">Campaigns</router-link>
+          </el-button>
           <!--<el-button v-permission="['advertise.app.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
         </template>
       </el-table-column>

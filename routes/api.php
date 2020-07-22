@@ -96,6 +96,7 @@ Route::group(['middleware' => 'api'], function () {
 
             // 卖量Channel数据
             Route::get('{app_id}/channel', 'AppController@channel')->name('campaign.app.channel')->middleware('permission:advertise.app');
+            Route::get('{app_id}/campaign', 'AppController@campaign')->name('campaign.app.campaign')->middleware('permission:advertise.app');
 
             //编辑
 //            Route::post('{id?}', 'AppController@save')->name('app.save')->middleware('permission:advertise.app.edit');

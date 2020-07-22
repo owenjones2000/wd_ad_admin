@@ -21,6 +21,13 @@ class AppResource extends Resource {
       params: query,
     });
   }
+  campaignList(app_id, query) {
+    return request({
+      url: '/' + this.uri + '/' + app_id + '/campaign',
+      method: 'get',
+      params: query,
+    });
+  }
 
   enable(app_id){
     return request({
