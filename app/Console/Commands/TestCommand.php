@@ -89,7 +89,7 @@ class TestCommand extends Command
     {
         $code = mt_rand(10000, 99999);
         dump($code);
-        $phone = "L8618581547568";
+        $phone = "8618581547568";
         $params = [
             "code"  => $code,
             "phone" => $phone

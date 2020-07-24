@@ -43,6 +43,10 @@ export function validAlphabets(str) {
   const reg = /^[A-Za-z]+$/;
   return reg.test(str);
 }
+export function validPhone(str) {
+  const reg = /^[1]([3-9])[0-9]{9}$/;
+  return reg.test(str);
+}
 
 /**
  * Validate an email address

@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 Route::group(['middleware' => 'api'], function () {
     Route::post('auth/login', 'AuthController@login');
+    Route::post('auth/sendcode', 'AuthController@sendCode');
     Route::group(['middleware' => 'auth:api'], function () {
         Route::get('auth/user', 'AuthController@user');
         Route::post('auth/user', 'AuthController@update');

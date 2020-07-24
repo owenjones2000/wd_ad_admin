@@ -9,26 +9,35 @@
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
-        <el-input v-model="loginForm.email" name="email" type="text" auto-complete="on" :placeholder="$t('login.email')" />
+        <el-input
+          v-model="loginForm.phone"
+          name="phone"
+          type="text"
+          auto-complete="on"
+          placeholder="phone"
+        />
+        <!-- <el-button slot="append" icon="el-icon-search" /> Send Code -->
       </el-form-item>
       <el-form-item prop="password">
         <span class="svg-container">
           <svg-icon icon-class="password" />
         </span>
         <el-input
-          v-model="loginForm.password"
-          :type="pwdType"
-          name="password"
+          v-model="loginForm.code"
+          type="text"
+          name="code"
           auto-complete="on"
-          placeholder="password"
+          placeholder="code"
           @keyup.enter.native="handleLogin"
         />
-        <span class="show-pwd" @click="showPwd">
-          <svg-icon icon-class="eye" />
-        </span>
       </el-form-item>
       <el-form-item>
-        <el-button :loading="loading" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
+        <el-button type="primary" style="width:100%;" :disabled="disabled" @click="handleSend">
+          {{ btnTitle }}
+        </el-button>
+      </el-form-item>
+      <el-form-item>
+        <el-button :loading="loading" type="primary" style="width:100%;" :disabled="isClick" @click.native.prevent="handleLogin">
           Sign in
         </el-button>
       </el-form-item>
@@ -38,39 +47,52 @@
 
 <script>
 import LangSelect from '@/components/LangSelect';
-import { validEmail } from '@/utils/validate';
+import { validPhone } from '@/utils/validate';
+import request from '@/utils/request';
 
 export default {
   name: 'Login',
   components: { LangSelect },
   data() {
-    const validateEmail = (rule, value, callback) => {
-      if (!validEmail(value)) {
-        callback(new Error('Please enter the correct email'));
+    const validatePhone = (rule, value, callback) => {
+      if (!validPhone(value)) {
+        callback(new Error('Please enter the correct phone'));
       } else {
         callback();
       }
     };
     const validatePass = (rule, value, callback) => {
-      if (value.length < 2) {
-        callback(new Error('Password cannot be less than 2 digits'));
+      if (value.length < 4) {
+        callback(new Error('Password cannot be less than 4 digits'));
       } else {
         callback();
       }
     };
+
     return {
+      disabled: false,
       loginForm: {
-        email: '',
-        password: '',
+        phone: '',
+        code: '',
       },
+      btnTitle: 'Send Code',
       loginRules: {
-        email: [{ required: true, trigger: 'blur', validator: validateEmail }],
-        password: [{ required: true, trigger: 'blur', validator: validatePass }],
+        phone: [{ required: true, trigger: 'blur', validator: validatePhone }],
+        code: [{ required: true, trigger: 'blur', validator: validatePass }],
       },
       loading: false,
-      pwdType: 'password',
       redirect: undefined,
     };
+  },
+  computed: {
+    // 手机号和验证码都不能为空
+    isClick(){
+      if (!this.loginForm.phone || !this.loginForm.code) {
+        return true;
+      } else {
+        return false;
+      }
+    },
   },
   watch: {
     $route: {
@@ -81,36 +103,94 @@ export default {
     },
   },
   methods: {
-    showPwd() {
-      if (this.pwdType === 'password') {
-        this.pwdType = '';
-      } else {
-        this.pwdType = 'password';
+    handleLogin() {
+      console.log(this.loginForm);
+      // this.$refs.loginForm.validate(valid => {
+      //   if (valid) {
+      //     this.loading = true;
+      //     this.$store.dispatch('user/login', this.loginForm)
+      //       .then(() => {
+      //         this.$router.push({ path: this.redirect || '/' });
+      //         this.loading = false;
+      //       })
+      //       .catch(() => {
+      //         this.loading = false;
+      //       });
+      //   } else {
+      //     this.$message.error('Please enter the correct');
+      //     return false;
+      //   }
+      // });
+      this.loading = true;
+      request
+        .post('auth/login', this.loginForm)
+        .then(response => {
+          console.log(response);
+          this.$router.push({ path: this.redirect || '/' });
+          this.loading = false;
+          // this.formData = new FormData();
+        })
+        .catch(error => {
+          console.log(error);
+          this.loading = false;
+          // this.formData = new FormData();
+        });
+      console.log(this.btnTitle);
+    },
+    handleSend(){
+      console.log(this.loginForm);
+      if (this.validatePhone()) {
+        // 发送网络请求
+        request
+          .post('auth/sendcode', this.loginForm)
+          .then(response => {
+            console.log(response);
+            if (response.status){
+              this.validateBtn();
+              this.$message({
+                message: 'success',
+                type: 'success',
+              });
+            } else {
+              this.$message.error(response.error);
+            }
+            // this.formData = new FormData();
+          })
+          .catch(error => {
+            console.log(error);
+            // this.formData = new FormData();
+          });
       }
     },
-    handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true;
-          this.$store.dispatch('user/login', this.loginForm)
-            .then(() => {
-              this.$router.push({ path: this.redirect || '/' });
-              this.loading = false;
-            })
-            .catch(() => {
-              this.loading = false;
-            });
+    validatePhone(){
+      if (!this.loginForm.phone) {
+        this.$message.error('Please enter the correct phone');
+      } else if (!/^1[3456789]\d{9}$/.test(this.loginForm.phone)) {
+        this.$message.error('Please enter the correct phone');
+      } else {
+        return true;
+      }
+    },
+    validateBtn(){
+      // 倒计时
+      let time = 60;
+      const timer = setInterval(() => {
+        if (time === 0) {
+          clearInterval(timer);
+          this.disabled = false;
+          this.btnTitle = 'Send code';
         } else {
-          console.log('error submit!!');
-          return false;
+          this.btnTitle = time + '  Seconds Retry';
+          this.disabled = true;
+          time--;
         }
-      });
+      }, 1000);
     },
   },
 };
 </script>
 
-<style rel="stylesheet/scss" lang="scss">
+ <style rel="stylesheet/scss" lang="scss">
 $bg:#2d3a4b;
 $light_gray:#eee;
 
