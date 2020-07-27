@@ -57,7 +57,7 @@ class AuthController extends Controller
 
     public function sendCode(Request $request)
     {
-        $code = mt_rand(10000, 99999);
+        $code = mt_rand(100000, 999999);
         $phone = $request->input('phone');
         $exist =  User::query()->where('phone', $phone)->first();
         if (!$exist) {
