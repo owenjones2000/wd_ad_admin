@@ -256,6 +256,7 @@ class AppController extends Controller
         $channel_id_list = array_reverse(array_keys($advertise_kpi_list));
         $order_by_ids = implode(',', $channel_id_list);
         $channel_query = clone $channel_base_query;
+        $channel_query->with('advertiser',  'audience');
         $channel_query->whereIn('id', $channel_id_list);
         if (!empty($order_by_ids)) {
             $channel_query->orderByRaw(DB::raw("FIELD(id,{$order_by_ids}) desc"));
