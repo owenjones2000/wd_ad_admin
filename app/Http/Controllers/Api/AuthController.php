@@ -10,6 +10,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Advertise\AccountApiToken;
 use App\Models\Advertise\ApiToken;
 use Illuminate\Http\Request;
 use Validator;
@@ -25,6 +26,10 @@ class AuthController extends Controller
         return ApiToken::query()->where(['bundle_id' => $request->input('bundle_id')])->paginate();
     }
 
+    public function accountTokenList(Request $request){
+        return AccountApiToken::query()->where(['user_id' => $request->input('user_id')])->paginate();
+    }
+
     public function makeToken(Request $request){
         $api_token = ApiToken::Make(
             $request->input('bundle_id'),
@@ -33,8 +38,22 @@ class AuthController extends Controller
         return ['api_token' => $api_token['access_token']];
     }
 
+    public function makeAccountToken(Request $request){
+        $expireAt = $request->input('expired_at');
+        $api_token = AccountApiToken::Make(
+            $request->input('user_id'),
+            $expireAt
+        );
+        return ['api_token' => $api_token['access_token']];
+    }
+
     public function destroy($id){
         ApiToken::query()->where(['id' => $id]) ->delete();
         return response()->json(null, 204);
     }
+    public function delAccountToken($id){
+        AccountApiToken::query()->where(['id' => $id]) ->delete();
+        return response()->json(null, 204);
+    }
+    
 }

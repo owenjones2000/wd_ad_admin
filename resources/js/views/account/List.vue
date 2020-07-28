@@ -79,6 +79,13 @@
           <el-button v-permission="['advertise.bill']" type="primary" size="small" icon="el-icon-edit" @click="handleBillSet(scope.row)">
             BillSet
           </el-button>
+          <el-button
+            v-permission="['advertise.account.edit']"
+            type="normal"
+            size="small"
+            icon="el-icon-key "
+            @click="handleToken(scope.row)"
+          >Token</el-button>
           <!--<el-button v-permission="['advertise.account.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">-->
           <!--  Delete-->
           <!--</el-button>-->
@@ -153,7 +160,72 @@
         </div>
       </div>
     </el-dialog>
+    <el-dialog :title="dialogTokenFormName" :visible.sync="dialogTokenFormVisible">
+      <div v-loading="loading" class="form-container">
+        <el-form
+          ref="tokenForm"
+          v-permission="['advertise.account.edit']"
+          :model="newToken"
+          label-position="left"
+          label-width="150px"
+          style="max-width: 500px;"
+        >
+          <el-form-item :label="$t('token.expired_at')" prop="expired_at">
+            <el-date-picker
+              v-model="newToken.expired_at"
+              type="date"
+              value-format="yyyy-MM-dd"
+              placeholder="no limit"
+            />
+            <el-button type="primary" @click="makeToken()">{{ $t('token.make') }}</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      <el-divider />
+      <el-table
+        v-loading="loading"
+        :data="currentUserTokens"
+        border
+        fit
+        highlight-current-row
+        style="width: 100%"
+      >
+        <el-table-column
+          align="center"
+          label="Access Token"
+          width="200"
+          :show-overflow-tooltip="true"
+        >
+          <template slot-scope="scope">
+            <el-link
+              v-clipboard:copy="scope.row.access_token"
+              v-clipboard:success="clipboardSuccess"
+              type="primary"
+              icon="el-icon-document"
+            />
 
+            <span>{{ scope.row.access_token }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column align="center" label="Expired Date">
+          <template slot-scope="scope">
+            <span>{{ scope.row.expired_at }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column align="center" label="Actions" width="100" fixed="right">
+          <template slot-scope="scope">
+            <el-link
+              v-permission="['advertise.account.edit']"
+              type="danger"
+              icon="el-icon-delete"
+              @click="handleTokenDelete(scope.row);"
+            />
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
     <el-dialog :title="dialogPermission.title" :visible.sync="dialogPermission.visible">
       <div v-loading="dialogPermission.Loading" class="form-container">
         <el-tree
@@ -183,16 +255,19 @@
 <script>
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
 import AccountResource from '@/api/account';
+import TokenResource from '@/api/token';
 import waves from '@/directive/waves'; // Waves directive
 import permission from '@/directive/permission'; // Waves directive
 import checkPermission from '@/utils/permission'; // Permission checking
+import clipboard from '@/directive/clipboard/index.js'; // use clipboard by v-directive
 
 const accountResource = new AccountResource();
+const tokenResource = new TokenResource();
 
 export default {
   name: 'AccountList',
   components: { Pagination },
-  directives: { waves, permission },
+  directives: { waves, permission, clipboard },
   data() {
     return {
       list: [],
@@ -229,6 +304,12 @@ export default {
           email: '',
         },
       },
+      dialogTokenFormVisible: false,
+      dialogTokenFormName: 'User token',
+      newToken: {
+        expired_at: null,
+      },
+      currentUserTokens: [],
       dialogPermission: {
         title: 'Permissions',
         loading: false,
@@ -291,6 +372,93 @@ export default {
       });
       this.total = meta.total;
       this.loading = false;
+    },
+    handleToken(account) {
+      this.currentAccount = account;
+      console.log(account);
+      console.log(this.currentAccount);
+      this.dialogTokenFormName = account.realname;
+      this.getTokenList();
+      this.dialogTokenFormVisible = true;
+    },
+    async getTokenList() {
+      this.currentUserTokens = [];
+      const { data } = await tokenResource.userTokenList(this.currentAccount.id);
+      this.currentUserTokens = data;
+    },
+    makeToken() {
+      this.$confirm(
+        'This will make a new token for' +
+          this.currentAccount.realname +
+          '. Continue?',
+        'Warning',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning',
+        }
+      )
+        .then(() => {
+          console.log(this.currentAccount);
+          tokenResource
+            .makeUserToken(this.currentAccount.id, this.newToken.expired_at)
+            .then(response => {
+              this.$message({
+                type: 'success',
+                message: 'The new token : ' + response.api_token,
+              });
+              this.getTokenList();
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Make token canceled',
+          });
+        });
+    },
+    clipboardSuccess() {
+      this.$message({
+        message: 'Copy token successfully',
+        type: 'success',
+        duration: 1500,
+      });
+    },
+    handleTokenDelete(token) {
+      this.$confirm(
+        'This will permanently delete token ' +
+          token.access_token +
+          '. Continue?',
+        'Warning',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning',
+        }
+      )
+        .then(() => {
+          tokenResource
+            .delUserToken(token.id)
+            .then(response => {
+              this.$message({
+                type: 'success',
+                message: 'Delete token completed',
+              });
+              this.getTokenList();
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Delete token canceled',
+          });
+        });
     },
     handleFilter() {
       this.query.page = 1;
@@ -361,6 +529,8 @@ export default {
     handleEdit(account) {
       this.isNewAccount = false;
       this.currentAccount = account;
+      console.log(account);
+      console.log(this.currentAccount);
       this.passwordRequired = false;
       this.dialogFormVisible = true;
       this.$nextTick(() => {

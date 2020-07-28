@@ -15,6 +15,15 @@ class TokenResource extends Resource {
       },
     });
   }
+  userTokenList(user_id){
+    return request({
+      url: '/account/' + this.uri,
+      method: 'get',
+      params: {
+        'user_id': user_id,
+      },
+    });
+  }
 
   makeToken(bundle_id, expired_at) {
     return request({
@@ -24,6 +33,23 @@ class TokenResource extends Resource {
         'bundle_id': bundle_id,
         'expired_at': expired_at,
       },
+    });
+  }
+
+  makeUserToken(user_id, expired_at) {
+    return request({
+      url: '/account/' + this.uri,
+      method: 'post',
+      data: {
+        'user_id': user_id,
+        'expired_at': expired_at,
+      },
+    });
+  }
+  delUserToken(user_id) {
+    return request({
+      url: '/account/' + this.uri + '/' + user_id,
+      method: 'delete',
     });
   }
 }

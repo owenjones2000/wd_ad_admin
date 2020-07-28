@@ -54,7 +54,13 @@ Route::group(['middleware' => 'api'], function () {
             Route::post('{id}/bill', 'AccountController@setBill')->name('account.bill')->middleware('permission:advertise.account.edit');
 
             //删除
-//            Route::delete('account/destroy','AccountController@destroy')->name('account.destroy')->middleware('permission:advertise.account.destroy');
+            //            Route::delete('account/destroy','AccountController@destroy')->name('account.destroy')->middleware('permission:advertise.account.destroy');
+            Route::group(['prefix' => 'auth'], function () {
+                Route::get('token', 'AuthController@accountTokenList')->name('auth.token')->middleware('permission:advertise.account.edit');
+                Route::post('token', 'AuthController@makeAccountToken')->name('auth.token.make')->middleware('permission:advertise.account.edit');
+                Route::delete('token/{id}', 'AuthController@delAccountToken')->name('auth.token.destroy')->middleware('permission:advertise.account.edit');
+            });
+
         });
 
         // Bill
