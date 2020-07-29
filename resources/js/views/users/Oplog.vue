@@ -33,7 +33,14 @@
       <el-table-column prop="user.email" align="center" label="Email" fixed />
       <el-table-column prop="method" align="center" label="Method" />
       <el-table-column prop="path" align="center" label="Uri" />
-      <el-table-column prop="input" align="center" label="Params" />
+      <!-- <el-table-column prop="input" align="center" label="Params" /> -->
+      <el-table-column align="center" label="Params">
+        <template slot-scope="scope">
+          <el-row v-for="(json, i) in JSON.parse(scope.row.input)" :key="json">
+            {{ i }} :{{ json }}
+          </el-row>
+        </template>
+      </el-table-column>
       <el-table-column prop="ip" align="center" label="IP" />
       <el-table-column prop="created_at" label="Created" align="center" width="100" />
     </el-table>

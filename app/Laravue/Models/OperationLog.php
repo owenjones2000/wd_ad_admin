@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class OperationLog extends Model
 {
     protected $table = 'admin_operation_log';
-    // protected $connection = 'mysql_system';
+    protected $connection = 'mysql_system';
     protected $fillable = ['user_id', 'path', 'method', 'ip', 'input', 'name'];
 
     public static $methodColors = [
