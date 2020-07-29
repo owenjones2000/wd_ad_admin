@@ -23,7 +23,8 @@ Route::group(['middleware' => 'api'], function () {
     Route::apiResource('users', 'UserController')->middleware('permission:system.user');
     Route::get('users/{user}/permissions', 'UserController@permissions')->middleware('permission:system.user');
     Route::put('users/{user}/permissions', 'UserController@updatePermissions')->middleware('permission:system.user.permission');
-//    Route::apiResource('roles', 'RoleController')->middleware('permission:system.permission');
+    //    Route::apiResource('roles', 'RoleController')->middleware('permission:system.permission');
+    Route::get('users/operation/log', 'UserController@opLog')->name('user.oplog')->middleware('permission:system.user.oplog');
     Route::get('roles/{role}/permissions', 'RoleController@permissions')->middleware('system.role.permission');
     Route::apiResource('permissions', 'PermissionController')->middleware('permission:system.permission');
 

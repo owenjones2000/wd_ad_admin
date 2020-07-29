@@ -28,6 +28,14 @@ class UserResource extends Resource {
       data: permissions,
     });
   }
+
+  opLog(query) {
+    return request({
+      url: '/' + this.uri + '/operation/log',
+      method: 'get',
+      params: query,
+    });
+  }
 }
 
 export { UserResource as default };

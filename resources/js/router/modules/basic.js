@@ -21,9 +21,15 @@ const basicRoutes = {
     },
     {
       path: 'log',
-      component: () => import('@/views/users/Operation'),
+      component: () => import('@/views/users/Oplog'),
       name: 'LogList',
-      meta: { title: 'Log', icon: 'component', permissions: ['basic.manage'] },
+      meta: { title: 'Admin Log', icon: 'component', permissions: ['system.user.oplog'] },
+    },
+    {
+      path: 'account/oplog',
+      component: () => import('@/views/account/Oplog'),
+      name: 'OpLog',
+      meta: { title: 'Account Log', icon: 'tree-table', permissions: ['advertise.account.oplog'] },
     },
   ],
 };

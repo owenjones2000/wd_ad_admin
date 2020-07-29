@@ -28,12 +28,12 @@
     </div>
 
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%" @sort-change="handleSort">
-      <el-table-column prop="main_account.realname" align="center" label="Main Account" fixed />
-      <el-table-column prop="account.realname" align="center" label="Account" fixed />
-      <el-table-column prop="account.email" align="center" label="Email" fixed />
+      <el-table-column prop="user.name" align="center" label="Admin User" fixed />
+      <el-table-column prop="user.phone" align="center" label="Phone" fixed />
+      <el-table-column prop="user.email" align="center" label="Email" fixed />
       <el-table-column prop="method" align="center" label="Method" />
-      <el-table-column prop="uri" align="center" label="Uri" />
-      <el-table-column prop="query" align="center" label="Params" />
+      <el-table-column prop="path" align="center" label="Uri" />
+      <el-table-column prop="input" align="center" label="Params" />
       <el-table-column prop="ip" align="center" label="IP" />
       <el-table-column prop="created_at" label="Created" align="center" width="100" />
     </el-table>
@@ -44,12 +44,12 @@
 
 <script>
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
-import AccountResource from '@/api/account';
+import UserResource from '@/api/user';
 import waves from '@/directive/waves'; // Waves directive
 import permission from '@/directive/permission'; // Waves directive
 import checkPermission from '@/utils/permission'; // Permission checking
 
-const accountResource = new AccountResource();
+const userResource = new UserResource();
 
 export default {
   name: 'OpLog',
@@ -131,7 +131,7 @@ export default {
     async getList() {
       const { limit, page } = this.query;
       this.loading = true;
-      const { data, meta } = await accountResource.opLog(this.query);
+      const { data, meta } = await userResource.opLog(this.query);
       this.list = data;
       this.list.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;

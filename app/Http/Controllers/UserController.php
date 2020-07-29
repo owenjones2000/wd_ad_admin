@@ -12,10 +12,12 @@ namespace App\Http\Controllers;
 use App\Http\Resources\PermissionResource;
 use App\Http\Resources\UserResource;
 use App\Laravue\JsonResponse;
+use App\Laravue\Models\OperationLog;
 use App\Laravue\Models\Permission;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
@@ -218,5 +220,33 @@ class UserController extends Controller
                 'array'
             ],
         ];
+    }
+
+    public function opLog(Request $request)
+    {
+        $searchParams = $request->all();
+        $opLogQuery = OperationLog::query()->with('user');
+        $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
+        $keyword = Arr::get($searchParams, 'keyword', '');
+
+        $range_date = Arr::get($searchParams, 'daterange');
+        $start_date = date('Y-m-d 00:00:00', strtotime($range_date[0] ?? 'now'));
+        $end_date = date('Y-m-d 23:59:59', strtotime($range_date[1] ?? 'now'));
+        $opLogQuery->whereBetween('created_at', [$start_date, $end_date]);
+
+        if (!empty($keyword)) {
+            $like_keyword = '%' . $request->get('keyword') . '%';
+            $opLogQuery->WhereHas('user', function ($query) use ($like_keyword) {
+                $query->where('name', 'like', $like_keyword);
+                $query->orWhere('email', 'like', $like_keyword);
+            });
+        }
+
+        if (!empty(Arr::get($searchParams, 'method'))) {
+            $opLogQuery->where('method', Arr::get($searchParams, 'method'));
+        }
+
+        $opLogQuery->orderBy('created_at', 'desc');
+        return JsonResource::collection($opLogQuery->paginate($limit));
     }
 }
