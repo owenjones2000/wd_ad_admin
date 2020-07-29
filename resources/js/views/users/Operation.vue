@@ -454,20 +454,6 @@ export default {
         name: '',
       };
     },
-    handleDownload() {
-      this.downloading = true;
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['id', 'app_id', 'name'];
-        const filterVal = ['index', 'id', 'name'];
-        const data = this.formatJson(filterVal, this.list);
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: 'app-list',
-        });
-        this.downloading = false;
-      });
-    },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => v[j]));
     },
