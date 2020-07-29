@@ -3,7 +3,7 @@
 return [
     'enable' => true,
     'allowed_methods' => [
-        // 'GET',
+        'GET',
         'HEAD',
         'POST',
         'PUT',
