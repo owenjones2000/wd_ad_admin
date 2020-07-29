@@ -32,10 +32,10 @@ class LogOperation
                 'ip'      => isset($_SERVER["HTTP_X_FORWARDED_FOR"]) ? $_SERVER["HTTP_X_FORWARDED_FOR"] : $request->getClientIp(),
                 'input'   => $this->formatInput($request->input()),
             ];
-            Log::info($log);
+            // Log::info($log);
             try {
                 $res = OperationLog::create($log);
-                Log::info($res);
+                // Log::info($res);
             } catch (\Exception $exception) {
                 Log::info($exception);
             }
