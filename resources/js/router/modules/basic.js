@@ -14,12 +14,6 @@ const basicRoutes = {
   children: [
 
     {
-      path: 'advertiser',
-      component: () => import('@/views/advertiser/List'),
-      name: 'AdvertiserList',
-      meta: { title: 'Advertiser', icon: 'peoples', permissions: ['advertise.manage'] },
-    },
-    {
       path: 'log',
       component: () => import('@/views/users/Oplog'),
       name: 'LogList',
