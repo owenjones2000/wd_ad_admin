@@ -27,7 +27,7 @@ Route::group(['middleware' => 'api'], function () {
     Route::get('roles/{role}/permissions', 'RoleController@permissions')->middleware('system.role.permission');
     Route::apiResource('permissions', 'PermissionController')->middleware('permission:system.permission');
 
-    Route::group(['namespace' => 'Api'], function () {
+    Route::group(['namespace' => 'Api', 'middleware' => 'operation.log'], function () {
         // Account
         Route::group(['prefix' => 'account'],function (){
             Route::get('','AccountController@list')->name('account')->middleware('permission:advertise.account');

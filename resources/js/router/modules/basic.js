@@ -13,13 +13,18 @@ const basicRoutes = {
   },
   children: [
 
-    /** Country managements */
-    // {
-    //   path: 'channel',
-    //   component: () => import('@/views/channel/List'),
-    //   name: 'Country',
-    //   meta: { title: 'country', icon: 'user', permissions: ['basic.channel.list'] },
-    // },
+    {
+      path: 'advertiser',
+      component: () => import('@/views/advertiser/List'),
+      name: 'AdvertiserList',
+      meta: { title: 'Advertiser', icon: 'peoples', permissions: ['advertise.manage'] },
+    },
+    {
+      path: 'log',
+      component: () => import('@/views/users/Operation'),
+      name: 'LogList',
+      meta: { title: 'Log', icon: 'component', permissions: ['basic.manage'] },
+    },
   ],
 };
 
