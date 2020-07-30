@@ -34,6 +34,11 @@
           <span>{{ scope.row.email }}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="Phone">
+        <template slot-scope="scope">
+          <span>{{ scope.row.phone }}</span>
+        </template>
+      </el-table-column>
 
       <!--<el-table-column align="center" label="Role" width="120">-->
       <!--  <template slot-scope="scope">-->
@@ -94,6 +99,9 @@
           </el-form-item>
           <el-form-item :label="$t('user.email')" prop="email">
             <el-input v-model="user.email" />
+          </el-form-item>
+          <el-form-item label="Phone" prop="phone">
+            <el-input v-model="user.phone" />
           </el-form-item>
           <el-form-item :label="$t('user.password')" prop="password">
             <el-input v-model="user.password" show-password />

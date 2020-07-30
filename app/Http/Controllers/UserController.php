@@ -82,6 +82,7 @@ class UserController extends Controller
             $user = User::create([
                 'name' => $params['name'],
                 'email' => $params['email'],
+                'phone' => $params['phone'],
                 'password' => Hash::make($params['password']),
             ]);
             $role = Role::findByName($params['role']);
@@ -127,9 +128,15 @@ class UserController extends Controller
             if ($found && $found->id !== $user->id) {
                 return response()->json(['error' => 'Email has been taken'], 403);
             }
+            $phone = $request->get('phone');
+            $found = User::query()->where('phone', $phone)->first();
+            if ($found && $found->id !== $user->id) {
+                return response()->json(['error' => 'phone has been taken'], 403);
+            }
 
             $user->name = $request->get('name');
             $user->email = $email;
+            $user->phone = $phone;
             $user->save();
             return new UserResource($user);
         }
@@ -215,6 +222,7 @@ class UserController extends Controller
         return [
             'name' => 'required',
             'email' => $isNew ? 'required|email|unique:mysql_system.admin_users' : 'required|email',
+            'phone' => $isNew ? 'required|unique:mysql_system.admin_users' : 'required',
             'roles' => [
                 'required',
                 'array'
