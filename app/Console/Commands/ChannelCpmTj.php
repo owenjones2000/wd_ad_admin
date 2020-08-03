@@ -7,6 +7,7 @@ use App\Models\Advertise\Impression;
 use App\Models\ChannelCpm;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ChannelCpmTj extends Command
 {
@@ -41,6 +42,7 @@ class ChannelCpmTj extends Command
      */
     public function handle()
     {
+        Log::info('start' . __METHOD__);
         $start_day = $this->argument('start_day');
         $end_day = $this->argument('end_day');
         if (empty($start_day)) {
@@ -53,6 +55,8 @@ class ChannelCpmTj extends Command
         } else {
             $end_date = date('Ymd', strtotime("-{$end_day} day"));
         }
+        Log::info('start_date' . $start_date);
+        Log::info('end_date' . $end_date);
         dump('start_date' .$start_date);
         dump('end_date' . $end_date);
         $impression_query = Impression::multiTableQuery(function ($query) use ($start_date, $end_date) {
@@ -88,5 +92,6 @@ class ChannelCpmTj extends Command
             ]);
         }
         dump('finish');
+        Log::info('finish'.__METHOD__);
     }
 }
