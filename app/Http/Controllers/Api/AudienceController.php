@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\AudienceRedis;
 use App\Laravue\JsonResponse;
 use App\Models\Advertise\App;
 use App\Models\Audience;
@@ -267,14 +268,17 @@ class AudienceController extends Controller
         
         $newappIds = array_diff($appIds, $oldAppIds);
         if ($newappIds){
-            $idfas = Idfa::where('tag_id', $id)->chunk(10000, function($idfas) use ($newappIds){
-                $redisValue = $idfas->pluck('idfa');
-                foreach ($newappIds as $key => $id) {
-                    // $redisRes = Redis::connection('default')->sadd('app_audience_blocklist_' . $id, ...$redisValue);
-                    $redisRes = Redis::connection('feature')->sadd('app_audience_blocklist_' . $id, ...$redisValue);
-                    Log::info('redisres  ' . $redisRes. '   appid '. $id);
-                }
-            });
+            // $idfas = Idfa::where('tag_id', $id)->chunk(10000, function($idfas) use ($newappIds){
+            //     $redisValue = $idfas->pluck('idfa');
+            //     foreach ($newappIds as $key => $id) {
+            //         // $redisRes = Redis::connection('default')->sadd('app_audience_blocklist_' . $id, ...$redisValue);
+            //         $redisRes = Redis::connection('feature')->sadd('app_audience_blocklist_' . $id, ...$redisValue);
+            //         Log::info('redisres  ' . $redisRes. '   appid '. $id);
+            //     }
+            // });
+            dispatch(new AudienceRedis($id, $newappIds));
+            // $job = new AudienceRedis($id, $newappIds);
+            // $job ->dispatch();
         }
         $tag->apps()->sync($appIds);
 

@@ -306,18 +306,6 @@ class StatisController extends Controller
         $start_date = date('Ymd', strtotime($range_date[0] ?? 'now'));
         $end_date = date('Ymd', strtotime($range_date[1] ?? 'now'));
 
-        //        $start_time = date('Y-m-d 00:00:00', strtotime($range_date[0]??'now'));
-        //        $end_time = date('Y-m-d 23:59:59', strtotime($range_date[1]??'now'));
-
-        // Device
-        //        $device_query = Device::query()
-        //            // ->whereBetween('created_at', [$start_time, $end_time])
-        //        ;
-        //
-        //        $total_device = $device_query->select([
-        //            DB::raw('count(1) as total_device_count'),
-        //        ])->first()->toArray();
-
         // Request
         $request_query = \App\Models\Advertise\Request::multiTableQuery(function ($query) use ($start_date, $end_date) {
             $query->whereBetween('date', [$start_date, $end_date]);
@@ -365,18 +353,6 @@ class StatisController extends Controller
         $range_date = $request->get('daterange');
         $start_date = date('Ymd', strtotime($range_date[0] ?? 'now'));
         $end_date = date('Ymd', strtotime($range_date[1] ?? 'now'));
-
-        //        $start_time = date('Y-m-d 00:00:00', strtotime($range_date[0]??'now'));
-        //        $end_time = date('Y-m-d 23:59:59', strtotime($range_date[1]??'now'));
-
-        // Device
-        //        $device_query = Device::query()
-        //            // ->whereBetween('created_at', [$start_time, $end_time])
-        //        ;
-        //
-        //        $total_device = $device_query->select([
-        //            DB::raw('count(1) as total_device_count'),
-        //        ])->first()->toArray();
 
         // Request
         $avg_request_query = \App\Models\Advertise\Request::multiTableQuery(function ($query) use ($start_date, $end_date) {
@@ -454,18 +430,6 @@ class StatisController extends Controller
         $range_date = $request->get('daterange');
         $start_date = date('Ymd', strtotime($range_date[0] ?? 'now'));
         $end_date = date('Ymd', strtotime($range_date[1] ?? 'now'));
-
-        //        $start_time = date('Y-m-d 00:00:00', strtotime($range_date[0]??'now'));
-        //        $end_time = date('Y-m-d 23:59:59', strtotime($range_date[1]??'now'));
-
-        // Device
-        //        $device_query = Device::query()
-        //            // ->whereBetween('created_at', [$start_time, $end_time])
-        //        ;
-        //
-        //        $total_device = $device_query->select([
-        //            DB::raw('count(1) as total_device_count'),
-        //        ])->first()->toArray();
 
         // Request
         $avg_request_query = \App\Models\Advertise\Request::multiTableQuery(function ($query) use ($start_date, $end_date) {
