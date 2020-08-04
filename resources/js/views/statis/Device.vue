@@ -116,7 +116,7 @@ export default {
         page: 1,
         limit: 15,
         keyword: '',
-        daterange: [new Date(new Date().setDate(new Date().getDate() - 7)), new Date()],
+        daterange: [new Date(new Date().setDate(new Date().getDate() - 14)), new Date()],
       },
       pickerOptions: defaultDatePickerOptions,
     };
