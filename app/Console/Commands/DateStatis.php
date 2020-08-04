@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Advertise\Ad;
+use App\Models\Advertise\AdvertiseKpi;
 use App\Models\Advertise\App;
 use App\Models\Advertise\Asset;
 use App\Models\Advertise\Campaign;
@@ -78,6 +79,7 @@ class DateStatis extends Command
         // dd($total_request, $idfa_request);
         $devices =  $total_request['uq_idfa'] + $idfa_request['uq_no_idfa'];
         $request_avg  = $devices ? $total_request['total'] / $devices : 0;
+        $request_avg = round($request_avg, 4);
         // Impression
         $impression_query = \App\Models\Advertise\Impression::multiTableQuery(function ($query) use ($date) {
             $query->where('date', $date);
@@ -106,7 +108,28 @@ class DateStatis extends Command
             DB::raw('count(*) / count(DISTINCT idfa) as install_avg'),
         ])->first()->toArray();
 
-        //add
+        // $subtask_query =  AdvertiseKpi::multiTableQuery(function ($query) use ($date) {
+        //     $query->where('date', $date);
+        //     return $query;
+        // }, $date, $date);
+        // $total_subtask = $subtask_query->select([
+        //     DB::raw('count(DISTINCT app_id) as apps'),
+        //     DB::raw('count(DISTINCT campaign_id) as campaigns'),
+        //     DB::raw('count(DISTINCT ad_id) as ads'),
+        //     DB::raw('count(DISTINCT target_app_id) as channels'),
+        //     DB::raw('count(DISTINCT country) as countries'),
+        //     DB::raw('sum(requests) as requests'),
+        //     DB::raw('sum(impressions) as impressions'),
+        //     DB::raw('sum(clicks) as clicks'),
+        //     DB::raw('sum(installations) as installs'),
+        //     DB::raw('round(sum(clicks) * 100 / sum(impressions), 2) as ctr'),
+        //     DB::raw('round(sum(installations) * 100 / sum(clicks), 2) as cvr'),
+        //     DB::raw('round(sum(installations) * 100 / sum(impressions), 2) as ir'),
+        //     DB::raw('round(sum(spend), 2) as spend'),
+        //     DB::raw('round(sum(spend) / sum(installations), 2) as ecpi'),
+        //     DB::raw('round(sum(spend) * 1000 / sum(impressions), 2) as ecpm'),
+        // ])->first();
+                //add
         $begin = Carbon::parse($date ?? 'now')->startOfDay();
         $end = Carbon::parse($date ?? 'now')->endOfDay();
         $newapp = App::query()->whereBetween('created_at', [$begin, $end])->count();

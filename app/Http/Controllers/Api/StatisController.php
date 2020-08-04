@@ -307,7 +307,7 @@ class StatisController extends Controller
         $start_date = date('Ymd', strtotime($range_date[0] ?? 'now'));
         $end_date = date('Ymd', strtotime($range_date[1] ?? 'now'));
 
-       $devices  = Statis::whereBetween('date', [$start_date, $end_date])->get();
+       $devices  = Statis::whereBetween('date', [$start_date, $end_date])->orderBy('date', 'desc')->get();
 
         return new JsonResource($devices);
     }
