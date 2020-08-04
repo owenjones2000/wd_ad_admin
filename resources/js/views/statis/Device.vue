@@ -26,29 +26,59 @@
     </div>
 
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="Devices">
+      <el-table-column align="center" label="Date">
         <template slot-scope="scope">
-          <span>{{ scope.row.total_device_count ? scope.row.total_device_count : 0 }}</span>
+          <span>{{ scope.row.date }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="uq_idfa Devices">
+        <template slot-scope="scope">
+          <span>{{ scope.row.statis.uq_idfa ? scope.row.statis.uq_idfa : 0 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="uq_no_idfa Devices">
+        <template slot-scope="scope">
+          <span>{{ scope.row.statis.uq_no_idfa ? scope.row.statis.uq_no_idfa : 0 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="New App">
+        <template slot-scope="scope">
+          <span>{{ scope.row.statis.newapp ? scope.row.statis.newapp : 0 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="New Channel">
+        <template slot-scope="scope">
+          <span>{{ scope.row.statis.newchannel ? scope.row.statis.newchannel : 0 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="New Campaign">
+        <template slot-scope="scope">
+          <span>{{ scope.row.statis.newcampaign ? scope.row.statis.newcampaign : 0 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="New Ad">
+        <template slot-scope="scope">
+          <span>{{ scope.row.statis.newad ? scope.row.statis.newad : 0 }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="Request Avg">
         <template slot-scope="scope">
-          <span>{{ scope.row.request_avg ? scope.row.request_avg : 0 }}</span>
+          <span>{{ scope.row.statis.request_avg ? scope.row.statis.request_avg : 0 }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="Impression Avg">
         <template slot-scope="scope">
-          <span>{{ scope.row.impression_avg ? scope.row.impression_avg : 0 }}</span>
+          <span>{{ scope.row.statis.impression_avg ? scope.row.statis.impression_avg : 0 }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="Click Avg">
         <template slot-scope="scope">
-          <span>{{ scope.row.click_avg ? scope.row.click_avg : 0 }}</span>
+          <span>{{ scope.row.statis.click_avg ? scope.row.statis.click_avg : 0 }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="Install Avg">
         <template slot-scope="scope">
-          <span>{{ scope.row.install_avg ? scope.row.install_avg : 0 }}</span>
+          <span>{{ scope.row.statis.install_avg ? scope.row.statis.install_avg : 0 }}</span>
         </template>
       </el-table-column>
       <!-- <el-table-column align="center" label="Actions">

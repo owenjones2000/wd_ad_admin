@@ -10,6 +10,7 @@ use App\Models\Advertise\Ad;
 use App\Models\Advertise\App;
 use App\Models\Advertise\Campaign;
 use App\Models\Advertise\Channel;
+use App\Models\Statis;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
@@ -306,46 +307,9 @@ class StatisController extends Controller
         $start_date = date('Ymd', strtotime($range_date[0] ?? 'now'));
         $end_date = date('Ymd', strtotime($range_date[1] ?? 'now'));
 
-        // Request
-        $request_query = \App\Models\Advertise\Request::multiTableQuery(function ($query) use ($start_date, $end_date) {
-            $query->whereBetween('date', [$start_date, $end_date]);
-            return $query;
-        }, $start_date, $end_date);
+       $devices  = Statis::whereBetween('date', [$start_date, $end_date])->get();
 
-        $total_request = $request_query->select([
-            DB::raw('count(DISTINCT idfa) as total_device_count'),
-            DB::raw('count(1) / count(DISTINCT idfa) as request_avg'),
-        ])->first()->toArray();
-
-        // Impression
-        $impression_query = \App\Models\Advertise\Impression::multiTableQuery(function ($query) use ($start_date, $end_date) {
-            $query->whereBetween('date', [$start_date, $end_date]);
-            return $query;
-        }, $start_date, $end_date);
-
-        $total_impression = $impression_query->select([
-            DB::raw('count(1) / count(DISTINCT idfa) as impression_avg'),
-        ])->first()->toArray();
-        // Clicks
-        $click_query = \App\Models\Advertise\Click::multiTableQuery(function ($query) use ($start_date, $end_date) {
-            $query->whereBetween('date', [$start_date, $end_date]);
-            return $query;
-        }, $start_date, $end_date);
-
-        $total_click = $click_query->select([
-            DB::raw('count(1) / count(DISTINCT idfa) as click_avg'),
-        ])->first()->toArray();
-        // Installs
-        $install_query = \App\Models\Advertise\Install::multiTableQuery(function ($query) use ($start_date, $end_date) {
-            $query->whereBetween('date', [$start_date, $end_date]);
-            return $query;
-        }, $start_date, $end_date);
-
-        $total_install = $install_query->select([
-            DB::raw('count(1) / count(DISTINCT idfa) as install_avg'),
-        ])->first()->toArray();
-
-        return new JsonResource([array_merge(/*$total_device,*/$total_request, $total_impression, $total_click, $total_install)]);
+        return new JsonResource($devices);
     }
 
     public function deviceByChannel(Request $request)

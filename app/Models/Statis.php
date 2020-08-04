@@ -13,5 +13,6 @@ class Statis extends Model
         'statis' => 'array',
     ];
 
+    protected $guarded = [];
     const UPDATED_AT = null;
 }
