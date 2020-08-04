@@ -59,9 +59,10 @@ class DateStatis extends Command
         Log::info('end' . $end);
         dump('start' . $start);
         dump('end' . $end);
+        $over = $end;
         // Request
-        for ($index = $start->copy(); $index->format('Ymd') <= $end->format('Ymd'); $index->addDay()) {
-            $date = $index->format('Ymd');
+        for ($begin = $start->copy(); $begin->format('Ymd') <= $over->format('Ymd'); $begin->addDay()) {
+            $date = $begin->format('Ymd');dump($begin->format('Ymd'));
             $request_query = \App\Models\Advertise\Request::multiTableQuery(function ($query) use ($date) {
                 $query->where('date', $date);
                 return $query;
