@@ -16,7 +16,7 @@ class DateStatis extends Command
      *
      * @var string
      */
-    protected $signature = 'admin:statis {start_day?} {end_day?}';
+    protected $signature = 'admin:statis {date?}';
 
     /**
      * The console command description.
@@ -43,30 +43,23 @@ class DateStatis extends Command
     public function handle()
     {
         Log::info('start' . __METHOD__);
-        $start_day = $this->argument('start_day');
-        $end_day = $this->argument('end_day');
-        if (empty($start_day)) {
-            $start_date = date('Ymd');
+        $dateStr = $this->argument('date');
+        if (empty($dateStr)) {
+            $date = date('Ymd');
         } else {
-            $start_date = date('Ymd', strtotime("-{$start_day} day"));
+            $date = date('Ymd', strtotime($dateStr));
         }
-        if (empty($end_day)) {
-            $end_date = date('Ymd');
-        } else {
-            $end_date = date('Ymd', strtotime("-{$end_day} day"));
-        }
-        Log::info('start_date' . $start_date);
-        Log::info('end_date' . $end_date);
-        dump('start_date' . $start_date);
-        dump('end_date' . $end_date);
+
+        Log::info('date' . $date);
+        dump('date' . $date);
         // Request
-        $request_query = \App\Models\Advertise\Request::multiTableQuery(function ($query) use ($start_date, $end_date) {
-            $query->whereBetween('date', [$start_date, $end_date]);
+        $request_query = \App\Models\Advertise\Request::multiTableQuery(function ($query) use ($date) {
+            $query->where('date', $date);
             return $query;
-        }, $start_date, $end_date);
+        }, $date, $date);
 
         $total_request = $request_query->select([
-            DB::raw('count(DISTINCT idfa) as total_device_count'),
+            DB::raw('count(DISTINCT idfa) as total_uq_idfa'),
             DB::raw('count(*) as total'),
             'date',
         ])
