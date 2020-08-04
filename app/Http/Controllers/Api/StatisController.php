@@ -307,7 +307,10 @@ class StatisController extends Controller
         $start_date = date('Ymd', strtotime($range_date[0] ?? 'now'));
         $end_date = date('Ymd', strtotime($range_date[1] ?? 'now'));
 
-       $devices  = Statis::whereBetween('date', [$start_date, $end_date])->orderBy('date', 'desc')->get();
+        $devices  = Statis::whereBetween('date', [$start_date, $end_date])->orderBy('date', 'desc')->get()->toArray();
+        foreach ($devices as $key => &$value) {
+            $value['statis']['request_avg']  = round($value['statis']['request_avg'], 4);
+        }
 
         return new JsonResource($devices);
     }
