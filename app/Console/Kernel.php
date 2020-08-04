@@ -3,7 +3,9 @@
 namespace App\Console;
 
 use App\Console\Commands\ChannelCpmTj;
+use App\Console\Commands\DateStatis;
 use App\Console\Commands\SubTaskMonthSum;
+use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -31,7 +33,9 @@ class Kernel extends ConsoleKernel
             ->monthlyOn(8, '00:50');
         $schedule->command(SubTaskMonthSum::class)->runInBackground()->monthlyOn(8);
         $schedule->command(ChannelCpmTj::class, ["1", "1"])->runInBackground()->dailyAt("0:30");
+        $schedule->command(ChannelCpmTj::class, [Carbon::now()->subDay()->format('Ymd')])->runInBackground()->dailyAt("0:30");
         $schedule->command(ChannelCpmTj::class)->runInBackground()->everyTenMinutes();
+        $schedule->command(DateStatis::class)->runInBackground()->hourly();
     }
 
     /**
