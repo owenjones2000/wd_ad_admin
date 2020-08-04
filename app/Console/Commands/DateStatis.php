@@ -61,15 +61,13 @@ class DateStatis extends Command
         $total_request = $request_query->select([
             DB::raw('count(DISTINCT idfa) as total_uq_idfa'),
             DB::raw('count(*) as total'),
-            'date',
         ])
-        ->groupBy('date')->get()->toArray();
+        ->first()->toArray();
         $idfa_request = $request_query->where('idfa', '00000000-0000-0000-0000-000000000000')
         ->select([
             DB::raw('count(DISTINCT ip) as no_idfa_count'),
             DB::raw('count(*) as total_no_idfa'),
-            'date'
-        ])->groupBy('date')->get()->toArray();
+        ])->first()->toArray();
         dd($total_request, $idfa_request);
         // dd($impression_list);
        
