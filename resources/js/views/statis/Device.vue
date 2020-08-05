@@ -61,6 +61,11 @@
           <span>{{ scope.row.statis.newad ? scope.row.statis.newad : 0 }}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="Installs">
+        <template slot-scope="scope">
+          <span>{{ scope.row.installs ? scope.row.installs : 0 }}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="Request Avg">
         <template slot-scope="scope">
           <span>{{ scope.row.statis.request_avg ? scope.row.statis.request_avg : 0 }}</span>
@@ -76,11 +81,11 @@
           <span>{{ scope.row.statis.click_avg ? scope.row.statis.click_avg : 0 }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Install Avg">
+      <!-- <el-table-column align="center" label="Install Avg">
         <template slot-scope="scope">
           <span>{{ scope.row.statis.install_avg ? scope.row.statis.install_avg : 0 }}</span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <!-- <el-table-column align="center" label="Actions">
         <template>
           <router-link class="link-type" :to="'/statis/device/channel'">Channels</router-link>

@@ -38,8 +38,11 @@ class AudienceRedis implements ShouldQueue
     {
         $id = $this->tag_id;
         $newappIds = $this->app_ids;
+        Log::info('AudienceRedis   tagid ' . $id);
+        Log::info($newappIds);
         $idfas = Idfa::where('tag_id', $id)->chunk(10000, function ($idfas) use ($newappIds) {
             $redisValue = $idfas->pluck('idfa');
+            Log::info(count($redisValue));
             foreach ($newappIds as $key => $id) {
                 // $redisRes = Redis::connection('default')->sadd('app_audience_blocklist_' . $id, ...$redisValue);
                 $redisRes = Redis::connection('feature')->sadd('app_audience_blocklist_' . $id, ...$redisValue);

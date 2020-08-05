@@ -308,8 +308,23 @@ class StatisController extends Controller
         $end_date = date('Ymd', strtotime($range_date[1] ?? 'now'));
 
         $devices  = Statis::whereBetween('date', [$start_date, $end_date])->orderBy('date', 'desc')->get()->toArray();
+
+        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use ($start_date, $end_date) {
+            $query->whereBetween('date', [$start_date, $end_date])
+                ->select([
+                    'date', 'requests', 'impressions', 'clicks', 'installations', 'spend',
+                    'app_id', 'campaign_id', 'ad_id', 'target_app_id', 'country'
+                ]);
+            return $query;
+        }, $start_date, $end_date);
+
+        $kpi = $advertise_kpi_query->select([
+            DB::raw('sum(installations) as installs'),
+            'date',
+        ])->groupBy('date')->get()->keyBy('date')->toArray();
         foreach ($devices as $key => &$value) {
             $value['statis']['request_avg']  = round($value['statis']['request_avg'], 4);
+            $value['installs'] = $kpi[$value['date']]['installs']??0;
         }
 
         return new JsonResource($devices);
