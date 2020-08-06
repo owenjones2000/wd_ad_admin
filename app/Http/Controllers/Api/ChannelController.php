@@ -66,13 +66,23 @@ class ChannelController extends Controller
             $channel_base_query->where('platform', $os);
         }
         $country = $request->input('country');
+        $type = $request->input('type');
         $channel_id_query = clone $channel_base_query;
         $channel_id_query->select('id');
-        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use ($start_date, $end_date, $channel_id_query, $country) {
+        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use (
+            $start_date,
+            $end_date,
+            $channel_id_query,
+            $type,
+            $country
+        ) {
             $query->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('target_app_id', $channel_id_query)
-                ->when($country, function($query)use($country){
+                ->when($country, function ($query) use ($country) {
                     $query->where('country', $country);
+                })
+                ->when($type, function ($query) use ($type) {
+                    $query->where('type', $type);
                 })
                 ->select([
                     'requests', 'impressions', 'clicks', 'installations', 'spend',
@@ -115,11 +125,20 @@ class ChannelController extends Controller
         }
         $channel_list = $channel_query->paginate($request->get('limit', 30));
         //install表统计
-        $install_query = Install::multiTableQuery(function ($query) use ($start_date, $end_date, $channel_id_query, $country) {
+        $install_query = Install::multiTableQuery(function ($query) use (
+            $start_date,
+            $end_date,
+            $channel_id_query,
+            $type,
+            $country
+        ) {
             $query->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('target_app_id', $channel_id_query)
                 ->when($country, function ($query) use ($country) {
                     $query->where('country', $country);
+                })
+                ->when($type, function ($query) use ($type) {
+                    $query->where('type', $type);
                 })
                 ->select([
                     'cost',
@@ -145,6 +164,9 @@ class ChannelController extends Controller
             ->whereIn('target_app_id', $channel_id_query)
             ->when($country, function ($query) use ($country) {
                 $query->where('country', $country);
+            })
+            ->when($type, function ($query) use ($type) {
+                $query->where('type', $type);
             })
             ->select([
                 DB::raw('sum(cpm_revenue) as cpm'),
@@ -392,8 +414,8 @@ class ChannelController extends Controller
         $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use ($start_date, $end_date, $channel_id_query, $adtype) {
             $query->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('target_app_id', $channel_id_query)
-                ->when($adtype, function($query) use ($adtype){
-                    $query-> where('type', $adtype);
+                ->when($adtype, function ($query) use ($adtype) {
+                    $query->where('type', $adtype);
                 })
                 ->select([
                     'date', 'requests', 'impressions', 'clicks', 'installations', 'spend',
@@ -477,10 +499,20 @@ class ChannelController extends Controller
         }
         $app_id_query = clone $app_base_query;
         $app_id_query->select('id');
-        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use ($start_date, $end_date, $app_id_query, $channel_id) {
+        $type = $request->input('type');
+        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use (
+            $start_date,
+            $end_date,
+            $app_id_query,
+            $type,
+            $channel_id
+        ) {
             $query->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('app_id', $app_id_query)
                 ->where('target_app_id', $channel_id)
+                ->when($type, function ($query) use ($type) {
+                    $query->where('type', $type);
+                })
                 ->select([
                     'requests', 'impressions', 'clicks', 'installations', 'spend',
                     'app_id',

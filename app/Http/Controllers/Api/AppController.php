@@ -34,18 +34,23 @@ class AppController extends Controller
             $app_base_query->where('os', $os);
         }
         $country = $request->input('country');
+        $type = $request->input('type');
         $app_id_query = clone $app_base_query;
         $app_id_query->select('id');
         $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use (
             $start_date,
             $end_date,
             $app_id_query,
+            $type,
             $country
         ) {
             $query->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('app_id', $app_id_query)
                 ->when($country, function ($query) use ($country) {
                     $query->where('country', $country);
+                })
+                ->when($type, function ($query) use ($type) {
+                    $query->where('type', $type);
                 })
                 ->select([
                     'requests', 'impressions', 'clicks', 'installations', 'spend',

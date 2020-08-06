@@ -4,15 +4,29 @@
       <el-input
         v-model="query.keyword"
         :placeholder="$t('table.keyword')"
-        style="width: 200px;"
+        style="width: 150px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
       <el-select
+        v-model="query.type"
+        clearable
+        placeholder="Type"
+        style="width: 150px;"
+        class="filter-item"
+      >
+        <el-option
+          v-for="item in types"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        />
+      </el-select>
+      <el-select
         v-model="query.os"
         clearable
         placeholder="platform"
-        style="width: 200px;"
+        style="width: 150px;"
         class="filter-item"
       >
         <el-option
@@ -26,7 +40,7 @@
         v-model="query.country"
         clearable
         placeholder="ALL Country"
-        style="width: 200px;"
+        style="width: 150px;"
         class="filter-item"
       >
         <el-option
@@ -392,12 +406,17 @@ export default {
         { value: 'ios', label: 'ios' },
         { value: 'android', label: 'android' },
       ],
+      types: [
+        { value: '1', label: 'Reward' },
+        { value: '2', label: 'Interstitial' },
+      ],
       query: {
         page: 1,
         limit: 15,
         keyword: '',
         country: '',
         os: '',
+        type: '',
         daterange: [new Date(), new Date()],
       },
       newApp: {},
