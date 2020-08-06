@@ -166,10 +166,20 @@ class AppController extends Controller
         }
         $channel_id_query = clone $channel_base_query;
         $channel_id_query->select('id');
-        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use ($start_date, $end_date, $channel_id_query, $app_id) {
+        $type = $request->input('type');
+        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use (
+            $start_date,
+            $end_date,
+            $channel_id_query,
+            $type,
+            $app_id
+        ) {
             $query->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('target_app_id', $channel_id_query)
                 ->where('app_id', $app_id)
+                ->when($type, function ($query) use ($type) {
+                    $query->where('type', $type);
+                })
                 ->select([
                     'requests', 'impressions', 'clicks', 'installations', 'spend',
                     'target_app_id',

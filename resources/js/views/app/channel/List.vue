@@ -2,6 +2,20 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-select
+        v-model="query.type"
+        clearable
+        placeholder="Type"
+        style="width: 150px;"
+        class="filter-item"
+      >
+        <el-option
+          v-for="item in types"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        />
+      </el-select>
       <el-date-picker
         v-model="query.daterange"
         type="daterange"
@@ -115,8 +129,13 @@ export default {
         page: 1,
         limit: 15,
         keyword: '',
+        type: '',
         daterange: [new Date(), new Date()],
       },
+      types: [
+        { value: '1', label: 'Reward' },
+        { value: '2', label: 'Interstitial' },
+      ],
       newChannel: {},
       dialogFormVisible: false,
       currentChannelId: 0,
