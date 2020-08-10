@@ -172,6 +172,7 @@
         label="eCpm"
         sortable="custom"
       />
+      <el-table-column prop="id" align="center" label="ID" fixed />
       <el-table-column prop="name" align="center" label="Name" fixed />
       <el-table-column prop="bundle_id" align="center" label="Package" fixed />
       <el-table-column prop="platform" align="center" label="Platform" fixed />

@@ -83,7 +83,7 @@ class CampaignController extends Controller
             if(isset($advertise_kpi_list[$campaign['id']])){
                 $campaign->kpi = $advertise_kpi_list[$campaign['id']];
             }
-            $states = array_values(array_filter(explode(',', $campaign->audience->states)));
+            $states = array_values(array_filter(explode(',', $campaign->audience->states??'')));
             foreach ($states as $key => $value) {
                 $states[$key] = $all_states[$value];
             }

@@ -131,6 +131,7 @@
         </template>
       </el-table-column>
 
+      <el-table-column prop="id" align="center" label="ID" />
       <el-table-column prop="name" align="center" label="Name" />
       <el-table-column prop="bundle_id" align="center" label="Package" />
       <el-table-column prop="os" align="center" label="Platform" />
