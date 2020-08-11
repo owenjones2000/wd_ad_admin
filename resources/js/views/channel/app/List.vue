@@ -16,6 +16,20 @@
           :value="item.value"
         />
       </el-select>
+      <el-select
+        v-model="query.country"
+        clearable
+        placeholder="ALL Country"
+        style="width: 150px;"
+        class="filter-item"
+      >
+        <el-option
+          v-for="item in countrys"
+          :key="item.code"
+          :label="item.name"
+          :value="item.code"
+        />
+      </el-select>
       <el-date-picker
         v-model="query.daterange"
         type="daterange"
@@ -172,8 +186,12 @@ export default {
         limit: 15,
         keyword: '',
         type: '',
+        country: '',
         daterange: [new Date(), new Date()],
       },
+      countrys: [
+
+      ],
       newChannel: {},
       dialogFormVisible: false,
       currentChannelId: 0,
@@ -244,6 +262,7 @@ export default {
   created() {
     this.resetNewChannel();
     this.getList();
+    this.countryList();
   },
   methods: {
     checkPermission,
@@ -259,6 +278,10 @@ export default {
       });
       this.total = meta.total;
       this.loading = false;
+    },
+    async countryList(){
+      const data = await channelResource.countryList();
+      this.countrys = data;
     },
     handleFilter() {
       this.query.page = 1;
