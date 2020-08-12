@@ -1,7 +1,13 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input
+        v-model="query.keyword"
+        :placeholder="$t('table.keyword')"
+        style="width: 200px;"
+        class="filter-item"
+        @keyup.enter.native="handleFilter"
+      />
       <el-select
         v-model="query.os"
         clearable
@@ -28,18 +34,37 @@
         value-format="yyyy-MM-dd"
         :picker-options="pickerOptions"
       />
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        {{ $t('table.search') }}
-      </el-button>
+      <el-button
+        v-waves
+        class="filter-item"
+        type="primary"
+        icon="el-icon-search"
+        @click="handleFilter"
+      >{{ $t('table.search') }}</el-button>
       <!--<el-button v-permission="['advertise.app.edit']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">-->
       <!--  {{ $t('table.add') }}-->
       <!--</el-button>-->
-      <!--<el-button v-waves :loading="downloading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">-->
-      <!--  {{ $t('table.export') }}-->
-      <!--</el-button>-->
+      <el-button
+        v-waves
+        :loading="downloading"
+        class="filter-item"
+        type="primary"
+        icon="el-icon-download"
+        @click="handleDownload"
+      >
+        -->
+        {{ $t('table.export') }}
+      </el-button>
     </div>
 
-    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%; margin-bottom: 20px;">
+    <el-table
+      v-loading="loading"
+      :data="list"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%; margin-bottom: 20px;"
+    >
       <el-table-column align="center" label="Apps" prop="apps" />
       <el-table-column align="center" label="Campaigns" prop="campaigns" />
       <el-table-column align="center" label="Ads" prop="ads" />
@@ -97,7 +122,14 @@
       </el-table-column>
     </el-table>
     <el-divider />
-    <el-table v-loading="loading" :data="listByGroup" border fit highlight-current-row style="width: 100%">
+    <el-table
+      v-loading="loading"
+      :data="listByGroup"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%"
+    >
       <el-table-column align="center" label="Date" prop="date" />
       <el-table-column align="center" label="Apps" prop="apps" />
       <el-table-column align="center" label="Campaigns" prop="campaigns" />
@@ -155,13 +187,13 @@
         </template>
       </el-table-column>
     </el-table>
-    <pagination v-show="totalListByGroup>0" :total="totalListByGroup" :page.sync="query.page" :limit.sync="query.limit" @pagination="getListByGroup" />
+    <!-- <pagination v-show="totalListByGroup>0" :total="totalListByGroup" :page.sync="query.page" :limit.sync="query.limit" @pagination="getListByGroup" /> -->
   </div>
 </template>
 
 <script>
 import Statis from '@/api/statis';
-import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
+// import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
 import waves from '@/directive/waves'; // Waves directive
 import permission from '@/directive/permission'; // Waves directive
 import checkPermission from '@/utils/permission'; // Permission checking
@@ -171,7 +203,7 @@ const statis = new Statis();
 
 export default {
   name: 'AdvertiseStatis',
-  components: { Pagination },
+  // components: { Pagination },
   directives: { waves, permission },
   data() {
     return {
@@ -191,13 +223,15 @@ export default {
         limit: 15,
         os: '',
         keyword: '',
-        daterange: [new Date(new Date().setDate(new Date().getDate() - 7)), new Date()],
+        daterange: [
+          new Date(new Date().setDate(new Date().getDate() - 7)),
+          new Date(),
+        ],
       },
       pickerOptions: defaultDatePickerOptions,
     };
   },
-  computed: {
-  },
+  computed: {},
   created() {
     this.getList();
     this.getListByGroup();
@@ -208,12 +242,13 @@ export default {
     async getList() {
       const { limit, page } = this.query;
       this.loading = true;
-      const { data, meta } = await statis.total(this.query);
+      // const { data, meta } = await statis.total(this.query);
+      const { data } = await statis.total(this.query);
       this.list = data;
       this.list.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
       });
-      this.total = meta.total;
+      // this.total = meta.total;
       this.loading = false;
     },
     async getListByGroup() {
@@ -221,12 +256,13 @@ export default {
       const group_query = { ...this.query };
       group_query['grouping'] = 'date';
       this.loading = true;
-      const { data, meta } = await statis.total(group_query);
+      // const { data, meta } = await statis.total(group_query);
+      const { data } = await statis.total(group_query);
       this.listByGroup = data;
       this.listByGroup.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
       });
-      this.totalListByGroup = meta.total;
+      // this.totalListByGroup = meta.total;
       this.loading = false;
     },
     handleFilter() {
@@ -236,20 +272,66 @@ export default {
     },
     handleDownload() {
       this.downloading = true;
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['id', 'app_id', 'name'];
-        const filterVal = ['index', 'id', 'name'];
-        const data = this.formatJson(filterVal, this.list);
+      import('@/vendor/Export2Excel').then((excel) => {
+        const tHeader = [
+          'Date',
+          'Apps',
+          'Campaigns',
+          'Ads',
+          'Channels',
+          'Countries',
+          'Requests',
+          'Impressions',
+          'Clicks',
+          'Installs',
+          'CTR',
+          'CVR',
+          'IR',
+          'Spend',
+          'eCpi',
+          'eCpm',
+        ];
+        const filterVal = [
+          'date',
+          'apps',
+          'campaigns',
+          'ads',
+          'channels',
+          'countries',
+          'requests',
+          'impressions',
+          'clicks',
+          'installs',
+          'ctr',
+          'cvr',
+          'ir',
+          'spend',
+          'ecpi',
+          'ecpm',
+        ];
+        const data = this.formatJson(filterVal, this.listByGroup);
+        // const data = this.list;
+        console.log(data);
         excel.export_json_to_excel({
           header: tHeader,
           data,
-          filename: 'app-list',
+          filename: 'statis-list',
+          bookType: 'csv',
         });
         this.downloading = false;
       });
     },
+    // formatJson(filterVal, jsonData) {
+    //   return jsonData.map((v) => filterVal.map((j) => v[j]));
+    // },
     formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => v[j]));
+      return jsonData.map(v => filterVal.map(j => {
+        if (j === 'ctr' || j === 'cvr' || j === 'ir') {
+          return v[j] + '%';
+        } else {
+          return v[j];
+        }
+      }));
     },
   },
 };

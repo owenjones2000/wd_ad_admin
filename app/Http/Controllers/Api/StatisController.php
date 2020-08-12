@@ -65,7 +65,8 @@ class StatisController extends Controller
             $advertise_kpi_query->orderBy('date', $order);
         }
 
-        $advertise_kpi_list = $advertise_kpi_query->paginate();
+        // $advertise_kpi_list = $advertise_kpi_query->paginate();
+        $advertise_kpi_list = $advertise_kpi_query->get();
 
         return JsonResource::collection($advertise_kpi_list);
     }
