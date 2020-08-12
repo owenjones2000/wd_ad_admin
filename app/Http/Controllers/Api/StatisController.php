@@ -29,15 +29,30 @@ class StatisController extends Controller
         if ($os) {
             $channelIds = Channel::where('platform', $os)->select('id');
         }
-        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use ($start_date, $end_date, $channelIds) {
+        $type = $request->input('type');
+        $country = $request->input('country');
+        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use (
+            $start_date,
+            $end_date,
+            $type,
+            $country,
+            $channelIds
+        ) {
             $query->whereBetween('date', [$start_date, $end_date])
                 ->select([
                     'date', 'requests', 'impressions', 'clicks', 'installations', 'spend',
                     'app_id', 'campaign_id', 'ad_id', 'target_app_id', 'country'
-                ]);
+                ])
+                ->when($type, function ($query) use ($type) {
+                    $query->where('type', $type);
+                })
+                ->when($country, function ($query) use ($country) {
+                    $query->where('country', $country);
+                });
             if ($channelIds) {
                 $query->whereIn('target_app_id', $channelIds);
             }
+            
             return $query;
         }, $start_date, $end_date);
 
@@ -83,7 +98,7 @@ class StatisController extends Controller
 
         return response()->json([
             'newapp'  => $newapp,
-            'newchannel' => $newchannel, 
+            'newchannel' => $newchannel,
             'newcampaign' => $newcampaign,
             'newad' => $newad,
             // 'newapp'  => 100,
@@ -325,7 +340,7 @@ class StatisController extends Controller
         ])->groupBy('date')->get()->keyBy('date')->toArray();
         foreach ($devices as $key => &$value) {
             $value['statis']['request_avg']  = round($value['statis']['request_avg'], 4);
-            $value['installs'] = $kpi[$value['date']]['installs']??0;
+            $value['installs'] = $kpi[$value['date']]['installs'] ?? 0;
         }
 
         return new JsonResource($devices);

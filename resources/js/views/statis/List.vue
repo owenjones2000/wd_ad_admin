@@ -4,7 +4,7 @@
       <el-input
         v-model="query.keyword"
         :placeholder="$t('table.keyword')"
-        style="width: 200px;"
+        style="width: 150px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
@@ -12,7 +12,7 @@
         v-model="query.os"
         clearable
         placeholder="platform"
-        style="width: 200px;"
+        style="width: 150px;"
         class="filter-item"
       >
         <el-option
@@ -20,6 +20,34 @@
           :key="item.value"
           :label="item.label"
           :value="item.value"
+        />
+      </el-select>
+      <el-select
+        v-model="query.type"
+        clearable
+        placeholder="Type"
+        style="width: 150px;"
+        class="filter-item"
+      >
+        <el-option
+          v-for="item in types"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        />
+      </el-select>
+      <el-select
+        v-model="query.country"
+        clearable
+        placeholder="ALL Country"
+        style="width: 150px;"
+        class="filter-item"
+      >
+        <el-option
+          v-for="item in countrys"
+          :key="item.code"
+          :label="item.name"
+          :value="item.code"
         />
       </el-select>
       <el-date-picker
@@ -52,7 +80,6 @@
         icon="el-icon-download"
         @click="handleDownload"
       >
-        -->
         {{ $t('table.export') }}
       </el-button>
     </div>
@@ -198,8 +225,10 @@ import waves from '@/directive/waves'; // Waves directive
 import permission from '@/directive/permission'; // Waves directive
 import checkPermission from '@/utils/permission'; // Permission checking
 import defaultDatePickerOptions from '@/utils/datepicker';
+import ChannelResource from '@/api/channel';
 
 const statis = new Statis();
+const channelResource = new ChannelResource();
 
 export default {
   name: 'AdvertiseStatis',
@@ -218,11 +247,20 @@ export default {
       ],
       downloading: false,
       appCreating: false,
+      countrys: [
+
+      ],
+      types: [
+        { value: '1', label: 'Reward' },
+        { value: '2', label: 'Interstitial' },
+      ],
       query: {
         page: 1,
         limit: 15,
         os: '',
         keyword: '',
+        type: '',
+        country: '',
         daterange: [
           new Date(new Date().setDate(new Date().getDate() - 7)),
           new Date(),
@@ -235,6 +273,7 @@ export default {
   created() {
     this.getList();
     this.getListByGroup();
+    this.countryList();
   },
   methods: {
     checkPermission,
@@ -250,6 +289,10 @@ export default {
       });
       // this.total = meta.total;
       this.loading = false;
+    },
+    async countryList(){
+      const data = await channelResource.countryList();
+      this.countrys = data;
     },
     async getListByGroup() {
       const { limit, page } = this.query;
