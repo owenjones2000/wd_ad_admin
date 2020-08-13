@@ -140,7 +140,7 @@ class AppController extends Controller
                 })
                 ->select([
                     'requests', 'impressions', 'clicks', 'installations', 'spend',
-                    'app_id',
+                    'app_id','date'
                 ]);
             return $query;
         }, $start_date, $end_date);
