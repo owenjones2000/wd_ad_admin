@@ -26,6 +26,12 @@ class ChannelResource extends Resource {
       params: query,
     });
   }
+  restart(channel_id) {
+    return request({
+      url: '/' + this.uri + '/' + channel_id + '/restart',
+      method: 'post',
+    });
+  }
   removeBlack(channel_id, app_id) {
     return request({
       url: '/' + this.uri + '/' + channel_id + '/app/' + app_id + '/removeblack',

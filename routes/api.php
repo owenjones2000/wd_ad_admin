@@ -90,6 +90,7 @@ Route::group(['middleware' => 'api'], function () {
             Route::get('placement', 'ChannelController@placement')->name('channel.placement')->middleware('permission:placement.manage');
 
             Route::post('{id?}', 'ChannelController@save')->name('channel.save')->middleware('permission:advertise.channel.edit');
+            Route::post('{id}/restart', 'ChannelController@restartChannel')->name('channel.restart')->middleware('permission:advertise.channel.edit');
 
             // 买量APP数据
             Route::get('{channel_id}/app', 'ChannelController@app')->name('campaign.channel.app')->middleware('permission:advertise.channel');

@@ -2,6 +2,8 @@
 namespace App\Models\Advertise;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 class Channel extends Model
 {
@@ -30,5 +32,16 @@ class Channel extends Model
             'id',
             'id'
         );
+    }
+
+    public function restart()
+    {
+        $this->is_cold = 1;
+        $this->save();
+        // $res = Redis::connection("feature")->hincrby("wudiads_target_app_total_impression", $this->id,1);
+        $res1 = Redis::connection("feature")->hdel("wudiads_target_app_total_impression", $this->id);
+        Log::info('channel restart'. $this->id);
+        // Log::info($res);
+        Log::info($res1);
     }
 }

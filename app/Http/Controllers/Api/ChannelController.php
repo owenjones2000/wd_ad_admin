@@ -641,6 +641,14 @@ class ChannelController extends Controller
         return new ChannelResource($channel);
     }
 
+    public function restartChannel($id)
+    {
+        $channel = Channel::findOrFail($id);
+        $channel->restart();
+
+        return response()->json(['code' => 0, 'msg' => 'Restart']);
+    }
+
     public function countryList()
     {
         $regions = Region::query()->orderBy('sort', 'desc')->get();

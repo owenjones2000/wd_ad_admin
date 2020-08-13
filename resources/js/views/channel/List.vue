@@ -247,6 +247,13 @@
             icon="el-icon-key "
             @click="handleToken(scope.row)"
           >Token</el-button>
+          <el-button
+            v-permission="['advertise.channel.edit']"
+            type="danger"
+            size="small"
+            icon="el-icon-refresh-left"
+            @click="handleRestart(scope.row)"
+          >Restart</el-button>
           <!--<el-button v-permission="['advertise.channel.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">-->
           <!--  Delete-->
           <!--</el-button>-->
@@ -535,6 +542,25 @@ export default {
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['channelForm'].clearValidate();
+      });
+    },
+    handleRestart(channel) {
+      this.$confirm('This will resart channel ' + channel.name + '. Continue?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }).then(() => {
+        channelResource.restart(channel.id).then(response => {
+          this.$message({
+            type: 'success',
+            message: 'channel ' + channel.name + 'resart',
+          });
+          this.getList();
+        }).catch(error => {
+          console.log(error);
+        });
+      }).catch(error => {
+        console.log(error);
       });
     },
     async getTokenList() {
