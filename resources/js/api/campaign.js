@@ -34,6 +34,13 @@ class CampaignResource extends Resource {
       params: query,
     });
   }
+  adReviewList(query) {
+    return request({
+      url: '/' + this.uri + '/adreview',
+      method: 'get',
+      params: query,
+    });
+  }
 
   channelList(campaign_id, query) {
     return request({

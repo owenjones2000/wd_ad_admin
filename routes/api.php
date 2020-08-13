@@ -137,7 +137,7 @@ Route::group(['middleware' => 'api'], function () {
                 Route::post('joinwhite', 'CampaignController@joinWhite')->name('campaign.channel.joinwhite');
                 Route::post('removewhite', 'CampaignController@removeWhite')->name('campaign.channel.removewhite');
             });
-            
+            Route::get('adreview', 'AdController@listReview')->name('campaign.ad');
             // 广告
             Route::group(['prefix'=>'{campaign_id}/ad', 'middleware' => 'permission:advertise.campaign'], function () {
                 Route::get('', 'AdController@list')->name('campaign.ad');

@@ -86,6 +86,76 @@ class AdController extends Controller
         return JsonResource::collection($ad_list);
     }
 
+    public function listReview(Request $request)
+    {
+        $range_date = $request->get('daterange');
+        $start_date = date('Ymd', strtotime($range_date[0] ?? 'now'));
+        $end_date = date('Ymd', strtotime($range_date[1] ?? 'now'));
+        $order_by = explode('.', $request->get('field', 'status'));
+        $order_sort = $request->get('order', 'desc');
+
+        $ad_base_query = Ad::query()->where('need_review', 1);
+        if (!empty($request->get('keyword'))) {
+            $like_keyword = '%' . $request->get('keyword') . '%';
+            $ad_base_query->where('name', 'like', $like_keyword);
+            $ad_base_query->orWhereHas('campaign.advertiser', function ($query) use ($like_keyword) {
+                $query->where('realname', 'like', $like_keyword);
+            });
+            $ad_base_query->orWhereHas('campaign.app', function ($query) use ($like_keyword) {
+                $query->where('name', 'like', $like_keyword);
+            });
+        }
+
+        $ad_id_query = clone $ad_base_query;
+        $ad_id_query->select('id');
+        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use ($start_date, $end_date, $ad_id_query) {
+            $query->whereBetween('date', [$start_date, $end_date])
+                ->whereIn('ad_id', $ad_id_query);
+            return $query;
+        }, $start_date, $end_date);
+
+        $advertise_kpi_query->select([
+            DB::raw('sum(requests) as requests'),
+            DB::raw('sum(impressions) as impressions'),
+            DB::raw('sum(clicks) as clicks'),
+            DB::raw('sum(installations) as installs'),
+            DB::raw('round(sum(clicks) * 100 / sum(impressions), 2) as ctr'),
+            DB::raw('round(sum(installations) * 100 / sum(clicks), 2) as cvr'),
+            DB::raw('round(sum(installations) * 100 / sum(impressions), 2) as ir'),
+            DB::raw('round(sum(spend), 2) as spend'),
+            DB::raw('round(sum(spend) / sum(installations), 2) as ecpi'),
+            DB::raw('round(sum(spend) * 1000 / sum(impressions), 2) as ecpm'),
+            'ad_id',
+        ]);
+        $advertise_kpi_query->groupBy('ad_id');
+        if ($order_by[0] === 'kpi' && isset($order_by[1])) {
+            $advertise_kpi_query->orderBy($order_by[1], $order_sort);
+        }
+
+        $advertise_kpi_list = $advertise_kpi_query
+            ->orderBy('spend', 'desc')
+            ->get()
+            ->keyBy('ad_id')
+            ->toArray();
+        $order_by_ids = implode(',', array_reverse(array_keys($advertise_kpi_list)));
+        $ad_base_query->with('campaign.app', 'campaign.advertiser');
+        if (!empty($order_by_ids)) {
+            $ad_base_query->orderByRaw(DB::raw("FIELD(id,{$order_by_ids}) desc"));
+        }
+        if ($order_by[0] !== 'kpi') {
+            $ad_base_query->orderBy($order_by[0], $order_sort);
+        }
+        $ad_list = $ad_base_query->with('assets')
+            ->paginate($request->get('limit', 30));
+
+        foreach ($ad_list as &$ad) {
+            if (isset($advertise_kpi_list[$ad['id']])) {
+                $ad['kpi'] = $advertise_kpi_list[$ad['id']];
+            }
+        }
+
+        return JsonResource::collection($ad_list);
+    }
     /**
      * Display the specified resource.
      *

@@ -62,6 +62,13 @@ const acquisitionRoutes = {
       meta: { title: 'Campaign', icon: 'tree-table', permissions: ['advertise.campaign'] },
     },
     {
+      path: 'ad/review',
+      component: () => import('@/views/campaign/ad/Review'),
+      // component: () => import('@/views/campaign/List'),
+      name: 'AdList',
+      meta: { title: 'Ad Review', icon: 'user', permissions: ['advertise.campaign.ad.edit'] },
+    },
+    {
       path: 'campaign/:campaign_id(\\d+)/channel',
       component: () => import('@/views/campaign/channel/List'),
       name: 'CampaignChannelList',
@@ -75,6 +82,7 @@ const acquisitionRoutes = {
       meta: { title: 'Ad', icon: 'user', permissions: ['advertise.campaign.ad'] },
       hidden: true,
     },
+
     /** Channel managements */
     {
       path: 'channel',
