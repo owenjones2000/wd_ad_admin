@@ -317,7 +317,7 @@ class ChannelController extends Controller
         $end_date = date('Ymd', strtotime($range_date[1] ?? 'now'));
         $group_by = $request->get('grouping');
 
-        $channel_base_query = App::query();
+        $channel_base_query = Channel::query();
         if (!empty($request->get('keyword'))) {
             $channel_base_query->where('name', 'like', '%' . $request->get('name') . '%');
         }
