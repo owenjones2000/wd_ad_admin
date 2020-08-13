@@ -170,14 +170,6 @@
             icon="el-icon-finished"
             @click="handleReview(scope.row);"
           >Review</el-button>
-          <el-link
-            v-permission="['advertise.campaign.ad.restart']"
-            type="danger"
-            size="small"
-            icon="el-icon-refresh-left"
-            :underline="false"
-            @click="handleRestart(scope.row)"
-          />
         </template>
       </el-table-column>
     </el-table>
