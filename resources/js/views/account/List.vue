@@ -8,9 +8,9 @@
       <el-button v-permission="['advertise.account.edit']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">
         {{ $t('table.add') }}
       </el-button>
-      <el-button v-waves :loading="downloading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
+      <!-- <el-button v-waves :loading="downloading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
         Export
-      </el-button>
+      </el-button> -->
     </div>
 
     <el-table
@@ -48,7 +48,8 @@
       </el-table-column>
       <el-table-column prop="email" align="left" label="Email" />
       <el-table-column prop="realname" align="center" label="Real Name" />
-      <el-table-column prop="phone" align="center" label="Phone" />
+      <el-table-column prop="ava_credit" align="center" label="Credit" />
+      <el-table-column prop="expend_credit" align="center" label="Expanp Credit" />
 
       <el-table-column align="center" label="Status">
         <template slot-scope="scope">
@@ -72,6 +73,9 @@
         <template slot-scope="scope">
           <el-button v-permission="['advertise.account.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">
             Edit
+          </el-button>
+          <el-button v-permission="['advertise.account.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleCredit(scope.row)">
+            Add Credit
           </el-button>
           <el-button v-permission="['advertise.account.edit']" type="warning" size="small" icon="el-icon-edit" @click="handleEditPermissions(scope.row, scope.row);">
             Permissions

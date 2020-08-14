@@ -18,6 +18,8 @@ class AccountResource extends JsonResource
             'id' => $this->id,
             'email' => $this->email,
             'realname' => $this->realname,
+            'ava_credit' => $this->ava_credit,
+            'expend_credit' => $this->expend_credit,
             'isAdvertiseEnabled' => $this->isAdvertiseEnabled,
             'isPublishEnabled' => $this->isPublishEnabled,
             'status' => $this->status,
