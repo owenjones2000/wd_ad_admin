@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\AccountCredit;
 use App\Console\Commands\ChannelCpmTj;
 use App\Console\Commands\DateStatis;
 use App\Console\Commands\SubTaskMonthSum;
