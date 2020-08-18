@@ -33,6 +33,9 @@ class AppController extends Controller
             $os = $request->input('os');
             $app_base_query->where('os', $os);
         }
+        if ($request->input('is_admin_disable')){
+            $app_base_query->where('is_admin_disable', true);
+        }
         $country = $request->input('country');
         $type = $request->input('type');
         $app_id_query = clone $app_base_query;

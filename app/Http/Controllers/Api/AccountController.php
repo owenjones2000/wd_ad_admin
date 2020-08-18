@@ -41,7 +41,7 @@ class AccountController extends Controller
                 $query->orwhere('email', 'LIKE', '%' . $keyword . '%');
             });
         }
-        $accountQuery->orderBy('isAdvertiseEnabled', 'desc');
+        $accountQuery->orderBy('isAdvertiseEnabled', 'desc')->orderBy('ava_credit', 'asc');
         return AccountResource::collection($accountQuery->paginate($limit));
     }
 
