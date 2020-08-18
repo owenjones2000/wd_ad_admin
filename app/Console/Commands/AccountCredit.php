@@ -45,12 +45,7 @@ class AccountCredit extends Command
      */
     public function handle()
     {
-        $callback_installs = CallbackInstallation::query()
-            ->where('is_credit', 0)
-            ->limit(10000)
-            ->get();
-        try {
-            $accounts = Account::where('ava_credit', '<', 0)->get();
+        $accounts = Account::where('ava_credit', '<', 0)->get();
             if ($accounts){
                 foreach ($accounts as $key => $account) {
                     $apps = App::where('main_user_id', $account->id)
@@ -61,6 +56,12 @@ class AccountCredit extends Command
                     ]);
                 }
             }
+        $callback_installs = CallbackInstallation::query()
+            ->where('is_credit', 0)
+            ->limit(1000)
+            ->get();
+        try {
+            
             foreach ($callback_installs as $install) {
                 // 点击日期
                 $date = substr($install['click_id'], 0, 8);

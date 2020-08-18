@@ -8,12 +8,16 @@ use App\Http\Resources\PermissionTreeResource;
 use App\Models\Advertise\Account;
 use App\Http\Controllers\Controller;
 use App\Models\Advertise\AdvertiseKpi;
+use App\Models\Advertise\App;
 use App\Models\Advertise\UaPermission;
 use App\Models\Advertise\UaOperationLog;
+use App\Models\Credit;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AccountController extends Controller
 {
@@ -211,6 +215,36 @@ class AccountController extends Controller
         return new AccountResource($account);
     }
 
+    public function addCredit(Request $request, $id)
+    {
+        $addcredit =  $request->input('addcredit');
+        /** @var Account $account */
+        $account = Account::findOrFail($id);
+        try{
+            DB::transaction(function () use ($account, $addcredit) {
+                $account->ava_credit += $addcredit;
+                $account->save();
+                $credit = new Credit();
+                $credit->main_user_id = $account->id;
+                $credit->change = $addcredit;
+                $credit->operator = Auth::user()->name;
+                $credit->save();
+                if ($account->ava_credit  > 0){
+                    $apps = App::where('main_user_id', $account->id)->where('status', 0)->where('is_credit_disable', 1)
+                    ->update([
+                        'status' => 1,
+                        'is_credit_disable' => 0,
+                        'is_admin_disable' => 0,
+                    ]);
+                    Log::info($apps);
+                }
+            });
+        } catch (\Exception $e) {
+            Log::error($e);     
+        }
+        return response()->json(['code' => 0, 'msg' => 'ok']);
+        
+    }
     /**
      * 启用
      * @param $id

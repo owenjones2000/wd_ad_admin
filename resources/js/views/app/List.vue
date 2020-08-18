@@ -288,6 +288,9 @@
           <el-form-item :label="$t('app.description')" prop="description">
             <el-input v-model="currentApp.description" />
           </el-form-item>
+          <el-form-item label="App_id" prop="app_id">
+            <el-input v-model="currentApp.app_id" />
+          </el-form-item>
           <el-form-item :label="$t('app.track_platform')" prop="track_platform_id">
             <el-select
               v-model="currentApp.track_platform_id"
@@ -299,6 +302,9 @@
           </el-form-item>
           <el-form-item :label="$t('app.track_code')" prop="track_code">
             <el-input v-model="currentApp.track_code" />
+          </el-form-item>
+          <el-form-item label="Track_url" prop="track_url">
+            <el-input v-model="currentApp.track_url" />
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">

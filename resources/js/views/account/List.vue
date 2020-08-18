@@ -74,7 +74,7 @@
           <el-button v-permission="['advertise.account.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">
             Edit
           </el-button>
-          <el-button v-permission="['advertise.account.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleCredit(scope.row)">
+          <el-button v-permission="['advertise.account.edit']" type="normal" size="small" icon="el-icon-edit" @click="handleCredit(scope.row)">
             Add Credit
           </el-button>
           <el-button v-permission="['advertise.account.edit']" type="warning" size="small" icon="el-icon-edit" @click="handleEditPermissions(scope.row, scope.row);">
@@ -120,6 +120,25 @@
             {{ $t('table.cancel') }}
           </el-button>
           <el-button type="primary" @click="saveAccount()">
+            {{ $t('table.confirm') }}
+          </el-button>
+        </div>
+      </div>
+    </el-dialog>
+
+    <el-dialog title="Add Credit" :visible.sync="dialogCreditVisible">
+      <div v-loading="addCrediting" class="form-container">
+        <el-form ref="creditForm" :rules="creditrules" :model="currentAccount" label-position="left" label-width="150px" style="max-width: 500px;">
+          <el-form-item label="Credit" prop="addcredit">
+            <el-input v-model="currentAccount.addcredit" type="number" />
+          </el-form-item>
+
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogCreditVisible = false">
+            {{ $t('table.cancel') }}
+          </el-button>
+          <el-button type="primary" @click="addCredit()">
             {{ $t('table.confirm') }}
           </el-button>
         </div>
@@ -279,6 +298,7 @@ export default {
       loading: true,
       downloading: false,
       accountCreating: false,
+      addCrediting: false,
       billSetting: false,
       query: {
         page: 1,
@@ -289,6 +309,7 @@ export default {
       newAccount: {},
       isNewAccount: false,
       dialogFormVisible: false,
+      dialogCreditVisible: false,
       passwordRequired: true,
       currentAccountId: 0,
       currentAccount: {
@@ -339,6 +360,11 @@ export default {
         realname: [{ required: true, message: 'Real name is required', trigger: 'blur' }],
         password: [{ required: this.passwordRequired, message: 'Password is required', trigger: 'blur' }],
         confirmPassword: [{ validator: validateConfirmPassword, trigger: 'blur' }],
+      };
+    },
+    creditrules() {
+      return {
+        addcredit: [{ required: true, message: 'credit is required', trigger: 'blur' }],
       };
     },
     billSetRules() {
@@ -539,6 +565,15 @@ export default {
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['accountForm'].clearValidate();
+      });
+    },
+    handleCredit(account) {
+      this.currentAccount = account;
+      console.log(account);
+      console.log(this.currentAccount);
+      this.dialogCreditVisible = true;
+      this.$nextTick(() => {
+        this.$refs['creditForm'].clearValidate();
       });
     },
     handleDelete(id, name) {
@@ -749,6 +784,32 @@ export default {
             })
             .finally(() => {
               this.accountCreating = false;
+            });
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
+    addCredit() {
+      this.$refs['creditForm'].validate((valid) => {
+        if (valid) {
+          accountResource
+            .addCredit(this.currentAccount)
+            .then(response => {
+              this.$message({
+                message: 'Account ' + this.currentAccount.email + ' has been add credit successfully.',
+                type: 'success',
+                duration: 5 * 1000,
+              });
+              this.dialogCreditVisible = false;
+              this.handleFilter();
+            })
+            .catch(error => {
+              console.log(error);
+            })
+            .finally(() => {
+              this.addCrediting = false;
             });
         } else {
           console.log('error submit!!');

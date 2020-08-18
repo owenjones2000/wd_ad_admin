@@ -13,6 +13,13 @@ class AccountResource extends Resource {
       params: query,
     });
   }
+  addCredit(resource) {
+    return request({
+      url: '/' + this.uri + '/' + resource.id + '/addcredit',
+      method: 'post',
+      data: resource,
+    });
+  }
   opLog(query){
     return request({
       url: '/' + this.uri + '/oplog',
