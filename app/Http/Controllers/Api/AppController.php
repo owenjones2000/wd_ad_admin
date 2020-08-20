@@ -8,8 +8,11 @@ use App\Models\Advertise\Channel;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Advertise\Campaign;
+use Exception;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AppController extends Controller
 {
@@ -103,6 +106,24 @@ class AppController extends Controller
         return JsonResource::collection($app_list);
     }
 
+    public function appList(Request $request)
+    {
+        $app_base_query = App::query();
+        if (!empty($request->get('keyword'))) {
+            $like_keyword = '%' . $request->get('keyword') . '%';
+            $app_base_query->where('name', 'like', $like_keyword);
+            $app_base_query->orWhereHas('advertiser', function ($query) use ($like_keyword) {
+                $query->where('realname', 'like', $like_keyword);
+            });
+        }
+        $is_admin_disable = $request->input('is_admin_disable');
+        if (is_int($is_admin_disable)) {
+            $app_base_query->where('is_admin_disable', $is_admin_disable);
+        }
+
+        $apps = $app_base_query->with('advertiser')->orderBy('is_admin_disable', 'desc')->orderBy('id', 'desc')->paginate($request->get('limit', 30));
+        return JsonResource::collection($apps);
+    }
     public function data(Request $request)
     {
         $range_date = $request->get('daterange');
@@ -332,21 +353,22 @@ class AppController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    //    public function save(Request $request, $id = null)
-    //    {
-    //        $this->validate($request,[
-    //            'name'  => 'required|string|unique:a_app,name,'.$id,
-    //            'bundle_id'  => 'required|unique:a_app,bundle_id,'.$id,
-    //        ]);
-    //        try{
-    //            $params = $request->all();
-    //            $params['id'] = $id;
-    //            App::Make(Auth::user(), $params);
-    //            return redirect(route('advertise.app.edit', [$id]))->with(['status'=>'更新成功']);
-    //        } catch(BizException $ex){
-    //            return redirect(route('advertise.app.edit', [$id]))->withErrors(['status'=>$ex->getMessage()]);
-    //        }
-    //    }
+       public function save(Request $request, $id = null)
+       {
+           $this->validate($request,[
+               'name'  => 'required|string|unique:a_app,name,'.$id. ',id',
+               'bundle_id'  => 'required|unique:a_app,bundle_id,'.$id. ',id',
+           ]);
+           try{
+               $params = $request->all();
+               $params['id'] = $id;
+               App::Make($params);
+               return response()->json(['code' => 0, 'msg' => 'Successful']);
+           } catch(Exception $ex){
+               Log::error($ex);
+               return response()->json(['code' => 100, 'msg' => $ex->getMessage()]);
+           }
+       }
 
     /**
      * 启动

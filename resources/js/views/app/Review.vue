@@ -8,21 +8,21 @@
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
-      <!-- <el-select
-        v-model="query.type"
+      <el-select
+        v-model="query.is_admin_disable"
         clearable
-        placeholder="Type"
+        placeholder="Review Status"
         style="width: 150px;"
         class="filter-item"
       >
         <el-option
-          v-for="item in types"
+          v-for="item in reviews"
           :key="item.value"
           :label="item.label"
           :value="item.value"
         />
       </el-select>
-      <el-select
+      <!-- <el-select
         v-model="query.os"
         clearable
         placeholder="platform"
@@ -35,22 +35,9 @@
           :label="item.label"
           :value="item.value"
         />
-      </el-select> -->
-      <!-- <el-select
-        v-model="query.country"
-        clearable
-        placeholder="ALL Country"
-        style="width: 150px;"
-        class="filter-item"
-      >
-        <el-option
-          v-for="item in countrys"
-          :key="item.code"
-          :label="item.name"
-          :value="item.code"
-        />
-      </el-select> -->
-      <el-date-picker
+      </el-select>  -->
+
+      <!-- <el-date-picker
         v-model="query.daterange"
         type="daterange"
         class="filter-item"
@@ -68,7 +55,7 @@
         type="primary"
         icon="el-icon-search"
         @click="handleFilter"
-      >{{ $t('table.search') }}</el-button>
+      >{{ $t('table.search') }}</el-button> -->
       <!--<el-button v-permission="['advertise.app.edit']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">-->
       <!--  {{ $t('table.add') }}-->
       <!--</el-button>-->
@@ -87,124 +74,24 @@
       @expand-change="handleExpandChange"
       @sort-change="handleSort"
     >
-      <el-table-column align="center" label width="80" type="expand">
-        <template slot-scope="scope">
-          <el-table
-            v-loading="scope.row.loading"
-            :data="scope.row.children"
-            border
-            fit
-            highlight-current-row
-            style="width: 100%"
-          >
-            <el-table-column align="center" label="Date" width="100">
-              <template slot-scope="children">
-                <span>{{ children.row.date }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="spend" :formatter="moneyFormat" align="center" label="Spend" />
-            <el-table-column prop="ecpi" :formatter="moneyFormat" align="center" label="eCpi" />
-            <el-table-column prop="ecpm" :formatter="moneyFormat" align="center" label="eCpm" />
-            <el-table-column
-              prop="requests"
-              :formatter="numberFormat"
-              align="center"
-              label="Requests"
-            />
-            <el-table-column
-              prop="impressions"
-              :formatter="numberFormat"
-              align="center"
-              label="Impressions"
-            />
-            <el-table-column prop="clicks" :formatter="numberFormat" align="center" label="Clicks" />
-            <el-table-column
-              prop="installs"
-              :formatter="numberFormat"
-              align="center"
-              label="Installs"
-            />
-            <el-table-column prop="ctr" :formatter="percentageFormat" align="center" label="CTR" />
-            <el-table-column prop="cvr" :formatter="percentageFormat" align="center" label="CVR" />
-            <el-table-column prop="ir" :formatter="percentageFormat" align="center" label="IR" />
-          </el-table>
-        </template>
-      </el-table-column>
-
       <el-table-column prop="id" align="center" label="ID" />
       <el-table-column prop="name" align="center" label="Name" />
       <el-table-column prop="bundle_id" align="center" label="Package" />
       <el-table-column prop="os" align="center" label="Platform" />
-
       <el-table-column
-        prop="kpi.spend"
-        :formatter="moneyFormat"
+        prop="app_id"
         align="center"
-        label="Spend"
-        sortable="custom"
+        label="AppId"
       />
       <el-table-column
-        prop="kpi.ecpi"
-        :formatter="moneyFormat"
+        prop="track.name"
         align="center"
-        label="eCpi"
-        sortable="custom"
+        label="TrackPlatform"
       />
       <el-table-column
-        prop="kpi.ecpm"
-        :formatter="moneyFormat"
+        prop="track_code"
         align="center"
-        label="eCpm"
-        sortable="custom"
-      />
-      <el-table-column
-        prop="kpi.requests"
-        :formatter="numberFormat"
-        align="center"
-        label="Requests"
-        sortable="custom"
-      />
-      <el-table-column
-        prop="kpi.impressions"
-        :formatter="numberFormat"
-        align="center"
-        label="Impressions"
-        sortable="custom"
-      />
-      <el-table-column
-        prop="kpi.clicks"
-        :formatter="numberFormat"
-        align="center"
-        label="Clicks"
-        sortable="custom"
-      />
-      <el-table-column
-        prop="kpi.installs"
-        :formatter="numberFormat"
-        align="center"
-        label="Installs"
-        sortable="custom"
-      />
-      <el-table-column
-        prop="kpi.ctr"
-        :formatter="percentageFormat"
-        align="center"
-        label="CTR"
-        sortable="custom"
-      />
-      <el-table-column
-        prop="kpi.cvr"
-        :formatter="percentageFormat"
-        align="center"
-        label="CVR"
-        sortable="custom"
-      />
-      <el-table-column
-        prop="kpi.ir"
-        :formatter="percentageFormat"
-        align="center"
-        label="IR"
-        sortable="custom"
+        label="TrackCode"
       />
 
       <el-table-column prop="advertiser.realname" align="center" label="Advertiser" />
@@ -260,7 +147,6 @@
           ref="appForm"
           :rules="rules"
           :model="currentApp"
-          disabled
           label-position="left"
           label-width="150px"
           style="max-width: 500px;"
@@ -293,6 +179,7 @@
             >
               <el-option label="AppsFlyer" :value="1" />
               <el-option label="Adjust" :value="2" />
+              <el-option label="Kochava" :value="3" />
             </el-select>
           </el-form-item>
           <el-form-item :label="$t('app.track_code')" prop="track_code">
@@ -304,9 +191,9 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
-          <!--<el-button type="primary" @click="saveApp()">-->
-          <!--{{ $t('table.confirm') }}-->
-          <!--</el-button>-->
+          <el-button type="primary" @click="saveApp()">
+            {{ $t('table.confirm') }}
+          </el-button>
         </div>
       </div>
     </el-dialog>
@@ -408,14 +295,14 @@ export default {
         { value: 'ios', label: 'ios' },
         { value: 'android', label: 'android' },
       ],
-      types: [
-        { value: '1', label: 'Reward' },
-        { value: '2', label: 'Interstitial' },
+      reviews: [
+        { value: '0', label: 'Yes' },
+        { value: '1', label: 'No' },
       ],
       query: {
         page: 1,
         limit: 15,
-        is_admin_disable: 1,
+        is_admin_disable: '',
         keyword: '',
         country: '',
         os: '',
@@ -468,7 +355,7 @@ export default {
     async getList() {
       const { limit, page } = this.query;
       this.loading = true;
-      const { data, meta } = await appResource.list(this.query);
+      const { data, meta } = await appResource.appList(this.query);
       data.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
         element['loading'] = false;

@@ -103,13 +103,14 @@ Route::group(['middleware' => 'api'], function () {
         Route::group(['prefix'=>'app', 'middleware' => 'permission:advertise.app'], function () {
             Route::get('', 'AppController@list')->name('app');
             Route::get('data', 'AppController@data')->name('app.data');
+            Route::get('applist', 'AppController@appList')->name('app.list')->middleware('permission:advertise.app.edit');
 
             // 卖量Channel数据
             Route::get('{app_id}/channel', 'AppController@channel')->name('campaign.app.channel')->middleware('permission:advertise.app');
             Route::get('{app_id}/campaign', 'AppController@campaign')->name('campaign.app.campaign')->middleware('permission:advertise.app');
 
             //编辑
-//            Route::post('{id?}', 'AppController@save')->name('app.save')->middleware('permission:advertise.app.edit');
+           Route::post('{id?}', 'AppController@save')->name('app.save')->middleware('permission:advertise.app.edit');
             Route::post('{id}/enable', 'AppController@enable')->name('app.enable')->middleware('permission:advertise.app.edit');
             Route::post('{id}/disable', 'AppController@disable')->name('app.disable')->middleware('permission:advertise.app.edit');
             Route::post('{id}/enableaudi', 'AppController@enableAudi')->name('app.enableaudi')->middleware('permission:advertise.app.edit');

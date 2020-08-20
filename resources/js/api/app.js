@@ -13,7 +13,13 @@ class AppResource extends Resource {
       params: query,
     });
   }
-
+  appList(query){
+    return request({
+      url: '/' + this.uri + '/applist',
+      method: 'get',
+      params: query,
+    });
+  }
   channelList(app_id, query) {
     return request({
       url: '/' + this.uri + '/' + app_id + '/channel',
