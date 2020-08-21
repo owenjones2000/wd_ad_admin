@@ -77,12 +77,13 @@ class TestCommand extends Command
 
     public function  test2()
     {
-        $ad = Ad::find(927);
-        $redis =  Redis::connection('feature');dump($redis);
-        Redis::connection('feature')->select(1);
-        $imp = Redis::connection('feature')->hget('wudiads_ad_total_impression', 927);
-        $ins = Redis::connection('feature')->hget('wudiads_ad_total_installation', 927);
-        dump($imp, $ins);
+        // $ad = Ad::find(927);
+        // $redis =  Redis::connection('feature');dump($redis);
+        // Redis::connection('feature')->select(1);
+        // $imp = Redis::connection('feature')->hget('wudiads_ad_total_impression', 927);
+        // $ins = Redis::connection('feature')->hget('wudiads_ad_total_installation', 927);
+        // dump($imp, $ins);
+        dd((new Ad)->getTable());
     }
 
     public function test3()
@@ -107,5 +108,19 @@ class TestCommand extends Command
             $result = ["result" => true, "message_id" => $data['message_id']];
         }
 
+    }
+
+    public function test4()
+    {
+        $client = new Client();
+        // $res = $client->get("https://itunes.apple.com/lookup?id=1524898135");
+        $res = $client->get("https://itunes.apple.com/lookup",[
+            'query' => [
+                'id'=> '1524898135'
+            ]
+        ]);
+        $content = $res->getBody()->getContents();
+        $data = json_decode($content, true);
+        dd($data);
     }
 }

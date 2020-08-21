@@ -48,14 +48,14 @@
         end-placeholder="end date"
         value-format="yyyy-MM-dd"
         :picker-options="pickerOptions"
-      />
+      /> -->
       <el-button
         v-waves
         class="filter-item"
         type="primary"
         icon="el-icon-search"
         @click="handleFilter"
-      >{{ $t('table.search') }}</el-button> -->
+      >{{ $t('table.search') }}</el-button>
       <!--<el-button v-permission="['advertise.app.edit']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">-->
       <!--  {{ $t('table.add') }}-->
       <!--</el-button>-->
@@ -127,7 +127,7 @@
             icon="el-icon-remove"
             @click="handleStatus(scope.row)"
           />
-
+          <el-link v-if="scope.row.os=='android'" icon="el-icon-view" type="primary" :href="'https://play.google.com/store/apps/details?id='+scope.row.bundle_id" target="_blank">review</el-link>
           <!--<el-button v-permission="['advertise.app.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
         </template>
       </el-table-column>

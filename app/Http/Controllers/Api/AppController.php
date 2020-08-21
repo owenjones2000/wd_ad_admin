@@ -117,7 +117,7 @@ class AppController extends Controller
             });
         }
         $is_admin_disable = $request->input('is_admin_disable');
-        if (is_int($is_admin_disable)) {
+        if ( $is_admin_disable!= '') {
             $app_base_query->where('is_admin_disable', $is_admin_disable);
         }
 
