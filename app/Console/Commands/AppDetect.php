@@ -65,7 +65,7 @@ class AppDetect extends Command
                         ]);
                         $code = $res->getStatusCode();
                         if ($code == 404){
-                            Log::error('app android'. $app->id. 'removal');
+                            Log::error('app android'. $app->id . $app->name . 'removal');
                             $app->status =0;
                             $app->is_admin_disable =1;
                             $app->save();
@@ -81,7 +81,7 @@ class AppDetect extends Command
                         $content = $res->getBody()->getContents();
                         $data = json_decode($content, true);
                         if (!is_array($data) && $data['resultCount']<1){
-                            Log::error('app  ios' . $app->id . 'removal');
+                            Log::error('app  ios' . $app->id . $app->name.'removal');
                             $app->status = 0;
                             $app->is_admin_disable = 1;
                             $app->save();
