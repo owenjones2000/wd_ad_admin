@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
 Route::group(['middleware' => 'api'], function () {
     Route::post('auth/login', 'AuthController@login');
     Route::post('auth/sendcode', 'AuthController@sendCode');
@@ -30,22 +31,22 @@ Route::group(['middleware' => 'api'], function () {
 
     Route::group(['namespace' => 'Api', 'middleware' => 'operation.log'], function () {
         // Account
-        Route::group(['prefix' => 'account'],function (){
-            Route::get('','AccountController@list')->name('account')->middleware('permission:advertise.account');
-            Route::get('oplog','AccountController@opLog')->name('account.oplog')->middleware('permission:advertise.account');
+        Route::group(['prefix' => 'account'], function () {
+            Route::get('', 'AccountController@list')->name('account')->middleware('permission:advertise.account');
+            Route::get('oplog', 'AccountController@opLog')->name('account.oplog')->middleware('permission:advertise.account');
             Route::get('advertiser', 'AccountController@advertiserList')->name('account.advertiser')->middleware('permission:advertise.manage');
 
             // 子账号
-            Route::post('{main_user_id}/assign','AccountController@assign')->name('account.assign')->middleware('permission:advertise.account.edit');
-            Route::post('{main_user_id}/detach/{account_id}','AccountController@detach')->name('account.detach')->middleware('permission:advertise.account.edit');
+            Route::post('{main_user_id}/assign', 'AccountController@assign')->name('account.assign')->middleware('permission:advertise.account.edit');
+            Route::post('{main_user_id}/detach/{account_id}', 'AccountController@detach')->name('account.detach')->middleware('permission:advertise.account.edit');
 
             //Route::get('{main_user_id?}/subs','AccountController@list')->name('account')->middleware('permission:advertise.account');
-            Route::get('permissions','AccountController@allPermission')->name('account.permission')->middleware('permission:advertise.account');
-            Route::get('{id}/permission/to/{main_user_id?}','AccountController@permissions')->name('account.permission')->middleware('permission:advertise.account');
-            Route::post('{account}/permission/to/{main_account_id}','AccountController@updatePermissions')->name('account.permission.update')->middleware('permission:advertise.account.edit');
+            Route::get('permissions', 'AccountController@allPermission')->name('account.permission')->middleware('permission:advertise.account');
+            Route::get('{id}/permission/to/{main_user_id?}', 'AccountController@permissions')->name('account.permission')->middleware('permission:advertise.account');
+            Route::post('{account}/permission/to/{main_account_id}', 'AccountController@updatePermissions')->name('account.permission.update')->middleware('permission:advertise.account.edit');
 
             //编辑
-            Route::post('{id?}','AccountController@save')->name('account.save')->middleware('permission:advertise.account.edit');
+            Route::post('{id?}', 'AccountController@save')->name('account.save')->middleware('permission:advertise.account.edit');
             Route::post('{id}/addcredit', 'AccountController@addCredit')->name('account.addcredit')->middleware('permission:advertise.account.edit');
             Route::post('{id}/enable', 'AccountController@enable')->name('account.enable')->middleware('permission:advertise.account.edit');
             Route::post('{id}/disable', 'AccountController@disable')->name('account.disable')->middleware('permission:advertise.account.edit');
@@ -62,20 +63,18 @@ Route::group(['middleware' => 'api'], function () {
                 Route::post('token', 'AuthController@makeAccountToken')->name('auth.token.make')->middleware('permission:advertise.account.edit');
                 Route::delete('token/{id}', 'AuthController@delAccountToken')->name('auth.token.destroy')->middleware('permission:advertise.account.edit');
             });
-
         });
 
         // Bill
-        Route::group(['prefix' => 'bill'],function (){
-            Route::get('','BillController@list')->name('bill')->middleware('permission:advertise.bill');
+        Route::group(['prefix' => 'bill'], function () {
+            Route::get('', 'BillController@list')->name('bill')->middleware('permission:advertise.bill');
             // 确认已支付
             Route::post('{id}/pay', 'BillController@pay')->name('bill.pay')->middleware('permission:advertise.bill.pay');
             Route::get('{id}/invoice', 'BillController@invoice')->name('bill.invoice');
             Route::get('{id}/invoice/pdf', 'BillController@invoicePdf')->name('bill.invoice.pdf');
             Route::post('{id}/invoice/send', 'BillController@sendInvoice')->name('bill.invoice.send');
-
         });
-        
+
         // API
         Route::group(['prefix' => 'auth'], function () {
             Route::get('token', 'AuthController@tokenList')->name('auth.token')->middleware('permission:basic.auth.token');
@@ -100,7 +99,7 @@ Route::group(['middleware' => 'api'], function () {
         });
 
         // 应用管理
-        Route::group(['prefix'=>'app', 'middleware' => 'permission:advertise.app'], function () {
+        Route::group(['prefix' => 'app', 'middleware' => 'permission:advertise.app'], function () {
             Route::get('', 'AppController@list')->name('app');
             Route::get('data', 'AppController@data')->name('app.data');
             Route::get('applist', 'AppController@appList')->name('app.list')->middleware('permission:advertise.app.edit');
@@ -110,17 +109,18 @@ Route::group(['middleware' => 'api'], function () {
             Route::get('{app_id}/campaign', 'AppController@campaign')->name('campaign.app.campaign')->middleware('permission:advertise.app');
 
             //编辑
-           Route::post('{id?}', 'AppController@save')->name('app.save')->middleware('permission:advertise.app.edit');
+            Route::post('{id?}', 'AppController@save')->name('app.save')->middleware('permission:advertise.app.edit');
             Route::post('{id}/enable', 'AppController@enable')->name('app.enable')->middleware('permission:advertise.app.edit');
             Route::post('{id}/disable', 'AppController@disable')->name('app.disable')->middleware('permission:advertise.app.edit');
             Route::post('{id}/enableaudi', 'AppController@enableAudi')->name('app.enableaudi')->middleware('permission:advertise.app.edit');
             Route::post('{id}/disableaudi', 'AppController@disableAudi')->name('app.disableaudi')->middleware('permission:advertise.app.edit');
+            Route::get('{id}/iosinfo', 'AppController@iosInfo')->name('app.iosinfo');
             //删除
-//        Route::delete('destroy', 'AppController@destroy')->name('app.destroy')->middleware('permission:app.destroy');
+            //        Route::delete('destroy', 'AppController@destroy')->name('app.destroy')->middleware('permission:app.destroy');
         });
 
         // 活动管理
-        Route::group(['prefix'=>'campaign'], function () {
+        Route::group(['prefix' => 'campaign'], function () {
             Route::get('', 'CampaignController@list')->name('advertise.campaign');
             //编辑
             Route::post('{id?}', 'CampaignController@save')->name('campaign.save')->middleware('permission:campaign.advertise.edit');
@@ -128,12 +128,12 @@ Route::group(['middleware' => 'api'], function () {
             Route::post('{id}/disable', 'CampaignController@disable')->name('campaign.disable')->middleware('permission:advertise.campaign.edit');
             Route::post('{id}/restart', 'CampaignController@clearRedis')->name('campaign.clear')->middleware('permission:advertise.campaign.restart');
             //删除
-//        Route::delete('destroy', 'CampaignController@destroy')->name('campaign.destroy')->middleware('permission:campaign.destroy');
+            //        Route::delete('destroy', 'CampaignController@destroy')->name('campaign.destroy')->middleware('permission:campaign.destroy');
 
             // 子渠道数据
             Route::get('{campaign_id}/channel', 'CampaignController@channel')->name('campaign.channel')->middleware('permission:advertise.campaign');
-            
-            Route::group(['prefix'=> '{campaign_id}/channel/{channel_id}', 'middleware' => 'permission:advertise.campaign.edit'], function(){
+
+            Route::group(['prefix' => '{campaign_id}/channel/{channel_id}', 'middleware' => 'permission:advertise.campaign.edit'], function () {
                 Route::post('joinblack', 'CampaignController@joinBlack')->name('campaign.channel.joinblack');
                 Route::post('removeblack', 'CampaignController@removeBlack')->name('campaign.channel.removeblack');
                 Route::post('joinwhite', 'CampaignController@joinWhite')->name('campaign.channel.joinwhite');
@@ -141,7 +141,7 @@ Route::group(['middleware' => 'api'], function () {
             });
             Route::get('adreview', 'AdController@listReview')->name('campaign.ad');
             // 广告
-            Route::group(['prefix'=>'{campaign_id}/ad', 'middleware' => 'permission:advertise.campaign'], function () {
+            Route::group(['prefix' => '{campaign_id}/ad', 'middleware' => 'permission:advertise.campaign'], function () {
                 Route::get('', 'AdController@list')->name('campaign.ad');
                 //编辑
                 Route::post('{id?}', 'AdController@save')->name('campaign.ad.save')->middleware('permission:advertise.campaign.ad.edit');
@@ -151,18 +151,18 @@ Route::group(['middleware' => 'api'], function () {
                 Route::post('{id}/pass', 'AdController@passReview')->name('campaign.ad.review.pass')->middleware('permission:advertise.campaign.ad.edit');
 
                 //删除
-//            Route::delete('destroy', 'AdController@destroy')->name('campaign.ad.destroy')->middleware('permission:campaign.ad.destroy');
+                //            Route::delete('destroy', 'AdController@destroy')->name('campaign.ad.destroy')->middleware('permission:campaign.ad.destroy');
             });
         });
 
         // 区域
-//        Route::group(['prefix'=>'{campaign_id}/region', 'middleware' => 'permission:campaign'], function () {
-//            Route::get('data', 'RegionController@data')->name('campaign.region.data');
-//            Route::get('list', 'RegionController@list')->name('campaign.region');
-//        });
+        //        Route::group(['prefix'=>'{campaign_id}/region', 'middleware' => 'permission:campaign'], function () {
+        //            Route::get('data', 'RegionController@data')->name('campaign.region.data');
+        //            Route::get('list', 'RegionController@list')->name('campaign.region');
+        //        });
 
         // 统计
-        Route::group(['prefix'=>'statis', 'middleware' => 'permission:advertise.statis'], function () {
+        Route::group(['prefix' => 'statis', 'middleware' => 'permission:advertise.statis'], function () {
             Route::get('total', 'StatisController@total')->name('statis.total');
             Route::get('newadd', 'StatisController@newAdd')->name('statis.newadd');
             Route::get('group', 'StatisController@group')->name('statis.device');
@@ -172,7 +172,7 @@ Route::group(['middleware' => 'api'], function () {
             Route::get('device/app', 'StatisController@deviceByApp')->name('statis.device');
         });
 
-        Route::group(['prefix' => 'audience', 'middleware' => 'permission:audience.manage'], function (){
+        Route::group(['prefix' => 'audience', 'middleware' => 'permission:audience.manage'], function () {
             Route::post('upload', 'AudienceController@upload')->name('audience.uplolad');
             Route::get('upload/log', 'AudienceController@idfaLog')->name('audience.uplolad.log');
             Route::get('app', 'AudienceController@getApp')->name('audience.app');
@@ -183,5 +183,4 @@ Route::group(['middleware' => 'api'], function () {
         //文件
         Route::post('Asset', 'AssetController@processMediaFiles')->name('asset.process');
     });
-
 });

@@ -119,8 +119,9 @@ class TestCommand extends Command
                 'id'=> '1524898135'
             ]
         ]);
+        $code = $res->getStatusCode();
         $content = $res->getBody()->getContents();
         $data = json_decode($content, true);
-        dd($data);
+        dd($code, $data);
     }
 }

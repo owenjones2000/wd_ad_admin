@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Advertise\Campaign;
 use Exception;
+use GuzzleHttp\Client;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -123,6 +124,22 @@ class AppController extends Controller
 
         $apps = $app_base_query->with('advertiser')->orderBy('is_admin_disable', 'desc')->orderBy('id', 'desc')->paginate($request->get('limit', 30));
         return JsonResource::collection($apps);
+    }
+
+    public function iosInfo($id)
+    {
+        $app = App::where('id', $id)->where('os', 'ios')->firstOrFail();
+        $appid = substr($app->app_id,2);
+        $client = new Client();
+        // $res = $client->get("https://itunes.apple.com/lookup?id=1524898135");
+        $res = $client->get("https://itunes.apple.com/lookup", [
+            'query' => [
+                'id' => $appid
+            ]
+        ]);
+        $content = $res->getBody()->getContents();
+        $data = json_decode($content, true);
+        return response()->json($data['results'][0]);
     }
     public function data(Request $request)
     {
