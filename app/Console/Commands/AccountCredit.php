@@ -46,17 +46,17 @@ class AccountCredit extends Command
     public function handle()
     {
         //暂时取消自动关闭
-        // $accounts = Account::where('ava_credit', '<', 0)->get();
-        //     if ($accounts){
-        //         foreach ($accounts as $key => $account) {
-        //             $apps = App::where('main_user_id', $account->id)
-        //             ->where('status', 1)->update([
-        //                 'status' => 0,
-        //                 'is_credit_disable' => 1,
-        //                 'is_admin_disable' => 1,
-        //             ]);
-        //         }
-        //     }
+        $accounts = Account::where('ava_credit', '<', 0)->get();
+            if ($accounts){
+                foreach ($accounts as $key => $account) {
+                    $apps = App::where('main_user_id', $account->id)
+                    ->where('status', 1)->update([
+                        'status' => 0,
+                        'is_credit_disable' => 1,
+                        'is_admin_disable' => 1,
+                    ]);
+                }
+            }
         $callback_installs = CallbackInstallation::query()
             ->where('id', '>=', 5227757)
             ->where('is_credit', 0)
