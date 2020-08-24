@@ -97,6 +97,7 @@ class AccountCredit extends Command
                         ]);
                 }
             }
+            Log::info('finish' . __METHOD__);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
         }

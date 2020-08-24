@@ -104,12 +104,12 @@
           />
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Audience">
+      <!-- <el-table-column align="center" label="Audience">
         <template slot-scope="scope">
           <i :style="{color: scope.row.is_audience ? '#67C23A' : '#F56C6C'}" :class="scope.row.is_audience ? 'el-icon-check' : 'el-icon-close'" />
           <el-link v-permission="['advertise.app.edit']" :type="scope.row.is_audience ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleAudience(scope.row)" />
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column align="center" label="Actions" width="270" fixed="right">
         <template slot-scope="scope">
           <el-button
@@ -128,6 +128,9 @@
             @click="handleStatus(scope.row)"
           />
           <el-link v-if="scope.row.os=='android'" icon="el-icon-view" type="primary" :href="'https://play.google.com/store/apps/details?id='+scope.row.bundle_id" target="_blank">android</el-link>
+          <router-link v-if="scope.row.os=='ios'" class="link-type" :to="'/acquisition/app/'+scope.row.id+'/ios/info'">
+            Ios
+          </router-link>
           <!--<el-button v-permission="['advertise.app.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
         </template>
       </el-table-column>

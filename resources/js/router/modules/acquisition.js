@@ -43,8 +43,15 @@ const acquisitionRoutes = {
     {
       path: 'app/review',
       component: () => import('@/views/app/Review'),
-      name: 'AppList',
+      name: 'AppReviewList',
       meta: { title: 'App  Review', icon: 'component', permissions: ['advertise.app.edit'] },
+    },
+    {
+      path: 'app/:app_id(\\d+)/ios/info',
+      component: () => import('@/views/app/Ios'),
+      name: 'AppIosInfo',
+      meta: { title: 'App  IOS Review', icon: 'component', permissions: ['advertise.app.edit'] },
+      hidden: true,
     },
     {
       path: 'app/:app_id(\\d+)/channel',
