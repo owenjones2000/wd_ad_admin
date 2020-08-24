@@ -45,6 +45,7 @@ class AccountCredit extends Command
      */
     public function handle()
     {
+        Log::info('start' . __METHOD__);
         $callback_installs = CallbackInstallation::query()
             ->where('id', '>=', 5227757)
             ->where('is_credit', 0)
@@ -87,6 +88,7 @@ class AccountCredit extends Command
             $accounts = Account::where('ava_credit', '<', 0)->get();
             if ($accounts) {
                 foreach ($accounts as $key => $account) {
+                    Log::error('account  disable' . $account->id . $account->realname . 'removal');
                     $apps = App::where('main_user_id', $account->id)
                         ->where('status', 1)->update([
                             'status' => 0,
