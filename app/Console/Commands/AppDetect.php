@@ -87,7 +87,6 @@ class AppDetect extends Command
                             $app->save();
                         }
                         break;
-                    
                     default:
                         # code...
                         break;
