@@ -88,8 +88,16 @@
           />
         </template>
       </el-table-column>
+      <el-table-column align="center" label="Playable">
+        <template slot-scope="scope">
+          <i
+            :style="{color: scope.row.playable ? '#67C23A' : '#F56C6C'}"
+            :class="scope.row.playable ? 'el-icon-check' : 'el-icon-close'"
+          />
+        </template>
+      </el-table-column>
 
-      <el-table-column
+      <!-- <el-table-column
         prop="kpi.requests"
         :formatter="numberFormat"
         align="center"
@@ -158,7 +166,7 @@
         align="center"
         label="eCpm"
         sortable="custom"
-      />
+      /> -->
 
       <el-table-column align="center" label="Actions" width="150px" fixed="right">
         <template slot-scope="scope">

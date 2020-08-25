@@ -152,6 +152,7 @@ class AdController extends Controller
             if (isset($advertise_kpi_list[$ad['id']])) {
                 $ad['kpi'] = $advertise_kpi_list[$ad['id']];
             }
+            $ad['playable'] = $ad->assets->pluck('type_id')->contains(8)??false;
         }
 
         return JsonResource::collection($ad_list);
