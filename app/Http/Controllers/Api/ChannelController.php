@@ -79,7 +79,7 @@ class ChannelController extends Controller
             $query->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('target_app_id', $channel_id_query)
                 ->when($country, function ($query) use ($country) {
-                    $query->where('country', $country);
+                    $query->whereIn('country', $country);
                 })
                 ->when($type, function ($query) use ($type) {
                     $query->where('type', $type);
@@ -135,7 +135,7 @@ class ChannelController extends Controller
             $query->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('target_app_id', $channel_id_query)
                 ->when($country, function ($query) use ($country) {
-                    $query->where('country', $country);
+                    $query->whereIn('country', $country);
                 })
                 ->when($type, function ($query) use ($type) {
                     $query->where('type', $type);
@@ -163,7 +163,7 @@ class ChannelController extends Controller
         $impression_list = ChannelCpm::whereBetween('date', [$start_date, $end_date])
             ->whereIn('target_app_id', $channel_id_query)
             ->when($country, function ($query) use ($country) {
-                $query->where('country', $country);
+                $query->whereIn('country', $country);
             })
             ->when($type, function ($query) use ($type) {
                 $query->where('type', $type);
