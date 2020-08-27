@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
-    <div v-for="shot in appinfo.screenshotUrls" :key="shot" class="block">
-      <el-image
-        :src="shot"
-      />
-    </div>
+    <el-carousel :interval="5000" arrow="always" height="700px" type="card">
+      <el-carousel-item v-for="shot in appinfo.screenshotUrls" :key="shot">
+        <img :src="shot" alt="">
+      </el-carousel-item>
+    </el-carousel>
     <div v-loading="appCreating" class="form-container">
       <el-form
         ref="appForm"
