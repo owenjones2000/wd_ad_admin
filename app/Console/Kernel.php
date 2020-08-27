@@ -38,7 +38,7 @@ class Kernel extends ConsoleKernel
         $schedule->command(DateStatis::class, [Carbon::now()->subDay()->format('Ymd')])->runInBackground()->dailyAt("0:30");
         $schedule->command(ChannelCpmTj::class)->runInBackground()->withoutOverlapping()->everyTenMinutes();
         $schedule->command(AccountCredit::class)->runInBackground()->withoutOverlapping()->everyFiveMinutes();
-        // $schedule->command(AppDetect::class)->runInBackground()->withoutOverlapping()->everyFiveMinutes();
+        $schedule->command(AppDetect::class)->runInBackground()->withoutOverlapping()->everyFiveMinutes();
         $schedule->command(DateStatis::class)->runInBackground()->hourly();
     }
 
