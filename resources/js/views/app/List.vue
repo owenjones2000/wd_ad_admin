@@ -39,6 +39,7 @@
       <el-select
         v-model="query.country"
         clearable
+        multiple
         placeholder="ALL Country"
         style="width: 150px;"
         class="filter-item"

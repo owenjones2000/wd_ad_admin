@@ -54,7 +54,7 @@ class AppController extends Controller
             $query->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('app_id', $app_id_query)
                 ->when($country, function ($query) use ($country) {
-                    $query->where('country', $country);
+                    $query->whereIn('country', $country);
                 })
                 ->when($type, function ($query) use ($type) {
                     $query->where('type', $type);
@@ -174,7 +174,7 @@ class AppController extends Controller
             $query->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('app_id', $app_id_query)
                 ->when($country, function ($query) use ($country) {
-                    $query->where('country', $country);
+                    $query->whereIn('country', $country);
                 })
                 ->when($type, function ($query) use ($type) {
                     $query->where('type', $type);
