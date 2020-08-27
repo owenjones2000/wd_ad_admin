@@ -139,7 +139,7 @@ class AppController extends Controller
         ]);
         $content = $res->getBody()->getContents();
         $data = json_decode($content, true);
-        return response()->json($data['results'][0]);
+        return response()->json($data['results'][0]??[]);
     }
     public function data(Request $request)
     {
