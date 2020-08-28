@@ -10,6 +10,7 @@ use App\Models\Advertise\Ad;
 use App\Models\Advertise\App;
 use App\Models\Advertise\Campaign;
 use App\Models\Advertise\Channel;
+use App\Models\Advertise\Region;
 use App\Models\Statis;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -364,8 +365,8 @@ class StatisController extends Controller
 
         $avg_request_query->addSelect('target_app_id')->groupBy('target_app_id')->with('channel');
 
-        $avg_request_list = $avg_request_query->paginate($request->input('limit'));
-        $target_app_id_list = array_column($avg_request_list->items(), 'target_app_id');
+        $avg_request_list = $avg_request_query->get()->sortByDesc('total_device_count');
+        $target_app_id_list = array_column($avg_request_list->toArray(), 'target_app_id');
         // Impression
         $avg_impression_query = \App\Models\Advertise\Impression::multiTableQuery(function ($query) use ($start_date, $end_date) {
             $query->whereBetween('date', [$start_date, $end_date]);
@@ -441,8 +442,8 @@ class StatisController extends Controller
 
         $avg_request_query->addSelect('app_id')->groupBy('app_id')->with('app');
 
-        $avg_request_list = $avg_request_query->paginate($request->input('limit'));
-        $app_id_list = array_column($avg_request_list->items(), 'app_id');
+        $avg_request_list = $avg_request_query->get()->sortByDesc('total_device_count');
+        $app_id_list = array_column($avg_request_list->toArray(), 'app_id');
         // Impression
         $avg_impression_query = \App\Models\Advertise\Impression::multiTableQuery(function ($query) use ($start_date, $end_date) {
             $query->whereBetween('date', [$start_date, $end_date]);
@@ -523,8 +524,10 @@ class StatisController extends Controller
                 DB::raw('count(DISTINCT ip) as uq_no_idfa'),
                 'country'
             ])->groupBy('country')->get()->keyBy('country')->toArray();
+        $countrys = Region::all()->pluck('name', 'code');
         foreach ($request_list as $key => $value) {
             $value->uq_no_idfa  = $no_idfa[$value->country]['uq_no_idfa']??0;
+            $value->country  = $value->country.' --- '.($countrys[$value->country]??'');
         }
         return new JsonResource($request_list);
     }
