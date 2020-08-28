@@ -170,6 +170,7 @@ Route::group(['middleware' => 'api'], function () {
             Route::get('device', 'StatisController@device')->name('statis.device');
             Route::get('device/channel', 'StatisController@deviceByChannel')->name('statis.device');
             Route::get('device/app', 'StatisController@deviceByApp')->name('statis.device');
+            Route::get('device/country', 'StatisController@deviceByCountry')->name('statis.device.country');
         });
 
         Route::group(['prefix' => 'audience', 'middleware' => 'permission:audience.manage'], function () {

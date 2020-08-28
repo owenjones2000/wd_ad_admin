@@ -83,7 +83,7 @@ export default {
       appCreating: false,
       query: {
         page: 1,
-        limit: 15,
+        limit: 100,
         keyword: '',
         daterange: [new Date(), new Date()],
       },

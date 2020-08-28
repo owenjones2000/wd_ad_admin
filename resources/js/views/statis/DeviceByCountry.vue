@@ -26,17 +26,22 @@
     </div>
 
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="Channel">
+      <el-table-column align="center" label="Country">
         <template slot-scope="scope">
-          <span>{{ scope.row.channel ? scope.row.channel.name : 'Unknown' }}</span>
+          <span>{{ scope.row.country ? scope.row.country : 'Unknown' }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Devices">
+      <el-table-column align="center" label="uq_idfa Devices">
         <template slot-scope="scope">
-          <span>{{ scope.row.total_device_count ? scope.row.total_device_count : 0 }}</span>
+          <span>{{ scope.row.uq_idfa ? scope.row.uq_idfa : 0 }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Request Avg">
+      <el-table-column align="center" label="uq_no_idfa Devices">
+        <template slot-scope="scope">
+          <span>{{ scope.row.uq_no_idfa ? scope.row.uq_no_idfa : 0 }}</span>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column align="center" label="Request Avg">
         <template slot-scope="scope">
           <span>{{ scope.row.request_avg ? scope.row.request_avg : 0 }}</span>
         </template>
@@ -55,7 +60,7 @@
         <template slot-scope="scope">
           <span>{{ scope.row.install_avg ? scope.row.install_avg : 0 }}</span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
 
   </div>
@@ -71,7 +76,7 @@ import defaultDatePickerOptions from '@/utils/datepicker';
 const statis = new Statis();
 
 export default {
-  name: 'DeviceStatisByChannel',
+  name: 'DeviceStatisByApp',
   components: { },
   directives: { waves, permission },
   data() {
@@ -101,7 +106,7 @@ export default {
     async getList() {
       const { limit, page } = this.query;
       this.loading = true;
-      const { data, meta } = await statis.deviceByChannel(this.query);
+      const { data, meta } = await statis.deviceByCountry(this.query);
       this.list = data;
       this.list.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;

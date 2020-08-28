@@ -50,6 +50,13 @@ class Statis {
       params: query,
     });
   }
+  deviceByCountry(query){
+    return request({
+      url: '/statis/device/country',
+      method: 'get',
+      params: query,
+    });
+  }
 }
 
 export { Statis as default };

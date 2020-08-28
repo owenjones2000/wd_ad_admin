@@ -52,6 +52,13 @@ const statisRoutes = {
       meta: { title: 'Device Statis By App', icon: 'user', permissions: ['advertise.statis'] },
       // hidden: true,
     },
+    {
+      path: 'device/country',
+      component: () => import('@/views/statis/DeviceByCountry'),
+      name: 'DeviceStatisByCountry',
+      meta: { title: 'Device Statis By Country', icon: 'user', permissions: ['advertise.statis'] },
+      // hidden: true,
+    },
   ],
 };
 

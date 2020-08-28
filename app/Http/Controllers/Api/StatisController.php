@@ -364,7 +364,7 @@ class StatisController extends Controller
 
         $avg_request_query->addSelect('target_app_id')->groupBy('target_app_id')->with('channel');
 
-        $avg_request_list = $avg_request_query->paginate();
+        $avg_request_list = $avg_request_query->paginate($request->input('limit'));
         $target_app_id_list = array_column($avg_request_list->items(), 'target_app_id');
         // Impression
         $avg_impression_query = \App\Models\Advertise\Impression::multiTableQuery(function ($query) use ($start_date, $end_date) {
@@ -441,7 +441,7 @@ class StatisController extends Controller
 
         $avg_request_query->addSelect('app_id')->groupBy('app_id')->with('app');
 
-        $avg_request_list = $avg_request_query->paginate();
+        $avg_request_list = $avg_request_query->paginate($request->input('limit'));
         $app_id_list = array_column($avg_request_list->items(), 'app_id');
         // Impression
         $avg_impression_query = \App\Models\Advertise\Impression::multiTableQuery(function ($query) use ($start_date, $end_date) {
@@ -498,5 +498,34 @@ class StatisController extends Controller
             $avg_request['install_avg'] = $avg_install_list[$avg_request['app_id']] ?? 0;
         }
         return new JsonResource($avg_request_list);
+    }
+
+    public function deviceByCountry(Request $request)
+    {
+        $range_date = $request->get('daterange');
+        $start_date = date('Ymd', strtotime($range_date[0] ?? 'now'));
+        $end_date = date('Ymd', strtotime($range_date[1] ?? 'now'));
+
+        // Request
+        $request_query = \App\Models\Advertise\Request::multiTableQuery(function ($query) use ($start_date, $end_date) {
+            $query->whereBetween('date', [$start_date, $end_date]);
+            return $query;
+        }, $start_date, $end_date);
+
+        $request_list = $request_query->select([
+            DB::raw('count(DISTINCT idfa) as uq_idfa'),
+            'country'
+        ])->groupBy('country')
+        // ->orderBy('uq_idfa', 'desc')
+        ->get()->sortByDesc('uq_idfa');
+        $no_idfa = $request_query->where('idfa', '00000000-0000-0000-0000-000000000000')
+            ->select([
+                DB::raw('count(DISTINCT ip) as uq_no_idfa'),
+                'country'
+            ])->groupBy('country')->get()->keyBy('country')->toArray();
+        foreach ($request_list as $key => $value) {
+            $value->uq_no_idfa  = $no_idfa[$value->country]['uq_no_idfa']??0;
+        }
+        return new JsonResource($request_list);
     }
 }
