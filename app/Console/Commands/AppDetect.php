@@ -12,6 +12,7 @@ use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 class AppDetect extends Command
 {
@@ -53,6 +54,7 @@ class AppDetect extends Command
         try {
             $client = new Client();
             foreach ($apps as $app) {
+                $key = 'app_removal'.$app->id;
                 switch ($app->os) {
                     case 'android':
                         
@@ -65,7 +67,6 @@ class AppDetect extends Command
                         ]);
                         $code = $res->getStatusCode();
                         if ($code == 404){
-                            Log::error('app android'. $app->id . $app->name . 'removal');
                             $client->request("POST", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=5ad32553-514f-4fb7-8552-849a0b52fe7f", [
                                 "json" => [
                                     "msgtype" => "text",
@@ -75,9 +76,15 @@ class AppDetect extends Command
                                     ]
                                 ]
                             ]);
-                            // $app->status =0;
-                            // $app->is_admin_disable =1;
-                            // $app->save();
+                            $count = Redis::incr($key);
+                            if ($count > 12){
+                                Log::error('app android' . $app->id . $app->name . 'removal');
+                                $app->status =0;
+                                $app->is_admin_disable =1;
+                                $app->save();
+                                Redis::del($key);
+                            }
+                            
                         }
                         break;
                     case 'ios':
@@ -90,7 +97,6 @@ class AppDetect extends Command
                         $content = $res->getBody()->getContents();
                         $data = json_decode($content, true);
                         if (isset($data['resultCount']) && $data['resultCount']<1){
-                            Log::error('app  ios' . $app->id . $app->name.'removal');
                             $client->request("POST", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=5ad32553-514f-4fb7-8552-849a0b52fe7f", [
                                 "json" => [
                                     "msgtype" => "text",
@@ -100,9 +106,14 @@ class AppDetect extends Command
                                     ]
                                 ]
                             ]);
-                            // $app->status = 0;
-                            // $app->is_admin_disable = 1;
-                            // $app->save();
+                            $count = Redis::incr($key);
+                            if ($count > 12) {
+                                Log::error('app  ios' . $app->id . $app->name . 'removal');
+                                $app->status = 0;
+                                $app->is_admin_disable = 1;
+                                $app->save();
+                                Redis::del($key);
+                            }
                         }
                         break;
                     default:

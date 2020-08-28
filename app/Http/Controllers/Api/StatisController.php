@@ -47,7 +47,7 @@ class StatisController extends Controller
                     $query->where('type', $type);
                 })
                 ->when($country, function ($query) use ($country) {
-                    $query->where('country', $country);
+                    $query->whereIn('country', $country);
                 });
             if ($channelIds) {
                 $query->whereIn('target_app_id', $channelIds);
