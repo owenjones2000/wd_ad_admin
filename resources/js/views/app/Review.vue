@@ -104,6 +104,13 @@
           />
         </template>
       </el-table-column>
+      <el-table-column
+        prop="created_at"
+        :formatter="dateFormat"
+        label="Created"
+        align="center"
+        width="100"
+      />
       <!-- <el-table-column align="center" label="Audience">
         <template slot-scope="scope">
           <i :style="{color: scope.row.is_audience ? '#67C23A' : '#F56C6C'}" :class="scope.row.is_audience ? 'el-icon-check' : 'el-icon-close'" />
@@ -421,6 +428,10 @@ export default {
       this.$nextTick(() => {
         this.$refs['appForm'].clearValidate();
       });
+    },
+    dateFormat(row, column, cellValue, index) {
+      var date = row[column.property];
+      return date.substr(0, 10);
     },
     handleDelete(id, name) {
       this.$confirm(
