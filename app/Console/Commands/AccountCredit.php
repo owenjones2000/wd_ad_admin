@@ -12,6 +12,7 @@ use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 class AccountCredit extends Command
 {
@@ -90,6 +91,7 @@ class AccountCredit extends Command
             ->where('isAdvertiseEnabled', 1)->get();
             if ($accounts) {
                 foreach ($accounts as $key => $account) {
+                    $key = 'credit_removal' . $account->id;
                     Log::error('account  credit disable' . $account->id . ' realname ' . $account->realname . ' end');
                     $apps = App::where('main_user_id', $account->id)
                         ->where('status', 1)->update([
@@ -97,15 +99,18 @@ class AccountCredit extends Command
                             'is_credit_disable' => 1,
                             'is_admin_disable' => 1,
                         ]);
-                    $client->request("POST", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=e797c254-5ca2-44b7-a254-71670c45112d", [
-                        "json" => [
-                            "msgtype" => "text",
-                            "text" => [
-                                "content" => "account  credit disable' . $account->id .' realname '. $account->realname.' end",
-                                "mentioned_list" => ["@all"],
+                    $count = Redis::incr($key);
+                    if ($count <= 5){
+                        $client->request("POST", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=e797c254-5ca2-44b7-a254-71670c45112d", [
+                            "json" => [
+                                "msgtype" => "text",
+                                "text" => [
+                                    "content" => "account  credit disable' . $account->id .' realname '. $account->realname.' end",
+                                    "mentioned_list" => ["@all"],
+                                ]
                             ]
-                        ]
-                    ]);
+                        ]);
+                    }
                 }
             }
             Log::info('finish' . __METHOD__);

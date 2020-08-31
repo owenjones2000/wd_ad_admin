@@ -18,6 +18,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 class AccountController extends Controller
 {
@@ -230,6 +231,8 @@ class AccountController extends Controller
                 $credit->operator = Auth::user()->name;
                 $credit->save();
                 if ($account->ava_credit  > 0){
+                    $key = 'credit_removal' . $account->id;
+                    Redis::del($key);
                     $apps = App::where('main_user_id', $account->id)->where('status', 0)->where('is_credit_disable', 1)
                     ->update([
                         'status' => 1,
