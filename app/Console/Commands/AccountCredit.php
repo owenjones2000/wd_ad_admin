@@ -100,7 +100,7 @@ class AccountCredit extends Command
                             'is_admin_disable' => 1,
                         ]);
                     $count = Redis::incr($key);
-                    if ($count <= 5){
+                    if ($count <= 3){
                         $client->request("POST", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=e797c254-5ca2-44b7-a254-71670c45112d", [
                             "json" => [
                                 "msgtype" => "text",
