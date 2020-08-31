@@ -46,7 +46,7 @@
       <!--    <span>{{ scope.row.id }}</span>-->
       <!--  </template>-->
       <!--</el-table-column>-->
-
+      <el-table-column prop="id" label="ID" fixed />
       <el-table-column prop="name" label="Ad" width="300px" fixed />
       <el-table-column prop="campaign.app.name" align="center" label="App" fixed />
       <el-table-column prop="campaign.advertiser.realname" align="center" label="Advertiser" fixed />
