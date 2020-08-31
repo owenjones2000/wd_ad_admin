@@ -8,6 +8,7 @@ use App\Models\Advertise\App;
 use App\Models\Advertise\Click;
 use App\Models\CallbackInstallation;
 use App\Models\Credit;
+use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -52,7 +53,7 @@ class AccountCredit extends Command
             ->limit(1000)
             ->get();
         try {
-            
+            $client = new Client();
             foreach ($callback_installs as $install) {
                 // 点击日期
                 $date = substr($install['click_id'], 0, 8);
@@ -85,16 +86,26 @@ class AccountCredit extends Command
                 }
             }
             //暂时取消自动关闭
-            $accounts = Account::where('ava_credit', '<', 0)->get();
+            $accounts = Account::where('ava_credit', '<', 0)->where('status', 1)
+            ->where('isAdvertiseEnabled', 1)->get();
             if ($accounts) {
                 foreach ($accounts as $key => $account) {
-                    Log::error('account  disable' . $account->id . $account->realname . 'removal');
+                    Log::error('account  credit disable' . $account->id . ' realname ' . $account->realname . ' end');
                     $apps = App::where('main_user_id', $account->id)
                         ->where('status', 1)->update([
                             'status' => 0,
                             'is_credit_disable' => 1,
                             'is_admin_disable' => 1,
                         ]);
+                    $client->request("POST", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=e797c254-5ca2-44b7-a254-71670c45112d", [
+                        "json" => [
+                            "msgtype" => "text",
+                            "text" => [
+                                "content" => "account  credit disable' . $account->id .' realname '. $account->realname.' end",
+                                "mentioned_list" => ["@all"],
+                            ]
+                        ]
+                    ]);
                 }
             }
             Log::info('finish' . __METHOD__);
