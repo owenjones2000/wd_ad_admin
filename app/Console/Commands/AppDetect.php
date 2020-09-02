@@ -69,18 +69,19 @@ class AppDetect extends Command
                         if ($code == 404){
                             $client->request("POST", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=5ad32553-514f-4fb7-8552-849a0b52fe7f", [
                                 "json" => [
-                                    "msgtype" => "text",
+                                    "msgtype" => "text",  
                                     "text" => [
-                                        "content" => "app  Android' . $app->id .' name '. $app->name.' removal",
+                                        "content" => "app  Android $app->id name $app->name account {$app->advertiser->realname} removal",
                                         "mentioned_list" => ["@all"],
                                     ]
                                 ]
                             ]);
                             $count = Redis::incr($key);
-                            if ($count > 12){
-                                Log::error('app android' . $app->id . $app->name . 'removal');
+                            if ($count > 3){
+                                Log::error("app  Android $app->id name $app->name account {$app->advertiser->realname} removal");
                                 $app->status =0;
                                 $app->is_admin_disable =1;
+                                $app->is_remove =1;
                                 $app->save();
                                 Redis::del($key);
                             }
@@ -101,16 +102,17 @@ class AppDetect extends Command
                                 "json" => [
                                     "msgtype" => "text",
                                     "text" => [
-                                        "content" => "app  Ios' . $app->id .' name '. $app->name.' removal",
+                                        "content" => "app  Ios $app->id name $app->name account {$app->advertiser->realname} removal",
                                         "mentioned_list" => ["@all"],
                                     ]
                                 ]
                             ]);
                             $count = Redis::incr($key);
-                            if ($count > 12) {
-                                Log::error('app  ios' . $app->id . $app->name . 'removal');
+                            if ($count > 3) {
+                                Log::error("app  Ios $app->id name $app->name account {$app->advertiser->realname} removal");
                                 $app->status = 0;
                                 $app->is_admin_disable = 1;
+                                $app->is_remove = 1;
                                 $app->save();
                                 Redis::del($key);
                             }

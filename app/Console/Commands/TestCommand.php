@@ -5,12 +5,14 @@ namespace App\Console\Commands;
 use App\Admin\Service\OceanengineService;
 use App\Models\Advertise\Account;
 use App\Models\Advertise\Ad;
+use App\Models\Advertise\App;
 use App\Models\Advertiser;
 use App\Models\Campaign;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
 class TestCommand extends Command
@@ -123,5 +125,57 @@ class TestCommand extends Command
         $content = $res->getBody()->getContents();
         $data = json_decode($content, true);
         dd($code, $data);
+    }
+
+    public function test5()
+    {
+        $apps = App::query()
+            ->get()->shuffle();
+        try {
+            $client = new Client();
+            foreach ($apps as $app) {
+                $key = 'app_removal' . $app->id;
+                switch ($app->os) {
+                    case 'android':
+                        $res = $client->get("https://play.google.com/store/apps/details", [
+                            'http_errors' => false,
+                            'query' => [
+                                'id' => $app->bundle_id
+                            ]
+                        ]);
+                        $code = $res->getStatusCode();
+                        if ($code == 404) {
+                            Log::error("app  Android $app->id name $app->name account {$app->advertiser->realname} removal");
+                            $app->status = 0;
+                            $app->is_admin_disable = 1;
+                            $app->is_remove = 1;
+                            $app->save();
+                            Redis::del($key);
+                        }
+                        break;
+                    case 'ios':
+                        $res = $client->get("https://itunes.apple.com/lookup", [
+                            'http_errors' => false,
+                            'query' => [
+                                'id' => substr($app->app_id, 2)
+                            ]
+                        ]);
+                        $content = $res->getBody()->getContents();
+                        $data = json_decode($content, true);
+                        if (isset($data['resultCount']) && $data['resultCount'] < 1) {
+                            
+                            Log::error("app  Ios $app->id name $app->name account {$app->advertiser->realname} removal");
+                            $app->status = 0;
+                            $app->is_admin_disable = 1;
+                            $app->is_remove = 1;
+                            $app->save();
+                            Redis::del($key);
+                        }
+                        break;
+                    default:
+                        # code...
+                        break;
+                }
+            }
     }
 }
