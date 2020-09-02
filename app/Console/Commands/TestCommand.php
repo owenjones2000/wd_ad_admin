@@ -109,16 +109,15 @@ class TestCommand extends Command
         if ($data && isset($data['result']) && $data['result'] === true) {
             $result = ["result" => true, "message_id" => $data['message_id']];
         }
-
     }
 
     public function test4()
     {
         $client = new Client();
         // $res = $client->get("https://itunes.apple.com/lookup?id=1524898135");
-        $res = $client->get("https://itunes.apple.com/lookup",[
+        $res = $client->get("https://itunes.apple.com/lookup", [
             'query' => [
-                'id'=> '1524898135'
+                'id' => '1524898135'
             ]
         ]);
         $code = $res->getStatusCode();
@@ -129,49 +128,51 @@ class TestCommand extends Command
 
     public function test5()
     {
+        Log::info('start' . __METHOD__);
         $apps = App::query()
             ->where('is_remove', 0)
             ->get()->shuffle();
-            $client = new Client();
-            foreach ($apps as $app) {
-                $key = 'app_removal' . $app->id;
-                switch ($app->os) {
-                    case 'android':
-                        $res = $client->get("https://play.google.com/store/apps/details", [
-                            'http_errors' => false,
-                            'query' => [
-                                'id' => $app->bundle_id
-                            ]
-                        ]);
-                        $code = $res->getStatusCode();
-                        if ($code == 404) {
-                            Log::error("app  Android $app->id name $app->name account {$app->advertiser->realname} removal");
-                            $app->is_remove = 1;
-                            $app->save();
-                            Redis::del($key);
-                        }
-                        break;
-                    case 'ios':
-                        $res = $client->get("https://itunes.apple.com/lookup", [
-                            'http_errors' => false,
-                            'query' => [
-                                'id' => substr($app->app_id, 2)
-                            ]
-                        ]);
-                        $content = $res->getBody()->getContents();
-                        $data = json_decode($content, true);
-                        if (isset($data['resultCount']) && $data['resultCount'] < 1) {
-                            
-                            Log::error("app  Ios $app->id name $app->name account {$app->advertiser->realname} removal");
-                            $app->is_remove = 1;
-                            $app->save();
-                            Redis::del($key);
-                        }
-                        break;
-                    default:
-                        # code...
-                        break;
-                }
+        $client = new Client();
+        foreach ($apps as $app) {
+            $key = 'app_removal' . $app->id;
+            switch ($app->os) {
+                case 'android':
+                    $res = $client->get("https://play.google.com/store/apps/details", [
+                        'http_errors' => false,
+                        'query' => [
+                            'id' => $app->bundle_id
+                        ]
+                    ]);
+                    $code = $res->getStatusCode();
+                    if ($code == 404) {
+                        Log::error("app  Android $app->id name $app->name account {$app->advertiser->realname} removal");
+                        $app->is_remove = 1;
+                        $app->save();
+                        Redis::del($key);
+                    }
+                    break;
+                case 'ios':
+                    $res = $client->get("https://itunes.apple.com/lookup", [
+                        'http_errors' => false,
+                        'query' => [
+                            'id' => substr($app->app_id, 2)
+                        ]
+                    ]);
+                    $content = $res->getBody()->getContents();
+                    $data = json_decode($content, true);
+                    if (isset($data['resultCount']) && $data['resultCount'] < 1) {
+
+                        Log::error("app  Ios $app->id name $app->name account {$app->advertiser->realname} removal");
+                        $app->is_remove = 1;
+                        $app->save();
+                        Redis::del($key);
+                    }
+                    break;
+                default:
+                    # code...
+                    break;
             }
+        }
+        Log::info('finish' . __METHOD__);
     }
 }
