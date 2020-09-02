@@ -104,6 +104,14 @@
           />
         </template>
       </el-table-column>
+      <el-table-column align="center" label="IsRemove">
+        <template slot-scope="scope">
+          <i
+            :style="{color: scope.row.is_remove ? '#67C23A' : '#F56C6C'}"
+            :class="scope.row.is_remove ? 'el-icon-check' : 'el-icon-close'"
+          />
+        </template>
+      </el-table-column>
       <el-table-column
         prop="created_at"
         :formatter="dateFormat"
