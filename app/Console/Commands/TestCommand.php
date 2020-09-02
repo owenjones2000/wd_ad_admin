@@ -130,8 +130,8 @@ class TestCommand extends Command
     public function test5()
     {
         $apps = App::query()
+            ->where('is_remove', 0)
             ->get()->shuffle();
-        try {
             $client = new Client();
             foreach ($apps as $app) {
                 $key = 'app_removal' . $app->id;
@@ -146,8 +146,6 @@ class TestCommand extends Command
                         $code = $res->getStatusCode();
                         if ($code == 404) {
                             Log::error("app  Android $app->id name $app->name account {$app->advertiser->realname} removal");
-                            $app->status = 0;
-                            $app->is_admin_disable = 1;
                             $app->is_remove = 1;
                             $app->save();
                             Redis::del($key);
@@ -165,8 +163,6 @@ class TestCommand extends Command
                         if (isset($data['resultCount']) && $data['resultCount'] < 1) {
                             
                             Log::error("app  Ios $app->id name $app->name account {$app->advertiser->realname} removal");
-                            $app->status = 0;
-                            $app->is_admin_disable = 1;
                             $app->is_remove = 1;
                             $app->save();
                             Redis::del($key);
