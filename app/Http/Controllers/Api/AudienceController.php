@@ -233,8 +233,8 @@ class AudienceController extends Controller
     public function getApp(Request $request)
     {
         $apps = App::query()
-        // ->where('status', 1)
-        // ->where('is_admin_disable', 0) 
+        ->where('status', 1)
+        ->where('is_admin_disable', 0) 
         ->get();
         return JsonResource::collection($apps);
     }
