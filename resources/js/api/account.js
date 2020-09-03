@@ -20,6 +20,13 @@ class AccountResource extends Resource {
       data: resource,
     });
   }
+  addCash(id, record) {
+    return request({
+      url: '/' + this.uri + '/' + id + '/addcash',
+      method: 'post',
+      data: record,
+    });
+  }
   opLog(query){
     return request({
       url: '/' + this.uri + '/oplog',

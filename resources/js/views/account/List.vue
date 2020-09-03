@@ -80,16 +80,19 @@
           <el-button v-permission="['advertise.account.edit']" type="warning" size="small" icon="el-icon-edit" @click="handleEditPermissions(scope.row, scope.row);">
             Permissions
           </el-button>
-          <el-button v-permission="['advertise.bill']" type="primary" size="small" icon="el-icon-edit" @click="handleBillSet(scope.row)">
+          <el-button v-permission="['advertise.bill']" type="normal" size="small" icon="el-icon-edit" @click="handleBillSet(scope.row)">
             BillSet
           </el-button>
           <el-button
             v-permission="['advertise.account.edit']"
-            type="normal"
+            type="primary"
             size="small"
             icon="el-icon-key "
             @click="handleToken(scope.row)"
           >Token</el-button>
+          <el-button v-permission="['advertise.account.cash']" type="normal" size="small" icon="el-icon-edit" @click="handleCash(scope.row)">
+            Add Cash
+          </el-button>
           <!--<el-button v-permission="['advertise.account.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">-->
           <!--  Delete-->
           <!--</el-button>-->
@@ -139,6 +142,33 @@
             {{ $t('table.cancel') }}
           </el-button>
           <el-button type="primary" @click="addCredit()">
+            {{ $t('table.confirm') }}
+          </el-button>
+        </div>
+      </div>
+    </el-dialog>
+
+    <el-dialog title="Add Cash" :visible.sync="dialogCashVisible">
+      <div v-loading="addCrediting" class="form-container">
+        <el-form ref="cashForm" :rules="cashrules" :model="record" label-position="left" label-width="150px" style="max-width: 500px;">
+          <el-form-item label="Amount" prop="amount">
+            <el-input v-model="record.amount" type="number" />
+          </el-form-item>
+          <el-form-item label="Date" prop="date">
+            <el-date-picker
+              v-model="record.date"
+              type="date"
+              value-format="yyyy-MM-dd"
+              placeholder="date"
+            />
+          </el-form-item>
+
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogCashVisible = false">
+            {{ $t('table.cancel') }}
+          </el-button>
+          <el-button type="primary" @click="addCash()">
             {{ $t('table.confirm') }}
           </el-button>
         </div>
@@ -294,6 +324,10 @@ export default {
   data() {
     return {
       list: [],
+      record: {
+        amount: null,
+        date: null,
+      },
       total: 0,
       loading: true,
       downloading: false,
@@ -310,6 +344,7 @@ export default {
       isNewAccount: false,
       dialogFormVisible: false,
       dialogCreditVisible: false,
+      dialogCashVisible: false,
       passwordRequired: true,
       currentAccountId: 0,
       currentAccount: {
@@ -365,6 +400,12 @@ export default {
     creditrules() {
       return {
         addcredit: [{ required: true, message: 'credit is required', trigger: 'blur' }],
+      };
+    },
+    cashrules() {
+      return {
+        amount: [{ required: true, message: 'cash is required', trigger: 'blur' }],
+        date: [{ required: true, message: 'date is required', trigger: 'blur' }],
       };
     },
     billSetRules() {
@@ -574,6 +615,13 @@ export default {
       this.dialogCreditVisible = true;
       this.$nextTick(() => {
         this.$refs['creditForm'].clearValidate();
+      });
+    },
+    handleCash(account) {
+      this.currentAccount = account;
+      this.dialogCashVisible = true;
+      this.$nextTick(() => {
+        this.$refs['cashForm'].clearValidate();
       });
     },
     handleDelete(id, name) {
@@ -803,6 +851,33 @@ export default {
                 duration: 5 * 1000,
               });
               this.dialogCreditVisible = false;
+              this.handleFilter();
+            })
+            .catch(error => {
+              console.log(error);
+            })
+            .finally(() => {
+              this.addCrediting = false;
+            });
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
+    addCash() {
+      this.$refs['cashForm'].validate((valid) => {
+        if (valid) {
+          console.log(this.record);
+          accountResource
+            .addCash(this.currentAccount.id, this.record)
+            .then(response => {
+              this.$message({
+                message: 'Account ' + this.currentAccount.email + ' has been add cash successfully.',
+                type: 'success',
+                duration: 5 * 1000,
+              });
+              this.dialogCashVisible = false;
               this.handleFilter();
             })
             .catch(error => {
