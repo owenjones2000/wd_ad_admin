@@ -50,5 +50,6 @@ class AudienceRedis implements ShouldQueue
                 Log::info('redisres  ' . $redisRes . '   appid ' . $id);
             }
         });
+        Log::info('AudienceRedis end');
     }
 }
