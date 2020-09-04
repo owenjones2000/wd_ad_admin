@@ -91,8 +91,6 @@
             <th >Campaign</th>
             <th >Install</th>
             <th >Spend</th>
-            {{-- <th style="width: 80%;">Description</th> --}}
-            {{-- <th style="text-align: right;">Fee Amount</th> --}}
         </tr>
         @foreach ($billInfo as $item)
         <tr class="odd-row">
@@ -110,7 +108,26 @@
         </tr> --}}
     </table>
     <hr />
-    <p style="color: #E01B84;text-align: right"><strong>Subtotal: ${{ number_format($bill['fee_amount'], 2) }}</strong></p>
+    @if(!$prePay->isEmpty())
+    <table class="detail" style="width: 100%">
+        <tr>
+            <th >Date</th>
+            <th >Paid</th>
+        </tr>
+        @foreach ($prePay as $item)
+        <tr class="odd-row">
+        <td>{{$item['date']}}</td>
+        <td>${{$item['amount']}}</td>
+        </tr>
+        @endforeach
+    </table>
+    <hr />
+    
+    <p style="color: #E01B84;text-align: right"><strong>Paid subtotal: ${{ number_format($prePay->sum('amount'), 2) }}</strong></p>
+    <hr>
+    @endif
+    
+    <p style="color: #E01B84;text-align: right"><strong>Dues Subtotal: ${{ number_format($bill['fee_amount']-$prePay->sum('amount'), 2) }}</strong></p>
     <hr />
     <table class="bank_info" style="width: 50%">
         <tr>

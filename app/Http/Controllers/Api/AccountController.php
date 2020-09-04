@@ -12,6 +12,8 @@ use App\Models\Advertise\App;
 use App\Models\Advertise\UaPermission;
 use App\Models\Advertise\UaOperationLog;
 use App\Models\Credit;
+use App\Models\Record;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
@@ -244,6 +246,26 @@ class AccountController extends Controller
             });
         } catch (\Exception $e) {
             Log::error($e);     
+        }
+        return response()->json(['code' => 0, 'msg' => 'ok']);
+        
+    }
+
+    public function addCash(Request $request, $id)
+    {
+        $amount =  $request->input('amount');
+        $date =  $request->input('date');
+        /** @var Account $account */
+        $account = Account::findOrFail($id);
+        try{
+            $record = new Record();
+            $record->amount = $amount;
+            $record->main_user_id = $id;
+            $record->date = Carbon::parse($date);
+            $record->save();
+        } catch (\Exception $e) {
+            Log::error($e);
+            return response()->json(['code' => 100, 'msg' => 'fail']);    
         }
         return response()->json(['code' => 0, 'msg' => 'ok']);
         

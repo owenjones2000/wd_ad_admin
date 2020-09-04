@@ -28,7 +28,16 @@
         icon="el-icon-search"
         @click="handleFilter"
       >{{ $t('table.search') }}</el-button>
-
+      <el-button
+        v-waves
+        :loading="downloading"
+        class="filter-item"
+        type="primary"
+        icon="el-icon-download"
+        @click="handleDownload"
+      >
+        {{ $t('table.export') }}
+      </el-button>
     </div>
 
     <el-table
@@ -456,20 +465,50 @@ export default {
     },
     handleDownload() {
       this.downloading = true;
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['id', 'app_id', 'name'];
-        const filterVal = ['index', 'id', 'name'];
+      import('@/vendor/Export2Excel').then((excel) => {
+        const tHeader = [
+          'Advertiser',
+          'Impressions',
+          'Clicks',
+          'Installs',
+          'CTR',
+          'CVR',
+          'IR',
+          'Spend',
+          'eCpi',
+          'eCpm',
+        ];
+        const filterVal = [
+          'realname',
+          'impressions',
+          'clicks',
+          'installs',
+          'ctr',
+          'cvr',
+          'ir',
+          'spend',
+          'ecpi',
+          'ecpm',
+        ];
         const data = this.formatJson(filterVal, this.list);
+        // const data = this.list;
+        console.log(data);
         excel.export_json_to_excel({
           header: tHeader,
           data,
-          filename: 'app-list',
+          filename: 'advertiser-list',
+          bookType: 'csv',
         });
         this.downloading = false;
       });
     },
     formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => v[j]));
+      return jsonData.map(v => filterVal.map(j => {
+        // console.log(v);
+        // console.log(j);
+        Object.assign(v, v['kpi']);
+        return v[j];
+      }));
     },
     clipboardSuccess() {
       this.$message({
