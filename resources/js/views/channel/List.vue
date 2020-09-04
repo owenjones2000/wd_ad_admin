@@ -231,7 +231,7 @@
       <el-table-column prop="rate" :formatter="percentageFormat" align="center" label="Rate" />
       <el-table-column align="center" label="Actions" width="300" fixed="right">
         <template slot-scope="scope">
-          <el-button type="normal" size="small" icon="el-icon-menu">
+          <el-button type="primary" size="small" icon="el-icon-menu">
             <router-link :to="'/acquisition/channel/'+scope.row.id+'/app'">Sources</router-link>
           </el-button>
           <el-button
@@ -243,7 +243,7 @@
           >Edit</el-button>
           <el-button
             v-permission="['basic.auth.token']"
-            type="normal"
+            type="primary"
             size="small"
             icon="el-icon-key "
             @click="handleToken(scope.row)"
@@ -252,6 +252,7 @@
             v-permission="['advertise.channel.edit']"
             type="danger"
             size="small"
+            style="margin-top:10px"
             icon="el-icon-refresh-left"
             @click="handleRestart(scope.row)"
           >Restart</el-button>

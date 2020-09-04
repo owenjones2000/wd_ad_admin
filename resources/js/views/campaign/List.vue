@@ -68,12 +68,13 @@
             v-permission="['advertise.campaign']"
             type="primary"
             size="small"
-            icon="el-icon-info"
+            icon="el-icon-edit"
             @click="handleEdit(scope.row)"
-          />
-          <el-button type="normal" size="small" icon="el-icon-menu">
-            <router-link class="link-type" :to="'/acquisition/campaign/'+scope.row.id+'/channel'">Sources</router-link>
-          </el-button>
+          >Edit</el-button>
+          <router-link class="link-type" :to="'/acquisition/campaign/'+scope.row.id+'/channel'">
+            <el-button type="primary" size="small" icon="el-icon-position">
+              Sources
+            </el-button></router-link>
           <el-link v-permission="['advertise.campaign.restart']" type="danger" size="small" icon="el-icon-refresh-left" :underline="false" @click="handleRestart(scope.row)" />
           <!--<el-link v-permission="['advertise.campaign.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />-->
           <!--<el-link v-permission="['advertise.campaign.destroy']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
