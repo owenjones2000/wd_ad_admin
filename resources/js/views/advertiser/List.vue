@@ -329,7 +329,7 @@
 </template>
 
 <script>
-import Pagination from '@/components/ '; // Secondary package based on el-pagination
+import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
 import AccountResource from '@/api/account';
 import waves from '@/directive/waves'; // Waves directive
 import permission from '@/directive/permission'; // Waves directive
