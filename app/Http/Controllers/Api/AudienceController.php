@@ -144,46 +144,6 @@ class AudienceController extends Controller
             return response()->json(['code' => 1000, 'msg' => 'Fail']);
         }
         return response()->json(['code' => 0, 'msg' => 'Successful']);
-        // $file_content = file_get_contents($realPath);
-        // 
-        // $data = static::strToCsvArray($file_content);
-        // $idfas = [];
-        // foreach ($data as $key => $value) {
-        //     if ($value['IDFA'] == '00000000-0000-0000-0000-000000000000') {
-        //         continue;
-        //     }
-        //     $idfas[]  = $value['IDFA'];
-        // }
-        // $idfas = array_unique($idfas);
-        // Log::info(count($idfas));
-        // $insertdata = [];
-        // try {
-        //     foreach ($idfas as $key => $value) {
-        //         $insertdata[] = ['idfa' => $value, 'batch_no' => $batchNo, 'tag' => $appid];
-        //     }
-        //     $chunkdata =  array_chunk($insertdata, 10000);
-
-        //     foreach ($chunkdata as $key => $value) {
-        //         $redisValue = array_column($value, 'idfa');
-        //         $dbRes = DB::table('a_idfa')->insert($value);
-        //         $redisRes = Redis::connection('feature')->sadd('app_audience_blocklist_' . $appid, ...$redisValue);
-        //         // Redis::connection('feature')->pipeline(function($pipe) use ($appid,$redisValue){
-        //         //     foreach ($redisValue as $key => $value) {
-        //         //         $pipe->sadd('app_audience_blocklist_' . $appid, $value);
-        //         //     }
-        //         // });
-        //         Log::info($dbRes);
-        //         Log::info($redisRes);
-        //     }
-        // } catch (\Exception $e) {
-        //     Log::error($e);
-        //     return response()->json(['code' => 1000, 'msg' => 'Fail']);
-        // }
-        // return response()->json(['code' => 0, 'msg' => 'Successful']);
-
-        // dd($request->all());
-        // $allSheets = Excel::import($request->file('idfa_file'))->toArray();
-
     }
 
     public function insertInto($idfas, $batchNo, $tagId)
@@ -268,14 +228,6 @@ class AudienceController extends Controller
         
         $newappIds = array_diff($appIds, $oldAppIds);
         if ($newappIds){
-            // $idfas = Idfa::where('tag_id', $id)->chunk(10000, function($idfas) use ($newappIds){
-            //     $redisValue = $idfas->pluck('idfa');
-            //     foreach ($newappIds as $key => $id) {
-            //         // $redisRes = Redis::connection('default')->sadd('app_audience_blocklist_' . $id, ...$redisValue);
-            //         $redisRes = Redis::connection('feature')->sadd('app_audience_blocklist_' . $id, ...$redisValue);
-            //         Log::info('redisres  ' . $redisRes. '   appid '. $id);
-            //     }
-            // });
             dispatch(new AudienceRedis($id, $newappIds));
             // $job = new AudienceRedis($id, $newappIds);
             // $job ->dispatch();
