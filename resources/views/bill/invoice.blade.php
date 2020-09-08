@@ -108,7 +108,7 @@
         </tr> --}}
     </table>
     <hr />
-    @if(!$prePay->isEmpty())
+    @if(isset($prePay) && !$prePay->isEmpty())
     <table class="detail" style="width: 100%">
         <tr>
             <th >Date</th>
@@ -127,7 +127,8 @@
     <hr>
     @endif
     
-    <p style="color: #E01B84;text-align: right"><strong>Dues Subtotal: ${{ number_format($bill['fee_amount']-$prePay->sum('amount'), 2) }}</strong></p>
+    {{-- <p style="color: #E01B84;text-align: right"><strong>Dues Subtotal: ${{ !$prePay->isEmpty()?number_format($bill['fee_amount'] - $prePay->sum('amount'), 2):number_format($bill['fee_amount'], 2) }}</strong></p> --}}
+    <p style="color: #E01B84;text-align: right"><strong>Dues Subtotal: ${{ number_format($bill['fee_amount'] - $prePay->sum('amount'), 2) }}</strong></p>
     <hr />
     <table class="bank_info" style="width: 50%">
         <tr>
