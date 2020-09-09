@@ -9,9 +9,12 @@ use App\Models\Advertise\Campaign;
 use App\Rules\AdvertiseName;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\AdTag;
+use Exception;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AdController extends Controller
 {
@@ -136,6 +139,33 @@ class AdController extends Controller
         //
     }
 
+    public function tagList(Request $request)
+    {
+        $keyword = $request->input('keyword', '');
+        $appTag = AdTag::when($keyword, function ($query) use ($keyword) {
+            $query->where('name', 'like', '%' . $keyword . '%');
+        })
+            ->where('status', 1)
+            ->paginate($request->get('limit', 30));;
+
+        return JsonResource::collection($appTag);
+    }
+
+    public function tagSave(Request $request, $id = null)
+    {
+        $this->validate($request, [
+            'name'  => 'required|string|unique:a_ad_tag,name,' . $id . ',id',
+        ]);
+        try {
+            $params = $request->all();
+            $params['id'] = $id;
+            AdTag::Make($params);
+            return response()->json(['code' => 0, 'msg' => 'Successful']);
+        } catch (Exception $ex) {
+            Log::error($ex);
+            return response()->json(['code' => 100, 'msg' => $ex->getMessage()]);
+        }
+    }
     /**
      * Show the form for editing the specified resource.
      *

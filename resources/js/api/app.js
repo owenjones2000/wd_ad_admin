@@ -20,6 +20,24 @@ class AppResource extends Resource {
       params: query,
     });
   }
+  tagList(query){
+    return request({
+      url: '/' + this.uri + '/taglist',
+      method: 'get',
+      params: query,
+    });
+  }
+  saveTag(resource) {
+    var url = '/' + this.uri + '/tag';
+    if (resource.id) {
+      url = '/' + this.uri + '/tag/' + resource.id;
+    }
+    return request({
+      url: url,
+      method: 'post',
+      data: resource,
+    });
+  }
   channelList(app_id, query) {
     return request({
       url: '/' + this.uri + '/' + app_id + '/channel',

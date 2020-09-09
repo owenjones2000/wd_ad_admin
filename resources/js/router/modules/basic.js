@@ -14,6 +14,18 @@ const basicRoutes = {
   children: [
 
     {
+      path: 'app/tag',
+      component: () => import('@/views/app/Tag'),
+      name: 'AppTag',
+      meta: { title: 'App Tag', icon: 'component', permissions: ['basic.manage'] },
+    },
+    {
+      path: 'ad/tag',
+      component: () => import('@/views/ad/Tag'),
+      name: 'AdTag',
+      meta: { title: 'Ad Tag', icon: 'component', permissions: ['basic.manage'] },
+    },
+    {
       path: 'log',
       component: () => import('@/views/users/Oplog'),
       name: 'LogList',
