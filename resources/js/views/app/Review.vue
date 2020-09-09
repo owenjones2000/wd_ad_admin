@@ -133,9 +133,10 @@
             >Ios</el-button>
           </router-link>
 
-          <router-link
+          <el-link
             class="link-type"
-            :to="'https://play.google.com/store/apps/details?id='+scope.row.bundle_id"
+            :href="'https://play.google.com/store/apps/details?id='+scope.row.bundle_id"
+            target="_blank"
           >
             <el-button
               v-if="scope.row.os =='android'"
@@ -144,7 +145,7 @@
               style="margin:0 10px"
               icon="el-icon-view"
             >android</el-button>
-          </router-link>
+          </el-link>
           <!--<el-button v-permission="['advertise.auth.token']" type="normal" size="small" icon="el-icon-key " @click="handleToken(scope.row)" />-->
           <el-button
             v-permission="['advertise.app.edit']"
