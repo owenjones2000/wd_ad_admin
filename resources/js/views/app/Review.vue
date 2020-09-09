@@ -152,7 +152,7 @@
             size="small"
             icon="el-icon-remove"
             @click="handleStatus(scope.row)"
-          >Delete</el-button>
+          >Disable</el-button>
 
           <!--  <el-link v-if="scope.row.os=='android'" icon="el-icon-view" type="primary" :href="'https://play.google.com/store/apps/details?id='+scope.row.bundle_id" target="_blank">android</el-link> -->
 
