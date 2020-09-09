@@ -15,12 +15,7 @@
         style="width: 150px;"
         class="filter-item"
       >
-        <el-option
-          v-for="item in types"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
+        <el-option v-for="item in types" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
       <el-select
         v-model="query.os"
@@ -44,12 +39,7 @@
         style="width: 150px;"
         class="filter-item"
       >
-        <el-option
-          v-for="item in countrys"
-          :key="item.code"
-          :label="item.name"
-          :value="item.code"
-        />
+        <el-option v-for="item in countrys" :key="item.code" :label="item.name" :value="item.code" />
       </el-select>
       <el-date-picker
         v-model="query.daterange"
@@ -220,33 +210,44 @@
       </el-table-column>
       <el-table-column align="center" label="Audience">
         <template slot-scope="scope">
-          <i :style="{color: scope.row.is_audience ? '#67C23A' : '#F56C6C'}" :class="scope.row.is_audience ? 'el-icon-check' : 'el-icon-close'" />
-          <el-link v-permission="['advertise.app.edit']" :type="scope.row.is_audience ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleAudience(scope.row)" />
+          <i
+            :style="{color: scope.row.is_audience ? '#67C23A' : '#F56C6C'}"
+            :class="scope.row.is_audience ? 'el-icon-check' : 'el-icon-close'"
+          />
+          <el-link
+            v-permission="['advertise.app.edit']"
+            :type="scope.row.is_audience ? 'danger' : 'info'"
+            size="small"
+            icon="el-icon-remove"
+            :underline="false"
+            @click="handleAudience(scope.row)"
+          />
         </template>
       </el-table-column>
       <el-table-column align="center" label="Actions" width="270" fixed="right">
         <template slot-scope="scope">
+          <el-button type="primary" size="small" icon="el-icon-position">
+            <router-link :to="'/acquisition/app/'+scope.row.id+'/channel'">Channels</router-link>
+          </el-button>
+
           <el-button
             v-permission="['advertise.app']"
             type="primary"
             size="small"
-            icon="el-icon-info"
+            icon="el-icon-zoom-in"
             @click="handleEdit(scope.row)"
-          />
+          >Details</el-button>
+          <el-button style="margin-top:10px" type="primary" size="small" icon="el-icon-position">
+            <router-link :to="'/acquisition/app/'+scope.row.id+'/campaign'">Campaigns</router-link>
+          </el-button>
           <!--<el-button v-permission="['advertise.auth.token']" type="normal" size="small" icon="el-icon-key " @click="handleToken(scope.row)" />-->
           <el-button
             v-permission="['advertise.app.edit']"
-            :type="scope.row.is_admin_disable ? 'danger' : 'info'"
+            :type="scope.row.is_admin_disable ? 'danger' : 'warning'"
             size="small"
-            icon="el-icon-remove"
+            icon="el-icon-info"
             @click="handleStatus(scope.row)"
-          />
-          <el-button type="normal" size="small" icon="el-icon-menu">
-            <router-link :to="'/acquisition/app/'+scope.row.id+'/channel'">Channels</router-link>
-          </el-button>
-          <el-button type="normal" size="small" icon="el-icon-menu">
-            <router-link :to="'/acquisition/app/'+scope.row.id+'/campaign'">Campaigns</router-link>
-          </el-button>
+          >Disable</el-button>
           <!--<el-button v-permission="['advertise.app.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
         </template>
       </el-table-column>
@@ -434,9 +435,7 @@ export default {
         name: '',
         tokens: [],
       },
-      countrys: [
-
-      ],
+      countrys: [],
       currentAppTokens: [],
       rules: {
         name: [
@@ -482,7 +481,7 @@ export default {
       this.total = meta.total;
       this.loading = false;
     },
-    async countryList(){
+    async countryList() {
       const data = await channelResource.countryList();
       this.countrys = data;
     },
@@ -550,14 +549,14 @@ export default {
         .then(() => {
           appResource
             .destroy(id)
-            .then(response => {
+            .then((response) => {
               this.$message({
                 type: 'success',
                 message: 'Delete completed',
               });
               this.handleFilter();
             })
-            .catch(error => {
+            .catch((error) => {
               console.log(error);
             });
         })
@@ -586,73 +585,87 @@ export default {
           if (app.is_admin_disable) {
             appResource
               .enable(app.id)
-              .then(response => {
+              .then((response) => {
                 this.$message({
                   type: 'success',
                   message: 'App ' + app.name + ' released',
                 });
                 this.getList();
               })
-              .catch(error => {
+              .catch((error) => {
                 console.log(error);
               });
           } else {
             appResource
               .disable(app.id)
-              .then(response => {
+              .then((response) => {
                 this.$message({
                   type: 'success',
                   message: 'App ' + app.name + ' disabled',
                 });
                 this.getList();
               })
-              .catch(error => {
+              .catch((error) => {
                 console.log(error);
               });
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
     handleAudience(campaign) {
-      this.$confirm('This will change app display audience ' + campaign.name + '. Continue?', 'Warning', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-      }).then(() => {
-        if (campaign.is_audience) {
-          appResource.disableAudi(campaign.id).then(response => {
-            this.$message({
-              type: 'success',
-              message: 'Campaign ' + campaign.name + ' released',
-            });
-            this.getList();
-          }).catch(error => {
-            console.log(error);
-          });
-        } else {
-          appResource.enableAudi(campaign.id).then(response => {
-            this.$message({
-              type: 'success',
-              message: 'Campaign ' + campaign.name + ' disabled',
-            });
-            this.getList();
-          }).catch(error => {
-            console.log(error);
-          });
+      this.$confirm(
+        'This will change app display audience ' +
+          campaign.name +
+          '. Continue?',
+        'Warning',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning',
         }
-      }).catch(error => {
-        console.log(error);
-      });
+      )
+        .then(() => {
+          if (campaign.is_audience) {
+            appResource
+              .disableAudi(campaign.id)
+              .then((response) => {
+                this.$message({
+                  type: 'success',
+                  message: 'Campaign ' + campaign.name + ' released',
+                });
+                this.getList();
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          } else {
+            appResource
+              .enableAudi(campaign.id)
+              .then((response) => {
+                this.$message({
+                  type: 'success',
+                  message: 'Campaign ' + campaign.name + ' disabled',
+                });
+                this.getList();
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     saveApp() {
-      this.$refs['appForm'].validate(valid => {
+      this.$refs['appForm'].validate((valid) => {
         if (valid) {
           this.appCreating = true;
           appResource
             .save(this.currentApp)
-            .then(response => {
+            .then((response) => {
               this.$message({
                 message:
                   'App ' +
@@ -665,7 +678,7 @@ export default {
               this.dialogFormVisible = false;
               this.handleFilter();
             })
-            .catch(error => {
+            .catch((error) => {
               console.log(error);
             })
             .finally(() => {

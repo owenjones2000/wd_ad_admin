@@ -35,7 +35,7 @@
           :label="item.label"
           :value="item.value"
         />
-      </el-select>  -->
+      </el-select>-->
 
       <!-- <el-date-picker
         v-model="query.daterange"
@@ -48,7 +48,7 @@
         end-placeholder="end date"
         value-format="yyyy-MM-dd"
         :picker-options="pickerOptions"
-      /> -->
+      />-->
       <el-button
         v-waves
         class="filter-item"
@@ -78,28 +78,16 @@
       <el-table-column prop="name" align="center" label="Name" />
       <el-table-column prop="bundle_id" align="center" label="Package" />
       <el-table-column prop="os" align="center" label="Platform" />
-      <el-table-column
-        prop="app_id"
-        align="center"
-        label="AppId"
-      />
-      <el-table-column
-        prop="track.name"
-        align="center"
-        label="TrackPlatform"
-      />
-      <el-table-column
-        prop="track_code"
-        align="center"
-        label="TrackCode"
-      />
+      <el-table-column prop="app_id" align="center" label="AppId" />
+      <el-table-column prop="track.name" align="center" label="TrackPlatform" />
+      <el-table-column prop="track_code" align="center" label="TrackCode" />
 
       <el-table-column prop="advertiser.realname" align="center" label="Advertiser" />
       <el-table-column align="center" label="Status">
         <template slot-scope="scope">
           <el-icon
             :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}"
-            size="small"
+            size="medium"
             :name="scope.row.status ? 'video-play' : 'video-pause'"
           />
         </template>
@@ -124,16 +112,39 @@
           <i :style="{color: scope.row.is_audience ? '#67C23A' : '#F56C6C'}" :class="scope.row.is_audience ? 'el-icon-check' : 'el-icon-close'" />
           <el-link v-permission="['advertise.app.edit']" :type="scope.row.is_audience ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleAudience(scope.row)" />
         </template>
-      </el-table-column> -->
-      <el-table-column align="center" label="Actions" width="270" fixed="right">
+      </el-table-column>-->
+      <el-table-column align="center" label="Actions" width="310" fixed="right">
         <template slot-scope="scope">
           <el-button
             v-permission="['advertise.app']"
             type="primary"
             size="small"
-            icon="el-icon-info"
+            icon="el-icon-edit"
             @click="handleEdit(scope.row)"
-          />
+          >Edit</el-button>
+
+          <router-link class="link-type" :to="'/acquisition/app/'+scope.row.id+'/ios/info'">
+            <el-button
+              v-if="scope.row.os=='ios'"
+              size="small"
+              type="primary"
+              style="margin:0 10px"
+              icon="el-icon-view"
+            >Ios</el-button>
+          </router-link>
+
+          <router-link
+            class="link-type"
+            :to="'https://play.google.com/store/apps/details?id='+scope.row.bundle_id"
+          >
+            <el-button
+              v-if="scope.row.os =='android'"
+              size="small"
+              type="primary"
+              style="margin:0 10px"
+              icon="el-icon-view"
+            >android</el-button>
+          </router-link>
           <!--<el-button v-permission="['advertise.auth.token']" type="normal" size="small" icon="el-icon-key " @click="handleToken(scope.row)" />-->
           <el-button
             v-permission="['advertise.app.edit']"
@@ -141,11 +152,10 @@
             size="small"
             icon="el-icon-remove"
             @click="handleStatus(scope.row)"
-          />
-          <el-link v-if="scope.row.os=='android'" icon="el-icon-view" type="primary" :href="'https://play.google.com/store/apps/details?id='+scope.row.bundle_id" target="_blank">android</el-link>
-          <router-link v-if="scope.row.os=='ios'" class="link-type" :to="'/acquisition/app/'+scope.row.id+'/ios/info'">
-            Ios
-          </router-link>
+          >Delete</el-button>
+
+          <!--  <el-link v-if="scope.row.os=='android'" icon="el-icon-view" type="primary" :href="'https://play.google.com/store/apps/details?id='+scope.row.bundle_id" target="_blank">android</el-link> -->
+
           <!--<el-button v-permission="['advertise.app.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
         </template>
       </el-table-column>
@@ -209,9 +219,7 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
-          <el-button type="primary" @click="saveApp()">
-            {{ $t('table.confirm') }}
-          </el-button>
+          <el-button type="primary" @click="saveApp()">{{ $t('table.confirm') }}</el-button>
         </div>
       </div>
     </el-dialog>
@@ -334,9 +342,7 @@ export default {
         name: '',
         tokens: [],
       },
-      countrys: [
-
-      ],
+      countrys: [],
       currentAppTokens: [],
       rules: {
         name: [
@@ -382,7 +388,7 @@ export default {
       this.total = meta.total;
       this.loading = false;
     },
-    async countryList(){
+    async countryList() {
       const data = await channelResource.countryList();
       this.countrys = data;
     },
@@ -454,14 +460,14 @@ export default {
         .then(() => {
           appResource
             .destroy(id)
-            .then(response => {
+            .then((response) => {
               this.$message({
                 type: 'success',
                 message: 'Delete completed',
               });
               this.handleFilter();
             })
-            .catch(error => {
+            .catch((error) => {
               console.log(error);
             });
         })
@@ -490,73 +496,87 @@ export default {
           if (app.is_admin_disable) {
             appResource
               .enable(app.id)
-              .then(response => {
+              .then((response) => {
                 this.$message({
                   type: 'success',
                   message: 'App ' + app.name + ' released',
                 });
                 this.getList();
               })
-              .catch(error => {
+              .catch((error) => {
                 console.log(error);
               });
           } else {
             appResource
               .disable(app.id)
-              .then(response => {
+              .then((response) => {
                 this.$message({
                   type: 'success',
                   message: 'App ' + app.name + ' disabled',
                 });
                 this.getList();
               })
-              .catch(error => {
+              .catch((error) => {
                 console.log(error);
               });
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
     handleAudience(campaign) {
-      this.$confirm('This will change app display audience ' + campaign.name + '. Continue?', 'Warning', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-      }).then(() => {
-        if (campaign.is_audience) {
-          appResource.disableAudi(campaign.id).then(response => {
-            this.$message({
-              type: 'success',
-              message: 'Campaign ' + campaign.name + ' released',
-            });
-            this.getList();
-          }).catch(error => {
-            console.log(error);
-          });
-        } else {
-          appResource.enableAudi(campaign.id).then(response => {
-            this.$message({
-              type: 'success',
-              message: 'Campaign ' + campaign.name + ' disabled',
-            });
-            this.getList();
-          }).catch(error => {
-            console.log(error);
-          });
+      this.$confirm(
+        'This will change app display audience ' +
+          campaign.name +
+          '. Continue?',
+        'Warning',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning',
         }
-      }).catch(error => {
-        console.log(error);
-      });
+      )
+        .then(() => {
+          if (campaign.is_audience) {
+            appResource
+              .disableAudi(campaign.id)
+              .then((response) => {
+                this.$message({
+                  type: 'success',
+                  message: 'Campaign ' + campaign.name + ' released',
+                });
+                this.getList();
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          } else {
+            appResource
+              .enableAudi(campaign.id)
+              .then((response) => {
+                this.$message({
+                  type: 'success',
+                  message: 'Campaign ' + campaign.name + ' disabled',
+                });
+                this.getList();
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     saveApp() {
-      this.$refs['appForm'].validate(valid => {
+      this.$refs['appForm'].validate((valid) => {
         if (valid) {
           this.appCreating = true;
           appResource
             .save(this.currentApp)
-            .then(response => {
+            .then((response) => {
               this.$message({
                 message:
                   'App ' +
@@ -569,7 +589,7 @@ export default {
               this.dialogFormVisible = false;
               this.handleFilter();
             })
-            .catch(error => {
+            .catch((error) => {
               console.log(error);
             })
             .finally(() => {
@@ -588,7 +608,7 @@ export default {
     },
     handleDownload() {
       this.downloading = true;
-      import('@/vendor/Export2Excel').then(excel => {
+      import('@/vendor/Export2Excel').then((excel) => {
         const tHeader = ['id', 'app_id', 'name'];
         const filterVal = ['index', 'id', 'name'];
         const data = this.formatJson(filterVal, this.list);
@@ -601,7 +621,7 @@ export default {
       });
     },
     formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => v[j]));
+      return jsonData.map((v) => filterVal.map((j) => v[j]));
     },
     clipboardSuccess() {
       this.$message({

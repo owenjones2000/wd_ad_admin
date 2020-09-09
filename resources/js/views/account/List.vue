@@ -74,25 +74,24 @@
           <el-button v-permission="['advertise.account.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">
             Edit
           </el-button>
-          <el-button v-permission="['advertise.account.edit']" type="normal" size="small" icon="el-icon-edit" @click="handleCredit(scope.row)">
+          <el-button v-permission="['advertise.bill']" type="primary" size="small" icon="el-icon-date" @click="handleBillSet(scope.row)">
+            BillSet
+          </el-button>
+          <el-button
+            v-permission="['advertise.account.edit']"
+            type="warning"
+            size="small"
+            icon="el-icon-key "
+            @click="handleToken(scope.row)"
+          >Token</el-button>
+
+          <el-button v-permission="['advertise.account.edit']" style="margin-top:10px" type="primary" size="small" icon="el-icon-plus" @click="handleCredit(scope.row)">
             Add Credit
           </el-button>
           <el-button v-permission="['advertise.account.edit']" type="warning" size="small" icon="el-icon-edit" @click="handleEditPermissions(scope.row, scope.row);">
             Permissions
           </el-button>
-          <el-button v-permission="['advertise.bill']" type="normal" size="small" icon="el-icon-edit" @click="handleBillSet(scope.row)">
-            BillSet
-          </el-button>
-          <el-button
-            v-permission="['advertise.account.edit']"
-            type="primary"
-            size="small"
-            icon="el-icon-key "
-            @click="handleToken(scope.row)"
-          >Token</el-button>
-          <el-button v-permission="['advertise.account.cash']" type="normal" size="small" icon="el-icon-edit" @click="handleCash(scope.row)">
-            Add Cash
-          </el-button>
+
           <!--<el-button v-permission="['advertise.account.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">-->
           <!--  Delete-->
           <!--</el-button>-->

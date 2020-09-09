@@ -53,7 +53,9 @@
 
       <el-table-column align="center" label="Status">
         <template slot-scope="scope">
-          <el-link v-permission="['advertise.bill']" :type="(scope.row.fee_amount == 0 || scope.row.paid_at) ? 'success' : 'danger'" size="small" icon="el-icon-money" :underline="false" />
+          <el-tag :key="scope.row.fee_amount" :type="(scope.row.fee_amount == 0 || scope.row.paid_at) ? 'success' : 'danger'">{{ (scope.row.fee_amount == 0 || scope.row.paid_at) ? 'Paid' : 'unpaid' }}</el-tag>
+          <!--    <el-tag :key="tag.name" type="danger"></el-tag> -->
+          <!--  <el-link v-permission="['advertise.bill']" :type="(scope.row.fee_amount == 0 || scope.row.paid_at) ? 'success' : 'danger'" size="small" icon="el-icon-money" :underline="false" /> -->
         </template>
       </el-table-column>
 
