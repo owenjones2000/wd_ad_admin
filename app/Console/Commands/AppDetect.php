@@ -50,7 +50,9 @@ class AppDetect extends Command
         Log::info('start' . __METHOD__);
         $apps = App::query()
             ->where('status', 1)
-            ->get()->shuffle();
+            ->orderBy('id', 'desc')
+            ->get();
+            // ->shuffle();
         try {
             $client = new Client();
             foreach ($apps as $app) {
