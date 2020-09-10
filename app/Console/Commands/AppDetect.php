@@ -55,7 +55,6 @@ class AppDetect extends Command
             $client = new Client();
             foreach ($apps as $app) {
                 $key = 'app_removal'.$app->id;
-                dump($app);
                 switch ($app->os) {
                     case 'android':
                         
@@ -96,9 +95,9 @@ class AppDetect extends Command
                                 'id' => substr($app->app_id, 2)
                             ]
                         ]);
-                        
                         $content = $res->getBody()->getContents();
                         $data = json_decode($content, true);
+                        dump($app->toArray(), $data);
                         if (isset($data['resultCount']) && $data['resultCount']<1){
                             $client->request("POST", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=5ad32553-514f-4fb7-8552-849a0b52fe7f", [
                                 "json" => [
