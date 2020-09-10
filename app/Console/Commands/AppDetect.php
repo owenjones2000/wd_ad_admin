@@ -50,6 +50,7 @@ class AppDetect extends Command
         Log::info('start' . __METHOD__);
         $apps = App::query()
             ->where('status', 1)
+            // ->where('id', 38)
             ->orderBy('id', 'desc')
             ->get();
             // ->shuffle();
@@ -99,7 +100,7 @@ class AppDetect extends Command
                         ]);
                         $content = $res->getBody()->getContents();
                         $data = json_decode($content, true);
-                        dump($app->toArray(), $data['resultCount']);
+                        Log::info("app  Ios $app->id name $app->name result {$data['resultCount']}");
                         if (isset($data['resultCount']) && $data['resultCount']<1){
                             $client->request("POST", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=5ad32553-514f-4fb7-8552-849a0b52fe7f", [
                                 "json" => [
