@@ -50,12 +50,12 @@ class AppDetect extends Command
         Log::info('start' . __METHOD__);
         $apps = App::query()
             ->where('status', 1)
-            ->where('id', 88)
             ->get()->shuffle();
         try {
             $client = new Client();
             foreach ($apps as $app) {
                 $key = 'app_removal'.$app->id;
+                dump($app);
                 switch ($app->os) {
                     case 'android':
                         
@@ -96,7 +96,7 @@ class AppDetect extends Command
                                 'id' => substr($app->app_id, 2)
                             ]
                         ]);
-                        dump($app->name);
+                        
                         $content = $res->getBody()->getContents();
                         $data = json_decode($content, true);
                         if (isset($data['resultCount']) && $data['resultCount']<1){
