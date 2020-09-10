@@ -79,7 +79,7 @@ class AppDetect extends Command
                                 ]
                             ]);
                             $count = Redis::incr($key);
-                            if ($count > 3){
+                            if ($count >= 3){
                                 Log::error("app  Android $app->id name $app->name account {$app->advertiser->realname} removal");
                                 $app->status =0;
                                 $app->is_admin_disable =1;
@@ -99,7 +99,7 @@ class AppDetect extends Command
                         ]);
                         $content = $res->getBody()->getContents();
                         $data = json_decode($content, true);
-                        dump($app->toArray(), $data);
+                        dump($app->toArray(), $data['resultCount']);
                         if (isset($data['resultCount']) && $data['resultCount']<1){
                             $client->request("POST", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=5ad32553-514f-4fb7-8552-849a0b52fe7f", [
                                 "json" => [
@@ -111,7 +111,7 @@ class AppDetect extends Command
                                 ]
                             ]);
                             $count = Redis::incr($key);
-                            if ($count > 3) {
+                            if ($count >= 3) {
                                 Log::error("app  Ios $app->id name $app->name account {$app->advertiser->realname} removal");
                                 $app->status = 0;
                                 $app->is_admin_disable = 1;
