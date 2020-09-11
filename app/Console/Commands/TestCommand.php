@@ -144,7 +144,7 @@ class TestCommand extends Command
                         ]
                     ]);
                     $code = $res->getStatusCode();
-                    dump($app->toArray(), $code);
+                    dump("app  android $app->id name $app->name result {$code}");
                     if ($code == 404) {
                         Log::error("app  Android $app->id name $app->name account {$app->advertiser->realname} removal");
                         $app->is_remove = 1;
@@ -160,7 +160,7 @@ class TestCommand extends Command
                     ]);
                     $content = $res->getBody()->getContents();
                     $data = json_decode($content, true);
-                    dump($app->toArray(), $data['resultCount']);
+                    dump("app  Ios $app->id name $app->name result {$data['resultCount']}");
                     if (isset($data['resultCount']) && $data['resultCount'] < 1) {
 
                         Log::error("app  Ios $app->id name $app->name account {$app->advertiser->realname} removal");
