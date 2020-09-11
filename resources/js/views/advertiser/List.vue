@@ -507,7 +507,12 @@ export default {
         // console.log(v);
         // console.log(j);
         Object.assign(v, v['kpi']);
-        return v[j];
+        if (j === 'ctr' || j === 'cvr' || j === 'ir') {
+          return v[j] + '%';
+        } else {
+          return v[j];
+        }
+        // return v[j];
       }));
     },
     clipboardSuccess() {

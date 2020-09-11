@@ -68,7 +68,9 @@ class BillController extends Controller
     public function invoicePdf($id){
         $bill = Bill::query()->where('id', $id)->with('account')->firstOrFail();
         $billInfo = BillInfo::query()->where('bill_id', $id)->get();
-        $pdf = PDF::loadView('bill.invoice', ['bill' => $bill, 'billInfo' => $billInfo]);
+        $prePay = Record::whereBetween('date', [$bill->start_date, $bill->end_date])
+        ->where('main_user_id', $bill->main_user_id)->get();
+        $pdf = PDF::loadView('bill.invoice', ['bill' => $bill, 'billInfo' =>$billInfo, 'prePay' => $prePay]);
         $invoice_name = 'Invoice_' . $bill['start_date'] . '~' . $bill['end_date'];
         return $pdf->download($invoice_name.'.pdf');
     }

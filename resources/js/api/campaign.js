@@ -19,7 +19,24 @@ class CampaignResource extends Resource {
       method: 'post',
     });
   }
-
+  tagList(query) {
+    return request({
+      url: '/' + this.uri + '/ad/taglist',
+      method: 'get',
+      params: query,
+    });
+  }
+  saveTag(resource) {
+    var url = '/' + this.uri + '/ad/tag';
+    if (resource.id) {
+      url = '/' + this.uri + '/ad/tag/' + resource.id;
+    }
+    return request({
+      url: url,
+      method: 'post',
+      data: resource,
+    });
+  }
   restart(campaign_id){
     return request({
       url: '/' + this.uri + '/' + campaign_id + '/restart',

@@ -50,7 +50,10 @@ class AppDetect extends Command
         Log::info('start' . __METHOD__);
         $apps = App::query()
             ->where('status', 1)
-            ->get()->shuffle();
+            // ->where('id', 38)
+            ->orderBy('id', 'desc')
+            ->get();
+            // ->shuffle();
         try {
             $client = new Client();
             foreach ($apps as $app) {
@@ -77,7 +80,7 @@ class AppDetect extends Command
                                 ]
                             ]);
                             $count = Redis::incr($key);
-                            if ($count > 3){
+                            if ($count >= 3){
                                 Log::error("app  Android $app->id name $app->name account {$app->advertiser->realname} removal");
                                 $app->status =0;
                                 $app->is_admin_disable =1;
@@ -97,6 +100,7 @@ class AppDetect extends Command
                         ]);
                         $content = $res->getBody()->getContents();
                         $data = json_decode($content, true);
+                        Log::info("app  Ios $app->id name $app->name result {$data['resultCount']}");
                         if (isset($data['resultCount']) && $data['resultCount']<1){
                             $client->request("POST", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=5ad32553-514f-4fb7-8552-849a0b52fe7f", [
                                 "json" => [
@@ -108,7 +112,7 @@ class AppDetect extends Command
                                 ]
                             ]);
                             $count = Redis::incr($key);
-                            if ($count > 3) {
+                            if ($count >= 3) {
                                 Log::error("app  Ios $app->id name $app->name account {$app->advertiser->realname} removal");
                                 $app->status = 0;
                                 $app->is_admin_disable = 1;

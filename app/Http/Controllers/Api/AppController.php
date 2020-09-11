@@ -8,6 +8,7 @@ use App\Models\Advertise\Channel;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Advertise\Campaign;
+use App\Models\AppTag;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -352,6 +353,33 @@ class AppController extends Controller
         return JsonResource::collection($channel_list);
     }
 
+    public function tagList(Request $request)
+    {
+        $keyword = $request->input('keyword', '');
+        $appTag = AppTag::when($keyword, function($query) use($keyword){
+            $query->where('name', 'like', '%'.$keyword.'%');
+        })
+        ->where('status', 1)
+        ->paginate($request->get('limit', 30));;
+
+        return JsonResource::collection($appTag);
+    }
+
+    public function tagSave(Request $request, $id =null)
+    {
+        $this->validate($request, [
+            'name'  => 'required|string|unique:a_app_tag,name,' . $id . ',id',
+        ]);
+        try {
+            $params = $request->all();
+            $params['id'] = $id;
+            AppTag::Make($params);
+            return response()->json(['code' => 0, 'msg' => 'Successful']);
+        } catch (Exception $ex) {
+            Log::error($ex);
+            return response()->json(['code' => 100, 'msg' => $ex->getMessage()]);
+        }
+    }
     /**
      * Display the specified resource.
      *

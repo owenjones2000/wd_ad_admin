@@ -9,9 +9,12 @@ use App\Models\Advertise\Campaign;
 use App\Rules\AdvertiseName;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\AdTag;
+use Exception;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AdController extends Controller
 {
@@ -67,6 +70,7 @@ class AdController extends Controller
             ->keyBy('ad_id')
             ->toArray();
         $order_by_ids = implode(',', array_reverse(array_keys($advertise_kpi_list)));
+        // dd($order_by_ids);
         $ad_base_query->with('campaign.app', 'campaign.advertiser');
         if(!empty($order_by_ids)){
             $ad_base_query->orderByRaw(DB::raw("FIELD(id,{$order_by_ids}) desc"));
@@ -75,6 +79,7 @@ class AdController extends Controller
             $ad_base_query->orderBy($order_by[0], $order_sort);
         }
         $ad_list = $ad_base_query->with('assets')
+            ->orderBy('id', 'desc')
             ->paginate($request->get('limit',30));
 
         foreach($ad_list as &$ad){
@@ -106,46 +111,12 @@ class AdController extends Controller
             });
         }
 
-        $ad_id_query = clone $ad_base_query;
-        $ad_id_query->select('id');
-        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use ($start_date, $end_date, $ad_id_query) {
-            $query->whereBetween('date', [$start_date, $end_date])
-                ->whereIn('ad_id', $ad_id_query);
-            return $query;
-        }, $start_date, $end_date);
-
-        $advertise_kpi_query->select([
-            DB::raw('sum(requests) as requests'),
-            DB::raw('sum(impressions) as impressions'),
-            DB::raw('sum(clicks) as clicks'),
-            DB::raw('sum(installations) as installs'),
-            DB::raw('round(sum(clicks) * 100 / sum(impressions), 2) as ctr'),
-            DB::raw('round(sum(installations) * 100 / sum(clicks), 2) as cvr'),
-            DB::raw('round(sum(installations) * 100 / sum(impressions), 2) as ir'),
-            DB::raw('round(sum(spend), 2) as spend'),
-            DB::raw('round(sum(spend) / sum(installations), 2) as ecpi'),
-            DB::raw('round(sum(spend) * 1000 / sum(impressions), 2) as ecpm'),
-            'ad_id',
-        ]);
-        $advertise_kpi_query->groupBy('ad_id');
-        if ($order_by[0] === 'kpi' && isset($order_by[1])) {
-            $advertise_kpi_query->orderBy($order_by[1], $order_sort);
-        }
-
-        $advertise_kpi_list = $advertise_kpi_query
-            ->orderBy('spend', 'desc')
-            ->get()
-            ->keyBy('ad_id')
-            ->toArray();
-        $order_by_ids = implode(',', array_reverse(array_keys($advertise_kpi_list)));
         $ad_base_query->with('campaign.app', 'campaign.advertiser');
-        if (!empty($order_by_ids)) {
-            $ad_base_query->orderByRaw(DB::raw("FIELD(id,{$order_by_ids}) desc"));
-        }
         if ($order_by[0] !== 'kpi') {
             $ad_base_query->orderBy($order_by[0], $order_sort);
         }
         $ad_list = $ad_base_query->with('assets')
+            ->orderBy('id', 'desc')
             ->paginate($request->get('limit', 30));
 
         foreach ($ad_list as &$ad) {
@@ -168,6 +139,33 @@ class AdController extends Controller
         //
     }
 
+    public function tagList(Request $request)
+    {
+        $keyword = $request->input('keyword', '');
+        $appTag = AdTag::when($keyword, function ($query) use ($keyword) {
+            $query->where('name', 'like', '%' . $keyword . '%');
+        })
+            ->where('status', 1)
+            ->paginate($request->get('limit', 30));;
+
+        return JsonResource::collection($appTag);
+    }
+
+    public function tagSave(Request $request, $id = null)
+    {
+        $this->validate($request, [
+            'name'  => 'required|string|unique:a_ad_tag,name,' . $id . ',id',
+        ]);
+        try {
+            $params = $request->all();
+            $params['id'] = $id;
+            AdTag::Make($params);
+            return response()->json(['code' => 0, 'msg' => 'Successful']);
+        } catch (Exception $ex) {
+            Log::error($ex);
+            return response()->json(['code' => 100, 'msg' => $ex->getMessage()]);
+        }
+    }
     /**
      * Show the form for editing the specified resource.
      *

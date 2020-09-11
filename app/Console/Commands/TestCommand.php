@@ -131,7 +131,7 @@ class TestCommand extends Command
         Log::info('start' . __METHOD__);
         $apps = App::query()
             ->where('is_remove', 0)
-            ->get()->shuffle();
+            ->get();
         $client = new Client();
         foreach ($apps as $app) {
             $key = 'app_removal' . $app->id;
@@ -144,11 +144,11 @@ class TestCommand extends Command
                         ]
                     ]);
                     $code = $res->getStatusCode();
+                    dump("app  android $app->id name $app->name result {$code}");
                     if ($code == 404) {
                         Log::error("app  Android $app->id name $app->name account {$app->advertiser->realname} removal");
                         $app->is_remove = 1;
                         $app->save();
-                        Redis::del($key);
                     }
                     break;
                 case 'ios':
@@ -160,12 +160,12 @@ class TestCommand extends Command
                     ]);
                     $content = $res->getBody()->getContents();
                     $data = json_decode($content, true);
+                    dump("app  Ios $app->id name $app->name result {$data['resultCount']}");
                     if (isset($data['resultCount']) && $data['resultCount'] < 1) {
 
                         Log::error("app  Ios $app->id name $app->name account {$app->advertiser->realname} removal");
                         $app->is_remove = 1;
                         $app->save();
-                        Redis::del($key);
                     }
                     break;
                 default:

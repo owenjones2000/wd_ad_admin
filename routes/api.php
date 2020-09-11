@@ -105,11 +105,13 @@ Route::group(['middleware' => 'api'], function () {
             Route::get('', 'AppController@list')->name('app');
             Route::get('data', 'AppController@data')->name('app.data');
             Route::get('applist', 'AppController@appList')->name('app.list')->middleware('permission:advertise.app.edit');
-
+            
+            Route::get('taglist', 'AppController@tagList')->name('app.tag.list')->middleware('permission:advertise.app.edit');
+            Route::post('tag/{id?}', 'AppController@tagSave')->name('app.tag.save')->middleware('permission:advertise.app.edit');
             // 卖量Channel数据
             Route::get('{app_id}/channel', 'AppController@channel')->name('campaign.app.channel')->middleware('permission:advertise.app');
             Route::get('{app_id}/campaign', 'AppController@campaign')->name('campaign.app.campaign')->middleware('permission:advertise.app');
-
+            
             //编辑
             Route::post('{id?}', 'AppController@save')->name('app.save')->middleware('permission:advertise.app.edit');
             Route::post('{id}/enable', 'AppController@enable')->name('app.enable')->middleware('permission:advertise.app.edit');
@@ -143,6 +145,9 @@ Route::group(['middleware' => 'api'], function () {
             });
             Route::get('adreview', 'AdController@listReview')->name('campaign.ad');
             // 广告
+            Route::get('ad/taglist', 'AdController@tagList')->name('campaign.ad.tag.list')->middleware('permission:advertise.campaign.ad.edit');
+            Route::post('ad/tag/{id?}', 'AdController@tagSave')->name('campaign.ad.tag.save')->middleware('permission:advertise.campaign.ad.edit');
+
             Route::group(['prefix' => '{campaign_id}/ad', 'middleware' => 'permission:advertise.campaign'], function () {
                 Route::get('', 'AdController@list')->name('campaign.ad');
                 //编辑
