@@ -229,6 +229,7 @@ export default {
     this.resetNewCampaign();
     this.getList();
   },
+  //
   methods: {
     checkPermission,
 
