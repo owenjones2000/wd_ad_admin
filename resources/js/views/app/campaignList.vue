@@ -134,7 +134,7 @@ import CampaignResource from '@/api/campaign';
 import AppResource from '@/api/app';
 import waves from '@/directive/waves'; // Waves directive
 import permission from '@/directive/permission'; // Waves directive
-import checkPermission from '@/utils/permission'; // Permission checking
+import checkPermission from '@/utils/permission'; // Permission
 
 const campaignResource = new CampaignResource();
 const appResource = new AppResource();
