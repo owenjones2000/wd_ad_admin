@@ -66,10 +66,16 @@
             v-permission="['advertise.campaign']"
             type="primary"
             size="small"
-            icon="el-icon-info"
+            icon="el-icon-edit"
             @click="handleEdit(scope.row)"
-          />
-          <router-link class="link-type" :to="'/acquisition/campaign/'+scope.row.id+'/channel'">Sources</router-link>
+          >Details</el-button>
+          <router-link class="link-type" :to="'/acquisition/campaign/'+scope.row.id+'/channel'">
+            <el-button
+              type="primary"
+              size="small"
+              icon="el-icon-position"
+            >Sources</el-button>
+          </router-link>
           <el-link v-permission="['advertise.campaign.restart']" type="danger" size="small" icon="el-icon-refresh-left" :underline="false" @click="handleRestart(scope.row)" />
           <!--<el-link v-permission="['advertise.campaign.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />-->
           <!--<el-link v-permission="['advertise.campaign.destroy']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
@@ -128,7 +134,7 @@ import CampaignResource from '@/api/campaign';
 import AppResource from '@/api/app';
 import waves from '@/directive/waves'; // Waves directive
 import permission from '@/directive/permission'; // Waves directive
-import checkPermission from '@/utils/permission'; // Permission checking
+import checkPermission from '@/utils/permission'; // Permission
 
 const campaignResource = new CampaignResource();
 const appResource = new AppResource();
@@ -223,6 +229,7 @@ export default {
     this.resetNewCampaign();
     this.getList();
   },
+  //
   methods: {
     checkPermission,
 

@@ -66,13 +66,13 @@
       <!--</template>-->
       <!--</el-table-column>-->
 
-      <el-table-column align="center" label="Actions" width="100" fixed="right">
-        <!--<template slot-scope="scope">-->
-        <!--<el-link v-permission="['advertise.campaign.ad.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />-->
-        <!--<el-link v-permission="['advertise.campaign.ad.edit']" :type="scope.row.is_admin_disable ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleStatus(scope.row)" />-->
-        <!--<el-link v-permission="['advertise.campaign.ad.destroy']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
-        <!--</template>-->
-      </el-table-column>
+      <!--  <el-table-column align="center" label="Actions" width="100" fixed="right"> -->
+      <!--<template slot-scope="scope">-->
+      <!--<el-link v-permission="['advertise.campaign.ad.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)" />-->
+      <!--<el-link v-permission="['advertise.campaign.ad.edit']" :type="scope.row.is_admin_disable ? 'danger' : 'info'" size="small" icon="el-icon-remove" :underline="false" @click="handleStatus(scope.row)" />-->
+      <!--<el-link v-permission="['advertise.campaign.ad.destroy']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);" />-->
+      <!--</template>-->
+      <!--  </el-table-column> -->
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
