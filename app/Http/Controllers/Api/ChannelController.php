@@ -142,14 +142,14 @@ class ChannelController extends Controller
                 })
                 ->select([
                     'cost',
-                    'spend',
+                    // 'spend',
                     'target_app_id',
 
                 ]);
             return $query;
         }, $start_date, $end_date);
         $install_list = $install_query->select([
-            DB::raw('round(sum(spend), 2) as spend'),
+            // DB::raw('round(sum(spend), 2) as spend'),
             DB::raw('round(sum(cost), 2) as cost'),
             'target_app_id',
         ])->groupBy('target_app_id')
@@ -383,7 +383,7 @@ class ChannelController extends Controller
                     $query->where('type', $type);
                 })
                 ->select([
-                    'date', 'cost', 'spend',
+                    'date', 'cost',
                     'target_app_id',
                 ]);
             return $query;

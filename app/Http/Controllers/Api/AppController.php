@@ -297,15 +297,15 @@ class AppController extends Controller
         $start_date = date('Ymd', strtotime($range_date[0] ?? 'now'));
         $end_date = date('Ymd', strtotime($range_date[1] ?? 'now'));
 
-        $channel_base_query = Campaign::query();
+        $campaign_base_query = Campaign::query();
         if (!empty($request->get('keyword'))) {
-            $channel_base_query->where('name', 'like', '%' . $request->get('keyword') . '%');
+            $campaign_base_query->where('name', 'like', '%' . $request->get('keyword') . '%');
         }
-        $channel_id_query = clone $channel_base_query;
-        $channel_id_query->select('id');
-        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use ($start_date, $end_date, $channel_id_query, $app_id) {
+        $campaign_id_query = clone $campaign_base_query;
+        $campaign_id_query->select('id');
+        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use ($start_date, $end_date, $campaign_id_query, $app_id) {
             $query->whereBetween('date', [$start_date, $end_date])
-                ->whereIn('campaign_id', $channel_id_query)
+                ->whereIn('campaign_id', $campaign_id_query)
                 ->where('app_id', $app_id)
                 ->select([
                     'requests', 'impressions', 'clicks', 'installations', 'spend',
@@ -336,13 +336,13 @@ class AppController extends Controller
             ->toArray();
         $channel_id_list = array_reverse(array_keys($advertise_kpi_list));
         $order_by_ids = implode(',', $channel_id_list);
-        $channel_query = clone $channel_base_query;
-        $channel_query->with('advertiser',  'audience');
-        $channel_query->whereIn('id', $channel_id_list);
+        $campaign_query = clone $campaign_base_query;
+        $campaign_query->with('advertiser',  'audience');
+        // $campaign_query->whereIn('id', $channel_id_list);
         if (!empty($order_by_ids)) {
-            $channel_query->orderByRaw(DB::raw("FIELD(id,{$order_by_ids}) desc"));
+            $campaign_query->orderByRaw(DB::raw("FIELD(id,{$order_by_ids}) desc"));
         }
-        $channel_list = $channel_query->orderBy($request->get('field', 'name'), $request->get('order', 'desc'))
+        $channel_list = $campaign_query->orderBy($request->get('field', 'name'), $request->get('order', 'desc'))
             ->paginate($request->get('limit', 30));
 
         foreach ($channel_list as $index => &$channel) {
