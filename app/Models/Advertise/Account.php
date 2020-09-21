@@ -145,10 +145,11 @@ class Account extends Model
     public function setBill($params)
     {
         $this->bill()->updateOrCreate(
-            [],
+            ['id' => $params['id']],
             [
                 'address' => Arr::get($params, 'address', ''),
                 'phone'   => Arr::get($params, 'phone', ''),
+                'company'   => Arr::get($params, 'company', ''),
             ]
         );
     }
