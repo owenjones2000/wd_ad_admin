@@ -3,6 +3,7 @@
 namespace App\Models\Advertise;
 
 use App\Exceptions\BizException;
+use App\Models\AppTag;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -87,5 +88,10 @@ class App extends Model
     public function advertiser()
     {
         return $this->belongsTo(Account::class, 'main_user_id', 'id');
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(AppTag::class, 'a_app_tags', 'app_id', 'tag_id', 'id', 'id');
     }
 }

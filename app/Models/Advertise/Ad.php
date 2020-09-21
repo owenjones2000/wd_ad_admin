@@ -1,6 +1,7 @@
 <?php
 namespace App\Models\Advertise;
 
+use App\Models\AdTag;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
@@ -96,6 +97,10 @@ class Ad extends Model
             'ad_id','country', 'id', 'code');
     }
 
+    public function tags()
+    {
+        return $this->belongsToMany(AdTag::class, 'a_ad_tags', 'ad_id', 'tag_id', 'id', 'id');
+    }
     /**
      * 广告类型
      * @return AdType

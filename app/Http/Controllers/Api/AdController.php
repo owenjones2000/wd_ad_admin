@@ -21,26 +21,26 @@ class AdController extends Controller
     public function list(Request $request, $campaign_id)
     {
         $range_date = $request->get('daterange');
-        $start_date = date('Ymd', strtotime($range_date[0]??'now'));
-        $end_date = date('Ymd', strtotime($range_date[1]??'now'));
+        $start_date = date('Ymd', strtotime($range_date[0] ?? 'now'));
+        $end_date = date('Ymd', strtotime($range_date[1] ?? 'now'));
         $order_by = explode('.', $request->get('field', 'status'));
         $order_sort = $request->get('order', 'desc');
 
         $ad_base_query = Ad::query()->where('campaign_id', $campaign_id);
-        if(!empty($request->get('keyword'))){
-            $like_keyword = '%'.$request->get('keyword').'%';
+        if (!empty($request->get('keyword'))) {
+            $like_keyword = '%' . $request->get('keyword') . '%';
             $ad_base_query->where('name', 'like', $like_keyword);
-            $ad_base_query->orWhereHas('campaign.advertiser', function($query) use($like_keyword) {
+            $ad_base_query->orWhereHas('campaign.advertiser', function ($query) use ($like_keyword) {
                 $query->where('realname', 'like', $like_keyword);
             });
-            $ad_base_query->orWhereHas('campaign.app', function($query) use($like_keyword) {
+            $ad_base_query->orWhereHas('campaign.app', function ($query) use ($like_keyword) {
                 $query->where('name', 'like', $like_keyword);
             });
         }
 
         $ad_id_query = clone $ad_base_query;
         $ad_id_query->select('id');
-        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function($query) use($start_date, $end_date, $ad_id_query){
+        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use ($start_date, $end_date, $ad_id_query) {
             $query->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('ad_id', $ad_id_query);
             return $query;
@@ -60,30 +60,30 @@ class AdController extends Controller
             'ad_id',
         ]);
         $advertise_kpi_query->groupBy('ad_id');
-        if($order_by[0] === 'kpi' && isset($order_by[1])){
+        if ($order_by[0] === 'kpi' && isset($order_by[1])) {
             $advertise_kpi_query->orderBy($order_by[1], $order_sort);
         }
 
         $advertise_kpi_list = $advertise_kpi_query
-            ->orderBy('spend','desc')
+            ->orderBy('spend', 'desc')
             ->get()
             ->keyBy('ad_id')
             ->toArray();
         $order_by_ids = implode(',', array_reverse(array_keys($advertise_kpi_list)));
         // dd($order_by_ids);
         $ad_base_query->with('campaign.app', 'campaign.advertiser');
-        if(!empty($order_by_ids)){
+        if (!empty($order_by_ids)) {
             $ad_base_query->orderByRaw(DB::raw("FIELD(id,{$order_by_ids}) desc"));
         }
-        if($order_by[0] !== 'kpi'){
+        if ($order_by[0] !== 'kpi') {
             $ad_base_query->orderBy($order_by[0], $order_sort);
         }
         $ad_list = $ad_base_query->with('assets')
             ->orderBy('id', 'desc')
-            ->paginate($request->get('limit',30));
+            ->paginate($request->get('limit', 30));
 
-        foreach($ad_list as &$ad){
-            if(isset($advertise_kpi_list[$ad['id']])){
+        foreach ($ad_list as &$ad) {
+            if (isset($advertise_kpi_list[$ad['id']])) {
                 $ad['kpi'] = $advertise_kpi_list[$ad['id']];
             }
         }
@@ -93,26 +93,26 @@ class AdController extends Controller
     public function adList(Request $request)
     {
         $range_date = $request->get('daterange');
-        $start_date = date('Ymd', strtotime($range_date[0]??'now'));
-        $end_date = date('Ymd', strtotime($range_date[1]??'now'));
+        $start_date = date('Ymd', strtotime($range_date[0] ?? 'now'));
+        $end_date = date('Ymd', strtotime($range_date[1] ?? 'now'));
         $order_by = explode('.', $request->get('field', 'status'));
         $order_sort = $request->get('order', 'desc');
 
         $ad_base_query = Ad::query()->where('status', 1);
-        if(!empty($request->get('keyword'))){
-            $like_keyword = '%'.$request->get('keyword').'%';
+        if (!empty($request->get('keyword'))) {
+            $like_keyword = '%' . $request->get('keyword') . '%';
             $ad_base_query->where('name', 'like', $like_keyword);
-            $ad_base_query->orWhereHas('campaign.advertiser', function($query) use($like_keyword) {
+            $ad_base_query->orWhereHas('campaign.advertiser', function ($query) use ($like_keyword) {
                 $query->where('realname', 'like', $like_keyword);
             });
-            $ad_base_query->orWhereHas('campaign.app', function($query) use($like_keyword) {
+            $ad_base_query->orWhereHas('campaign.app', function ($query) use ($like_keyword) {
                 $query->where('name', 'like', $like_keyword);
             });
         }
 
         $ad_id_query = clone $ad_base_query;
         $ad_id_query->select('id');
-        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function($query) use($start_date, $end_date, $ad_id_query){
+        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use ($start_date, $end_date, $ad_id_query) {
             $query->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('ad_id', $ad_id_query);
             return $query;
@@ -137,25 +137,25 @@ class AdController extends Controller
         // }
 
         $advertise_kpi_list = $advertise_kpi_query
-            ->orderBy('spend','desc')
+            ->orderBy('spend', 'desc')
             ->get()
             ->keyBy('ad_id')
             ->toArray();
         $order_by_ids = implode(',', array_reverse(array_keys($advertise_kpi_list)));
         // dd($order_by_ids);
         $ad_base_query->with('campaign.app', 'campaign.advertiser');
-        if(!empty($order_by_ids)){
+        if (!empty($order_by_ids)) {
             $ad_base_query->orderByRaw(DB::raw("FIELD(id,{$order_by_ids}) desc"));
         }
         // if($order_by[0] !== 'kpi'){
         //     $ad_base_query->orderBy($order_by[0], $order_sort);
         // }
-        $ad_list = $ad_base_query->with('assets')
+        $ad_list = $ad_base_query->with('assets', 'tags')
             ->orderBy('id', 'desc')
-            ->paginate($request->get('limit',30));
+            ->paginate($request->get('limit', 30));
 
-        foreach($ad_list as &$ad){
-            if(isset($advertise_kpi_list[$ad['id']])){
+        foreach ($ad_list as &$ad) {
+            if (isset($advertise_kpi_list[$ad['id']])) {
                 $ad['kpi'] = $advertise_kpi_list[$ad['id']];
             }
         }
@@ -163,6 +163,29 @@ class AdController extends Controller
         return JsonResource::collection($ad_list);
     }
 
+    public function bindTag(Request $request)
+    {
+        $this->validate($request, [
+            'ads' => 'bail|required|array',
+            'tags' => 'required|array',
+        ]);
+        $ads =  $request->input('ads', []);
+        $tags = $request->input('tags', []);
+        Log::info($ads, $tags);
+        try {
+            foreach ($ads as $key => $ad_id) {
+                $ad = Ad::findOrFail($ad_id);
+                if ($tags) {
+                    $ad->tags()->sync($tags);
+                }
+            }
+        } catch (Exception $e) {
+            Log::error($e);
+            return response()->json(['code' => 100, 'msg' => 'Failed']);
+        }
+
+        return response()->json(['code' => 0, 'msg' => 'Successful']);
+    }
     public function listReview(Request $request)
     {
         $range_date = $request->get('daterange');
@@ -195,7 +218,7 @@ class AdController extends Controller
             if (isset($advertise_kpi_list[$ad['id']])) {
                 $ad['kpi'] = $advertise_kpi_list[$ad['id']];
             }
-            $ad['playable'] = $ad->assets->pluck('type_id')->contains(8)??false;
+            $ad['playable'] = $ad->assets->pluck('type_id')->contains(8) ?? false;
         }
 
         return JsonResource::collection($ad_list);
@@ -257,16 +280,16 @@ class AdController extends Controller
      */
     public function edit($campaign_id, $id = null)
     {
-        if($id == null){
+        if ($id == null) {
             $ad = new Ad();
             $ad['campaign_id'] = $campaign_id;
-        }else{
+        } else {
             $ad = Ad::query()->where(['id' => $id, 'campaign_id' => $campaign_id])->firstOrFail();
         }
-        return view('advertise.campaign.ad.edit',compact('ad'));
+        return view('advertise.campaign.ad.edit', compact('ad'));
     }
-    
-    
+
+
     /**
      * Update the specified resource in storage.
      *
@@ -276,10 +299,10 @@ class AdController extends Controller
      */
     public function save(Request $request, $campaign_id, $id = null)
     {
-        $this->validate($request,[
+        $this->validate($request, [
             'name'  => [
-                'required','string','max:100',
-                'unique:a_ad,name,'.$id.',id,campaign_id,'.$campaign_id,
+                'required', 'string', 'max:100',
+                'unique:a_ad,name,' . $id . ',id,campaign_id,' . $campaign_id,
                 new AdvertiseName()
             ],
             'app_id' => 'exists:a_app,id',
@@ -295,13 +318,13 @@ class AdController extends Controller
         ])->firstOrFail();
         $params = $request->all();
         $params['id'] = $id;
-//        $params['status'] = isset($params['status']) ? 1 : 0;
+        //        $params['status'] = isset($params['status']) ? 1 : 0;
         $ad = $campaign->makeAd(Auth::user(), $params);
-        if ($ad){
+        if ($ad) {
             return redirect(route('advertise.campaign.ad.edit', [$ad['campaign_id'], $ad['id']]))
-                ->with(['status'=>'Save successfully.'.($ad['status'] ? '':' But ad is not running.')]);
+                ->with(['status' => 'Save successfully.' . ($ad['status'] ? '' : ' But ad is not running.')]);
         }
-        return redirect(route('advertise.campaign.ad.edit', [$ad['campaign_id'], $ad['id']]))->withErrors(['status'=>'Error']);
+        return redirect(route('advertise.campaign.ad.edit', [$ad['campaign_id'], $ad['id']]))->withErrors(['status' => 'Error']);
     }
 
     /**
@@ -315,7 +338,7 @@ class AdController extends Controller
         /** @var Ad $ad */
         $ad = Ad::query()->where(['id' => $id, 'campaign_id' => $campaign_id])->firstOrFail();
         $ad->enable();
-        return response()->json(['code'=>0,'msg'=>'Enabled']);
+        return response()->json(['code' => 0, 'msg' => 'Enabled']);
     }
 
     /**
@@ -329,7 +352,7 @@ class AdController extends Controller
         /** @var Ad $ad */
         $ad = Ad::query()->where(['id' => $id, 'campaign_id' => $campaign_id])->firstOrFail();
         $ad->disable();
-        return response()->json(['code'=>0,'msg'=>'Disabled']);
+        return response()->json(['code' => 0, 'msg' => 'Disabled']);
     }
 
     public function clearRedis($campaign_id, $id)
@@ -349,7 +372,7 @@ class AdController extends Controller
         /** @var Ad $ad */
         $ad = Ad::query()->where(['id' => $id, 'campaign_id' => $campaign_id])->firstOrFail();
         $ad->passReview();
-        return response()->json(['code'=>0,'msg'=>'Enabled']);
+        return response()->json(['code' => 0, 'msg' => 'Enabled']);
     }
 
     /**
@@ -361,12 +384,12 @@ class AdController extends Controller
     public function destroy(Request $request)
     {
         $ids = $request->get('ids');
-        if (empty($ids)){
-            return response()->json(['code'=>1,'msg'=>'请选择删除项']);
+        if (empty($ids)) {
+            return response()->json(['code' => 1, 'msg' => '请选择删除项']);
         }
-        if (Ad::destroy($ids)){
-            return response()->json(['code'=>0,'msg'=>'删除成功']);
+        if (Ad::destroy($ids)) {
+            return response()->json(['code' => 0, 'msg' => '删除成功']);
         }
-        return response()->json(['code'=>1,'msg'=>'删除失败']);
+        return response()->json(['code' => 1, 'msg' => '删除失败']);
     }
 }
