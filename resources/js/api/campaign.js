@@ -19,9 +19,23 @@ class CampaignResource extends Resource {
       method: 'post',
     });
   }
+  addtgss(resource) {
+    return request({
+      url: '/' + this.uri + '/ad/bindtag',
+      method: 'post',
+      data: resource,
+    });
+  }
   tagList(query) {
     return request({
       url: '/' + this.uri + '/ad/taglist',
+      method: 'get',
+      params: query,
+    });
+  }
+  tagAll(query) {
+    return request({
+      url: '/' + this.uri + '/ad/tagall',
       method: 'get',
       params: query,
     });
@@ -54,6 +68,14 @@ class CampaignResource extends Resource {
   adReviewList(query) {
     return request({
       url: '/' + this.uri + '/adreview',
+      method: 'get',
+      params: query,
+    });
+  }
+
+  adtagaList(query) {
+    return request({
+      url: '/' + this.uri + '/ad/list',
       method: 'get',
       params: query,
     });
