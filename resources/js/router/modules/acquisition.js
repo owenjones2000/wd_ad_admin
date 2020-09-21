@@ -85,7 +85,7 @@ const acquisitionRoutes = {
       path: 'ad/Adtag',
       component: () => import('@/views/ad/AdTag'),
       name: 'AdTag',
-      meta: { title: 'Ad Tag', icon: 'component', permissions: ['basic.manage'] },
+      meta: { title: 'Ad Tag', icon: 'component', permissions: ['advertise.campaign.ad.edit'] },
     },
     {
       path: 'campaign/:campaign_id(\\d+)/channel',

@@ -80,31 +80,9 @@
       </el-table-column>
       <el-table-column prop="created_at" label="Created" align="center" width="100" />
 
-      <el-table-column align="center" label="Status">
-        <template slot-scope="scope">
-          <el-icon
-            :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}"
-            size="small"
-            :name="scope.row.status ? 'video-play' : 'video-pause'"
-          />
-          <el-link
-            v-permission="['advertise.campaign.ad.edit']"
-            :type="scope.row.is_admin_disable ? 'danger' : 'info'"
-            size="small"
-            icon="el-icon-remove"
-            :underline="false"
-            @click="handleStatus(scope.row)"
-          />
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Playable">
-        <template slot-scope="scope">
-          <i
-            :style="{color: scope.row.playable ? '#67C23A' : '#F56C6C'}"
-            :class="scope.row.playable ? 'el-icon-check' : 'el-icon-close'"
-          />
-        </template>
-      </el-table-column>
+      <el-table-column align="center" prop="kpi.impressions" label="Impression" />
+      <el-table-column align="center" prop="kpi.installs" label="Install" />
+      <el-table-column align="center" prop="kpi.spend" label="Spend" />
 
       <el-table-column align="center" label="Actions" width="150px" fixed="right">
         <template slot-scope="scope">
