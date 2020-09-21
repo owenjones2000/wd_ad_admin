@@ -146,6 +146,7 @@ Route::group(['middleware' => 'api'], function () {
             Route::get('adreview', 'AdController@listReview')->name('campaign.ad');
             // 广告
             Route::get('ad/taglist', 'AdController@tagList')->name('campaign.ad.tag.list')->middleware('permission:advertise.campaign.ad.edit');
+            Route::get('ad/tagall', 'AdController@tagAll')->name('campaign.ad.tag.list')->middleware('permission:advertise.campaign.ad.edit');
             Route::post('ad/tag/{id?}', 'AdController@tagSave')->name('campaign.ad.tag.save')->middleware('permission:advertise.campaign.ad.edit');
 
             Route::group(['prefix' => '{campaign_id}/ad', 'middleware' => 'permission:advertise.campaign'], function () {
