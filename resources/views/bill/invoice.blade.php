@@ -39,9 +39,20 @@
         <h3 style="font-size: 1.38125em; color: #666666;">
             Essentials Tech Limited
         </h3>
-        <p style="width:150px; font-size: 0.8125em; color: #666666;">
+        <p style=" font-size: 0.8125em; color: #666666;">
             FLAT/RM A5, 9/F SILVERCORP INT*L TOWER 707-713 NATHAN RD, MONGKOK KLN, HONG KONG
         </p>
+        @if($billAdr)
+        <h3 style="font-size: 1.38125em; color: #666666;">
+            Bill To:
+        </h3>
+        <p style=" font-size: 0.8125em; color: #666666;">
+            {{$billAdr['company']}}
+        </p>
+        <p style=" font-size: 0.8125em; color: #666666;">
+            {{$billAdr['address']}}
+        </p>
+        @endif
     </div>
     <h1>Invoice</h1>
     <hr />

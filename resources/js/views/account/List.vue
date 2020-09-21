@@ -201,6 +201,9 @@
           <el-form-item :label="$t('bill.phone')" prop="phone">
             <el-input v-model="currentBillSet.phone" />
           </el-form-item>
+          <el-form-item label="Company Name" prop="company">
+            <el-input v-model="currentBillSet.company" />
+          </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="billDialogFormVisible = false">
@@ -411,6 +414,10 @@ export default {
       return {
         address: [
           { required: true, message: 'Address is required', trigger: 'blur' },
+          { max: 255 },
+        ],
+        company: [
+          { required: true, message: 'company is required', trigger: 'blur' },
           { max: 255 },
         ],
         phone: [{ max: 13 }],

@@ -7,6 +7,7 @@ use App\Http\Resources\BillResource;
 use App\Models\Advertise\Account;
 use App\Models\Advertise\Bill;
 use App\Models\Advertise\BillInfo;
+use App\Models\Advertise\BillSet;
 use App\Models\Record;
 use PDF;
 use Illuminate\Http\Request;
@@ -60,9 +61,10 @@ class BillController extends Controller
     public function invoice($id){
         $bill = Bill::query()->where('id', $id)->with('account')->firstOrFail();
         $billInfo = BillInfo::query()->where('bill_id', $id)->get();
+        $billAdr = BillSet::where('id', $bill->account->id)->first();
         $prePay = Record::whereBetween('date', [$bill->start_date, $bill->end_date])
         ->where('main_user_id', $bill->main_user_id)->get();
-        return view('bill.invoice', ['bill' => $bill, 'billInfo'=> $billInfo, 'prePay' => $prePay]);
+        return view('bill.invoice', ['bill' => $bill, 'billInfo'=> $billInfo, 'prePay' => $prePay, 'billAdr' => $billAdr]);
     }
 
     public function invoicePdf($id){

@@ -38,7 +38,7 @@ class AppController extends Controller
             $os = $request->input('os');
             $app_base_query->where('os', $os);
         }
-        if ($request->input('is_admin_disable')){
+        if ($request->input('is_admin_disable')) {
             $app_base_query->where('is_admin_disable', true);
         }
         $country = $request->input('country');
@@ -119,7 +119,7 @@ class AppController extends Controller
             });
         }
         $is_admin_disable = $request->input('is_admin_disable');
-        if ( $is_admin_disable!= '') {
+        if ($is_admin_disable != '') {
             $app_base_query->where('is_admin_disable', $is_admin_disable);
         }
 
@@ -130,7 +130,7 @@ class AppController extends Controller
     public function iosInfo($id)
     {
         $app = App::where('id', $id)->where('os', 'ios')->firstOrFail();
-        $appid = substr($app->app_id,2);
+        $appid = substr($app->app_id, 2);
         $client = new Client();
         // $res = $client->get("https://itunes.apple.com/lookup?id=1524898135");
         $res = $client->get("https://itunes.apple.com/lookup", [
@@ -140,7 +140,7 @@ class AppController extends Controller
         ]);
         $content = $res->getBody()->getContents();
         $data = json_decode($content, true);
-        return response()->json($data['results'][0]??[]);
+        return response()->json($data['results'][0] ?? []);
     }
     public function data(Request $request)
     {
@@ -182,7 +182,7 @@ class AppController extends Controller
                 })
                 ->select([
                     'requests', 'impressions', 'clicks', 'installations', 'spend',
-                    'app_id','date'
+                    'app_id', 'date'
                 ]);
             return $query;
         }, $start_date, $end_date);
@@ -280,7 +280,8 @@ class AppController extends Controller
         if (!empty($order_by_ids)) {
             $channel_query->orderByRaw(DB::raw("FIELD(id,{$order_by_ids}) desc"));
         }
-        $channel_list = $channel_query->orderBy($request->get('field', 'name'), $request->get('order', 'desc'))
+        $channel_list = $channel_query
+            ->orderBy('id', 'desc')
             ->paginate($request->get('limit', 30));
 
         foreach ($channel_list as $index => &$channel) {
@@ -296,17 +297,23 @@ class AppController extends Controller
         $range_date = $request->get('daterange');
         $start_date = date('Ymd', strtotime($range_date[0] ?? 'now'));
         $end_date = date('Ymd', strtotime($range_date[1] ?? 'now'));
+        $order_by = explode('.', $request->get('field', 'status'));
+        $order_sort = $request->get('order', 'desc');
 
-        $channel_base_query = Campaign::query();
+        $campaign_base_query = Campaign::query()->where('app_id', $app_id);
         if (!empty($request->get('keyword'))) {
-            $channel_base_query->where('name', 'like', '%' . $request->get('keyword') . '%');
+            $campaign_base_query->where('name', 'like', '%' . $request->get('keyword') . '%');
         }
-        $channel_id_query = clone $channel_base_query;
-        $channel_id_query->select('id');
-        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use ($start_date, $end_date, $channel_id_query, $app_id) {
+        $campaign_id_query = clone $campaign_base_query;
+        $campaign_id_query->select('id');
+        $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use (
+            $start_date,
+            $end_date,
+            $campaign_id_query
+        ) {
             $query->whereBetween('date', [$start_date, $end_date])
-                ->whereIn('campaign_id', $channel_id_query)
-                ->where('app_id', $app_id)
+                ->whereIn('campaign_id', $campaign_id_query)
+                // ->where('app_id', $app_id)
                 ->select([
                     'requests', 'impressions', 'clicks', 'installations', 'spend',
                     'campaign_id',
@@ -328,6 +335,9 @@ class AppController extends Controller
             'campaign_id',
         ]);
         $advertise_kpi_query->groupBy('campaign_id');
+        if ($order_by[0] === 'kpi' && isset($order_by[1])) {
+            $advertise_kpi_query->orderBy($order_by[1], $order_sort);
+        }
 
         $advertise_kpi_list = $advertise_kpi_query
             ->orderBy('spend', 'desc')
@@ -336,13 +346,14 @@ class AppController extends Controller
             ->toArray();
         $channel_id_list = array_reverse(array_keys($advertise_kpi_list));
         $order_by_ids = implode(',', $channel_id_list);
-        $channel_query = clone $channel_base_query;
-        $channel_query->with('advertiser',  'audience');
-        $channel_query->whereIn('id', $channel_id_list);
+        $campaign_query = clone $campaign_base_query;
+        $campaign_query->with('advertiser',  'audience');
+        // $campaign_query->whereIn('id', $channel_id_list);
         if (!empty($order_by_ids)) {
-            $channel_query->orderByRaw(DB::raw("FIELD(id,{$order_by_ids}) desc"));
+            $campaign_query->orderByRaw(DB::raw("FIELD(id,{$order_by_ids}) desc"));
         }
-        $channel_list = $channel_query->orderBy($request->get('field', 'name'), $request->get('order', 'desc'))
+        $channel_list = $campaign_query
+            ->orderBy('id', 'desc')
             ->paginate($request->get('limit', 30));
 
         foreach ($channel_list as $index => &$channel) {
@@ -356,16 +367,16 @@ class AppController extends Controller
     public function tagList(Request $request)
     {
         $keyword = $request->input('keyword', '');
-        $appTag = AppTag::when($keyword, function($query) use($keyword){
-            $query->where('name', 'like', '%'.$keyword.'%');
+        $appTag = AppTag::when($keyword, function ($query) use ($keyword) {
+            $query->where('name', 'like', '%' . $keyword . '%');
         })
-        ->where('status', 1)
-        ->paginate($request->get('limit', 30));;
+            ->where('status', 1)
+            ->paginate($request->get('limit', 30));;
 
         return JsonResource::collection($appTag);
     }
 
-    public function tagSave(Request $request, $id =null)
+    public function tagSave(Request $request, $id = null)
     {
         $this->validate($request, [
             'name'  => 'required|string|unique:a_app_tag,name,' . $id . ',id',
@@ -398,22 +409,22 @@ class AppController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-       public function save(Request $request, $id = null)
-       {
-           $this->validate($request,[
-               'name'  => 'required|string|unique:a_app,name,'.$id. ',id',
-               'bundle_id'  => 'required|unique:a_app,bundle_id,'.$id. ',id',
-           ]);
-           try{
-               $params = $request->all();
-               $params['id'] = $id;
-               App::Make($params);
-               return response()->json(['code' => 0, 'msg' => 'Successful']);
-           } catch(Exception $ex){
-               Log::error($ex);
-               return response()->json(['code' => 100, 'msg' => $ex->getMessage()]);
-           }
-       }
+    public function save(Request $request, $id = null)
+    {
+        $this->validate($request, [
+            'name'  => 'required|string|unique:a_app,name,' . $id . ',id',
+            'bundle_id'  => 'required|unique:a_app,bundle_id,' . $id . ',id',
+        ]);
+        try {
+            $params = $request->all();
+            $params['id'] = $id;
+            App::Make($params);
+            return response()->json(['code' => 0, 'msg' => 'Successful']);
+        } catch (Exception $ex) {
+            Log::error($ex);
+            return response()->json(['code' => 100, 'msg' => $ex->getMessage()]);
+        }
+    }
 
     /**
      * 启动

@@ -358,7 +358,7 @@ class AccountController extends Controller
     {
         /** @var Account $account */
         $account = Account::query()->findOrFail($id);
-        $account->setBill($request->only('address', 'phone'));
+        $account->setBill($request->all());
 
         return response()->json(['code'=>0,'msg'=>'Bill set updated']);
     }

@@ -4,10 +4,13 @@ namespace App\Models;
 
 use App\Models\Advertise\App;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class IdfaTag extends Model
 {
     //
+    use SoftDeletes;
+    
     protected $table= 'a_idfa_tag';
     protected $fillable = [
         'name',

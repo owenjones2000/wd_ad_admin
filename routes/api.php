@@ -56,7 +56,7 @@ Route::group(['middleware' => 'api'], function () {
             Route::post('{id}/advertising/disable', 'AccountController@disableAdvertising')->name('account.advertising.disable')->middleware('permission:advertise.account.edit');
             Route::post('{id}/publishing/enable', 'AccountController@enablePublishing')->name('account.publishing.enable')->middleware('permission:advertise.account.edit');
             Route::post('{id}/publishing/disable', 'AccountController@disablePublishing')->name('account.publishing.disable')->middleware('permission:advertise.account.edit');
-            Route::post('{id}/bill', 'AccountController@setBill')->name('account.bill')->middleware('permission:advertise.account.edit');
+            Route::post('{id}/bill', 'AccountController@setBill')->name('account.bill')->middleware('permission:advertise.bill');
 
             //删除
             //            Route::delete('account/destroy','AccountController@destroy')->name('account.destroy')->middleware('permission:advertise.account.destroy');
