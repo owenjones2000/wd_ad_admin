@@ -73,7 +73,11 @@
           />
         </template>
       </el-table-column>
-
+      <el-table-column align="center" label="tags">
+        <template slot-scope="scope">
+          <el-tag v-for="( item,key ) of scope.row.tags" :key="key" style="margin:5px">{{ item.name }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="created_at" label="Created" align="center" width="100" />
 
       <el-table-column align="center" label="Status">
