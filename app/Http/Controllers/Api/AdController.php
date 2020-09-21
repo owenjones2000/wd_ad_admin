@@ -150,6 +150,17 @@ class AdController extends Controller
 
         return JsonResource::collection($appTag);
     }
+    public function tagAll(Request $request)
+    {
+        $keyword = $request->input('keyword', '');
+        $appTag = AdTag::when($keyword, function ($query) use ($keyword) {
+            $query->where('name', 'like', '%' . $keyword . '%');
+        })
+            ->where('status', 1)
+            ->get();
+
+        return JsonResource::collection($appTag);
+    }
 
     public function tagSave(Request $request, $id = null)
     {
