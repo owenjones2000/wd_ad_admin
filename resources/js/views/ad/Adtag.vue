@@ -306,9 +306,10 @@ export default {
   },
   methods: {
     checkPermission,
+    // 确定提交
     selecttags(val) {
       this.selecttagalldata.push(val);
-      // console.log(this.selecttagalldata);
+      // console.log(this.se
       var result = [];
       var obj = {};
       for (var i = 0; i < this.selecttagalldata.length; i++) {
