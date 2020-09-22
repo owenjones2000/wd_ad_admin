@@ -87,14 +87,8 @@
 
       <el-table-column align="center" label="Actions" width="150px" fixed="right">
         <template slot-scope="scope">
-          <el-button
-            v-if="scope.row.need_review"
-            v-permission="['advertise.campaign.ad.edit']"
-            type="primary"
-            size="small"
-            icon="el-icon-finished"
-            @click="handleReview(scope.row);"
-          >Review</el-button>
+          <el-tag v-if="scope.row.tags.length>0" type="success">Identified</el-tag>
+          <el-tag v-else type="danger">Unidentified</el-tag>
         </template>
       </el-table-column>
     </el-table>
@@ -347,6 +341,9 @@ export default {
       for (const t of this.selecttagalldata) {
         obj.tags.push(t.id);
       }
+      if (obj.ads.length === 0 || obj.tags.length === 0) {
+        return false;
+      }
       campaignResource.addtgss(obj).then((res) => {
         console.log(res);
         if (res.code === 0) {
@@ -355,6 +352,7 @@ export default {
             type: 'success',
           });
           this.addtagsvisible = false;
+          this.getList();
         } else {
           this.$message({
             message: 'Setup failed',
