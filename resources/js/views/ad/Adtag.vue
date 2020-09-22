@@ -74,11 +74,11 @@
           />
         </template>
       </el-table-column>
-      <el-table-column align="center" label="tags">
+      <!--  <el-table-column align="center" label="tags">
         <template slot-scope="scope">
           <el-tag v-for="( item,key ) of scope.row.tags" :key="key" style="margin:5px">{{ item.name }}</el-tag>
         </template>
-      </el-table-column>
+      </el-table-column>-->
       <el-table-column prop="created_at" label="Created" align="center" width="100" />
 
       <el-table-column align="center" prop="kpi.impressions" label="Impression" />
@@ -133,7 +133,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="addtagsvisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button type="primary" @click="settags()">{{ $t('table.confirm') }}</el-button>
+        <el-button type="primary" @click="settags(1)">{{ $t('table.confirm') }}</el-button>
       </span>
     </el-dialog>
 
@@ -146,14 +146,42 @@
           :name="asset.id"
         >
           <div>
-            <video
-              v-if="asset.type.mime_type == 'video'"
-              :src="asset.url"
-              :width="((asset.spec && asset.spec.width) ? ((asset.spec.width > 500) ? '500px' : asset.spec.width) : '500') + 'px'"
-              poster
-              controls
-              controlslist="nodownload"
-            />
+            <div v-if="asset.type.mime_type == 'video'" style="display:flex">
+              <video
+                :src="asset.url"
+                :width="((asset.spec && asset.spec.width) ? ((asset.spec.width > 500) ? '500px' : asset.spec.width) : '500') + 'px'"
+                poster
+                controls
+                controlslist="nodownload"
+              />
+              <div style="margin-left:30px">
+                <h3>ALL</h3>
+                <div>
+                  <el-tag
+                    v-for="(item,key) of tagalldata"
+                    :key="key"
+                    style="margin:5px;cursor:pointer"
+                    size="medium"
+                    @click="selecttags(item)"
+                  >{{ item.name }}</el-tag>
+                </div>
+                <h3>chosen</h3>
+                <div>
+                  <el-tag
+                    v-for="(item,key) of selecttagalldata"
+                    :key="key"
+                    style="margin:5px;cursor:pointer"
+                    type="success"
+                    closable
+                    size="medium"
+                    @close="handleClose(item.name)"
+                  >{{ item.name }}</el-tag>
+                </div>
+                <span slot="footer" class="dialog-footer">
+                  <el-button type="primary" @click="settags(2)">{{ $t('table.confirm') }}</el-button>
+                </span>
+              </div>
+            </div>
             <img
               v-else-if="asset.type.mime_type == 'image'"
               :src="asset.url"
@@ -302,13 +330,19 @@ export default {
     handleClose(tag) {
       this.selecttagalldata.splice(this.selecttagalldata.indexOf(tag), 1);
     },
-    settags() {
+    // 1是多选提交  2是单选提交
+    settags(type) {
       const obj = {
         ads: [],
         tags: [],
       };
-      for (const y of this.multipleSelection) {
-        obj.ads.push(y.id);
+      console.log(type, this.currentAd.id);
+      if (type === 2) {
+        obj.ads.push(this.currentAd.id);
+      } else if (type === 1) {
+        for (const y of this.multipleSelection) {
+          obj.ads.push(y.id);
+        }
       }
       for (const t of this.selecttagalldata) {
         obj.tags.push(t.id);
@@ -382,6 +416,7 @@ export default {
     },
     handlePreview(ad) {
       this.currentAd = ad;
+      this.selecttagalldata = ad.tags;
       this.previewDialogFormVisible = true;
     },
     handleReview(ad) {
