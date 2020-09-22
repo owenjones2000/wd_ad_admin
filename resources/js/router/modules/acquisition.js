@@ -82,10 +82,10 @@ const acquisitionRoutes = {
       meta: { title: 'Ad Review', icon: 'user', permissions: ['advertise.campaign.ad.edit'] },
     },
     {
-      path: 'ad/Adtag',
+      path: 'ad/adtag',
       component: () => import('@/views/ad/AdTag'),
       name: 'AdTag',
-      meta: { title: 'Ad Tag', icon: 'component', permissions: ['advertise.campaign.ad.edit'] },
+      meta: { title: 'Ad Tag', icon: 'component', permissions: ['advertise.ad.tag'] },
     },
     {
       path: 'campaign/:campaign_id(\\d+)/channel',
