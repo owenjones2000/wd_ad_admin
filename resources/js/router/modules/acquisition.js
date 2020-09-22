@@ -83,7 +83,7 @@ const acquisitionRoutes = {
     },
     {
       path: 'ad/adtag',
-      component: () => import('@/views/ad/AdTag'),
+      component: () => import('@/views/ad/Adtag'),
       name: 'AdTag',
       meta: { title: 'Ad Tag', icon: 'component', permissions: ['advertise.ad.tag'] },
     },
