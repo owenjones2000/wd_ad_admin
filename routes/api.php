@@ -149,7 +149,7 @@ Route::group(['middleware' => 'api'], function () {
             Route::get('ad/tagall', 'AdController@tagAll')->name('campaign.ad.tag.list')->middleware('permission:advertise.campaign');
             Route::post('ad/tag/{id?}', 'AdController@tagSave')->name('campaign.ad.tag.all')->middleware('permission:advertise.campaign.ad.edit');
             Route::get('ad/list', 'AdController@adList')->name('campaign.ad.list')->middleware('permission:advertise.campaign.ad.edit');
-            Route::post('ad/bindtag', 'AdController@bindTag')->name('campaign.ad.bind')->middleware('advertise.ad.tag');
+            Route::post('ad/bindtag', 'AdController@bindTag')->name('campaign.ad.bind')->middleware('permission:advertise.ad.tag');
 
             Route::group(['prefix' => '{campaign_id}/ad', 'middleware' => 'permission:advertise.campaign'], function () {
                 Route::get('', 'AdController@list')->name('campaign.ad');
