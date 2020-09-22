@@ -76,7 +76,7 @@ class ChannelController extends Controller
             $type,
             $country
         ) {
-            $query->whereBetween('date', [$start_date, $end_date])
+            $query->where('spend', '>', 0)->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('target_app_id', $channel_id_query)
                 ->when($country, function ($query) use ($country) {
                     $query->whereIn('country', $country);
@@ -339,7 +339,7 @@ class ChannelController extends Controller
             $type,
             $country
         ) {
-            $query->whereBetween('date', [$start_date, $end_date])
+            $query->where('spend', '>', 0)->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('target_app_id', $channel_id_query)
                 ->when($country, function ($query) use ($country) {
                     $query->whereIn('country', $country);

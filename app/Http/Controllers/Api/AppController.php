@@ -52,7 +52,8 @@ class AppController extends Controller
             $type,
             $country
         ) {
-            $query->whereBetween('date', [$start_date, $end_date])
+            $query
+            ->where('spend', '>', 0)->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('app_id', $app_id_query)
                 ->when($country, function ($query) use ($country) {
                     $query->whereIn('country', $country);
@@ -172,7 +173,7 @@ class AppController extends Controller
             $type,
             $country
         ) {
-            $query->whereBetween('date', [$start_date, $end_date])
+            $query->where('spend', '>', 0)->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('app_id', $app_id_query)
                 ->when($country, function ($query) use ($country) {
                     $query->whereIn('country', $country);
@@ -237,7 +238,7 @@ class AppController extends Controller
             $country,
             $app_id
         ) {
-            $query->whereBetween('date', [$start_date, $end_date])
+            $query->where('spend', '>', 0)->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('target_app_id', $channel_id_query)
                 ->where('app_id', $app_id)
                 ->when($type, function ($query) use ($type) {
@@ -311,7 +312,7 @@ class AppController extends Controller
             $end_date,
             $campaign_id_query
         ) {
-            $query->whereBetween('date', [$start_date, $end_date])
+            $query->where('spend', '>', 0)->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('campaign_id', $campaign_id_query)
                 // ->where('app_id', $app_id)
                 ->select([
