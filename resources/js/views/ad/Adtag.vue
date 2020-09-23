@@ -132,64 +132,82 @@
     </el-dialog>
 
     <el-dialog :title="'Preview'" :visible.sync="previewDialogFormVisible" width="50%">
-      <el-collapse>
-        <el-collapse-item
-          v-for="(asset) in currentAd.assets"
-          :key="asset.id"
-          :title="asset.type.name"
-          :name="asset.id"
-        >
-          <div>
-            <div v-if="asset.type.mime_type == 'video'" style="display:flex">
-              <video
-                :src="asset.url"
-                :width="((asset.spec && asset.spec.width) ? ((asset.spec.width > 500) ? '500px' : asset.spec.width) : '500') + 'px'"
-                poster
-                controls
-                controlslist="nodownload"
-              />
-              <div style="margin-left:30px">
-                <h3>ALL</h3>
-                <div>
-                  <el-tag
-                    v-for="(item,key) of tagalldata"
-                    :key="key"
-                    style="margin:5px;cursor:pointer"
-                    size="medium"
-                    @click="selecttags(item)"
-                  >{{ item.name }}</el-tag>
-                </div>
-                <h3>chosen</h3>
-                <div>
-                  <el-tag
-                    v-for="(item,key) of selecttagalldata"
-                    :key="key"
-                    style="margin:5px;cursor:pointer"
-                    type="success"
-                    closable
-                    size="medium"
-                    @close="handleClose(item.name)"
-                  >{{ item.name }}</el-tag>
-                </div>
-                <span slot="footer" class="dialog-footer">
-                  <el-button type="primary" @click="settags(2)">{{ $t('table.confirm') }}</el-button>
-                </span>
+      <div v-for="(asset) in currentAd.assets" :key="asset.id">
+        <div v-if="asset.type.mime_type == 'video'" style="display:flex">
+          <video
+            :src="asset.url"
+            :width="((asset.spec && asset.spec.width) ? ((asset.spec.width > 500) ? '500px' : asset.spec.width) : '500') + 'px'"
+            poster
+            controls
+            controlslist="nodownload"
+          />
+          <div style="margin-left:30px">
+            <h3>ALL</h3>
+            <div style="display:flex;flex-wrap:wrap">
+              <div v-for="(item,key) of tagalldata" :key="key">
+                <el-tag
+                  v-if="item.group === 1"
+                  style="margin:5px;cursor:pointer"
+                  size="medium"
+                  @click="selecttags(item)"
+                >{{ item.name }}</el-tag>
               </div>
             </div>
-            <img
-              v-else-if="asset.type.mime_type == 'image'"
-              :src="asset.url"
-              :width="((asset.spec && asset.spec.width) ? ((asset.spec.width > 500) ? '500px' : asset.spec.width) : 500) + 'px'"
-            >
-            <el-link
-              v-else-if="asset.type.mime_type == 'html'"
-              :href="asset.url"
-              target="_blank"
-              type="primary"
-            >Click to preview</el-link>
+            <div style="display:flex;margin-top:15px;flex-wrap:wrap">
+              <div v-for="(item,key) of tagalldata" :key="key">
+                <el-tag
+                  v-if="item.group === 2"
+                  style="margin:5px;cursor:pointer"
+                  size="medium"
+                  @click="selecttags(item)"
+                >{{ item.name }}</el-tag>
+              </div>
+            </div>
+            <div style="display:flex;margin-top:15px;flex-wrap:wrap">
+              <div v-for="(item,key) of tagalldata" :key="key">
+                <el-tag
+                  v-if="item.group === 3"
+                  style="margin:5px;cursor:pointer"
+                  size="medium"
+                  @click="selecttags(item)"
+                >{{ item.name }}</el-tag>
+              </div>
+            </div>
+            <div style="display:flex;margin-top:15px;flex-wrap:wrap">
+              <div v-for="(item,key) of tagalldata" :key="key">
+                <el-tag
+                  v-if="item.group === 4"
+                  style="margin:5px;cursor:pointer"
+                  size="medium"
+                  @click="selecttags(item)"
+                >{{ item.name }}</el-tag>
+              </div>
+            </div>
+
+            <h3>chosen</h3>
+            <div>
+              <el-tag
+                v-for="(item,key) of selecttagalldata"
+                :key="key"
+                style="margin:5px;cursor:pointer"
+                type="success"
+                closable
+                size="medium"
+                @close="handleClose(item.name)"
+              >{{ item.name }}</el-tag>
+            </div>
+            <span slot="footer" class="dialog-footer">
+              <el-button type="primary" @click="settags(2)">{{ $t('table.confirm') }}</el-button>
+            </span>
           </div>
-        </el-collapse-item>
-      </el-collapse>
+        </div>
+        <el-link
+          v-else-if="asset.type.mime_type == 'html'"
+          :href="asset.url"
+          target="_blank"
+          type="primary"
+        >Click to preview</el-link>
+      </div>
     </el-dialog>
   </div>
 </template>
