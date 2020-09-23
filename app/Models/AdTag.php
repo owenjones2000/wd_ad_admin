@@ -12,6 +12,7 @@ class AdTag extends Model
     protected $fillable = [
         'name',
         'status',
+        'group'
     ];
 
     public static function Make($params)
