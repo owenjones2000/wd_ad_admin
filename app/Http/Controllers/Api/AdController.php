@@ -113,7 +113,7 @@ class AdController extends Controller
         $ad_id_query = clone $ad_base_query;
         $ad_id_query->select('id');
         $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use ($start_date, $end_date, $ad_id_query) {
-            $query->whereBetween('date', [$start_date, $end_date])
+            $query->where('installations', '>', 0)->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('ad_id', $ad_id_query);
             return $query;
         }, $start_date, $end_date);
@@ -137,7 +137,7 @@ class AdController extends Controller
         // }
 
         $advertise_kpi_list = $advertise_kpi_query
-            ->orderBy('spend', 'desc')
+            ->orderBy('installs', 'desc')
             ->get()
             ->keyBy('ad_id')
             ->toArray();
@@ -149,8 +149,8 @@ class AdController extends Controller
         }
         // if($order_by[0] !== 'kpi'){
         //     $ad_base_query->orderBy($order_by[0], $order_sort);
-        // }
-        $ad_list = $ad_base_query->with('assets', 'tags')
+        // }$campaign_query->whereIn('id', $channel_id_list);
+        $ad_list = $ad_base_query->whereIn('id', array_keys($advertise_kpi_list))->with('assets', 'tags')
             ->orderBy('id', 'desc')
             ->paginate($request->get('limit', 30));
 
