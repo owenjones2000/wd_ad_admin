@@ -120,7 +120,7 @@ class AdController extends Controller
         }, $start_date, $end_date);
 
         $advertise_kpi_query->select([
-            DB::raw('sum(requests) as requests'),
+            // DB::raw('sum(requests) as requests'),
             DB::raw('sum(impressions) as impressions'),
             DB::raw('sum(clicks) as clicks'),
             DB::raw('sum(installations) as installs'),
@@ -128,8 +128,8 @@ class AdController extends Controller
             // DB::raw('round(sum(installations) * 100 / sum(clicks), 2) as cvr'),
             // DB::raw('round(sum(installations) * 100 / sum(impressions), 2) as ir'),
             DB::raw('round(sum(spend), 2) as spend'),
-            DB::raw('round(sum(spend) / sum(installations), 2) as ecpi'),
-            DB::raw('round(sum(spend) * 1000 / sum(impressions), 2) as ecpm'),
+            // DB::raw('round(sum(spend) / sum(installations), 2) as ecpi'),
+            // DB::raw('round(sum(spend) * 1000 / sum(impressions), 2) as ecpm'),
             'ad_id',
         ]);
         $advertise_kpi_query->groupBy('ad_id');
