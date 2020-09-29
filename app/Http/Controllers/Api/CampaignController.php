@@ -29,6 +29,7 @@ class CampaignController extends Controller
         if(!empty($request->get('keyword'))){
             $like_keyword = '%'.$request->get('keyword').'%';
             $campaign_base_query->where('name', 'like', $like_keyword);
+            $campaign_base_query->orWhere('id', '=', $request->get('keyword'));
             $campaign_base_query->orWhereHas('advertiser', function($query) use($like_keyword) {
                 $query->where('realname', 'like', $like_keyword);
             });

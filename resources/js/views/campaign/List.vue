@@ -150,7 +150,7 @@ export default {
       query: {
         page: 1,
         limit: 15,
-        keyword: '',
+        keyword: this.$route.query.keyword,
         daterange: [new Date(), new Date()],
       },
       newCampaign: {},

@@ -52,15 +52,24 @@
       @selection-change="handleSelectionChange"
       @sort-change="handleSort"
     >
-      <!--<el-table-column align="center" label="ID" width="80">-->
-      <!--  <template slot-scope="scope">-->
-      <!--    <span>{{ scope.row.id }}</span>-->
-      <!--  </template>-->
-      <!--</el-table-column>-->
+
       <el-table-column prop="id" label="ID" fixed type="selection" />
       <el-table-column prop="id" label="ID" fixed />
-      <el-table-column prop="name" label="Ad" width="300px" fixed />
-      <el-table-column prop="campaign.app.name" align="center" label="App" fixed />
+      <el-table-column prop="name" label="Ad" fixed />
+      <el-table-column label="Campaign" fixed>
+        <template slot-scope="scope">
+          <router-link class="link-type" :to="'/acquisition/campaign?keyword='+scope.row.campaign.id">
+            {{ scope.row.campaign.name }}
+          </router-link>
+        </template>
+      </el-table-column>
+      <el-table-column label="App" fixed>
+        <template slot-scope="scope">
+          <router-link class="link-type" :to="'/acquisition/app?keyword='+scope.row.campaign.app.id">
+            {{ scope.row.campaign.app.name }}
+          </router-link>
+        </template>
+      </el-table-column>
       <el-table-column prop="campaign.advertiser.realname" align="center" label="Advertiser" fixed />
       <el-table-column align="center" label="Preview">
         <template slot-scope="scope">

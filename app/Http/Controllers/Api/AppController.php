@@ -30,6 +30,7 @@ class AppController extends Controller
         if (!empty($request->get('keyword'))) {
             $like_keyword = '%' . $request->get('keyword') . '%';
             $app_base_query->where('name', 'like', $like_keyword);
+            $app_base_query->orWhere('id', '=', $request->get('keyword'));
             $app_base_query->orWhereHas('advertiser', function ($query) use ($like_keyword) {
                 $query->where('realname', 'like', $like_keyword);
             });
@@ -152,6 +153,7 @@ class AppController extends Controller
 
         $app_base_query = App::query();
         if (!empty($request->get('keyword'))) {
+            $app_base_query->orWhere('id', '=', $request->get('keyword'));
             $app_base_query->where('name', 'like', '%' . $request->get('name') . '%');
         }
         if (!empty($request->get('id'))) {

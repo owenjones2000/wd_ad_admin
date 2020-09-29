@@ -102,12 +102,13 @@ class AdController extends Controller
         if (!empty($request->get('keyword'))) {
             $like_keyword = '%' . $request->get('keyword') . '%';
             $ad_base_query->where('name', 'like', $like_keyword);
-            $ad_base_query->orWhereHas('campaign.advertiser', function ($query) use ($like_keyword) {
-                $query->where('realname', 'like', $like_keyword);
-            });
-            $ad_base_query->orWhereHas('campaign.app', function ($query) use ($like_keyword) {
-                $query->where('name', 'like', $like_keyword);
-            });
+            $ad_base_query->orWhere('id', '=', $request->get('keyword'));
+            // $ad_base_query->orWhereHas('campaign.advertiser', function ($query) use ($like_keyword) {
+            //     $query->where('realname', 'like', $like_keyword);
+            // });
+            // $ad_base_query->orWhereHas('campaign.app', function ($query) use ($like_keyword) {
+            //     $query->where('name', 'like', $like_keyword);
+            // });
         }
 
         $ad_id_query = clone $ad_base_query;
