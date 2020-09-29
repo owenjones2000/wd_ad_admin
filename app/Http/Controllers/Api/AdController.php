@@ -114,7 +114,7 @@ class AdController extends Controller
         $ad_id_query = clone $ad_base_query;
         $ad_id_query->select('id');
         $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use ($start_date, $end_date, $ad_id_query) {
-            $query->where('impressions', '>', 0)->whereBetween('date', [$start_date, $end_date])
+            $query->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('ad_id', $ad_id_query);
             return $query;
         }, $start_date, $end_date);
