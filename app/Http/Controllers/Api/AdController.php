@@ -111,7 +111,6 @@ class AdController extends Controller
             //     $query->where('name', 'like', $like_keyword);
             // });
         }
-
         $ad_id_query = clone $ad_base_query;
         $ad_id_query->select('id');
         $advertise_kpi_query = AdvertiseKpi::multiTableQuery(function ($query) use ($start_date, $end_date, $ad_id_query) {
@@ -152,7 +151,9 @@ class AdController extends Controller
         // if($order_by[0] !== 'kpi'){
         //     $ad_base_query->orderBy($order_by[0], $order_sort);
         // }$campaign_query->whereIn('id', $channel_id_list);
-        $ad_list = $ad_base_query->whereIn('id', array_keys($advertise_kpi_list))->with('assets', 'tags')
+        $ad_list = $ad_base_query
+            // ->whereIn('id', array_keys($advertise_kpi_list))
+            ->with('assets', 'tags')
             ->orderBy('id', 'desc')
             ->paginate($request->get('limit', 30));
 
