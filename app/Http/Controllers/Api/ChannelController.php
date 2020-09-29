@@ -651,7 +651,7 @@ class ChannelController extends Controller
 
     public function countryList()
     {
-        $regions = Region::query()->orderBy('sort', 'desc')->get();
+        $regions = Region::query()->orderBy('sort', 'desc')->orderBy('name', 'asc')->get();
 
         return response()->json($regions);
     }
