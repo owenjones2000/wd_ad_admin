@@ -98,7 +98,8 @@ class AdController extends Controller
         $order_by = explode('.', $request->get('field', 'status'));
         $order_sort = $request->get('order', 'desc');
 
-        $ad_base_query = Ad::query()->where('status', 1);
+        $ad_base_query = Ad::query();
+        // ->where('status', 1);
         if (!empty($request->get('keyword'))) {
             $like_keyword = '%' . $request->get('keyword') . '%';
             $ad_base_query->where('name', 'like', $like_keyword);
