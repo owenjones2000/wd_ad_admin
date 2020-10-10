@@ -205,6 +205,7 @@ class AudienceController extends Controller
         $apps = App::query()
         ->where('status', 1)
         ->where('is_admin_disable', 0) 
+        ->orderBy('name', 'asc')
         ->get();
         return JsonResource::collection($apps);
     }
