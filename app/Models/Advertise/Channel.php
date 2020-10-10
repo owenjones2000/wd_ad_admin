@@ -38,8 +38,7 @@ class Channel extends Model
     {
         $this->is_cold = 1;
         $this->save();
-        // $res = Redis::connection("feature")->hincrby("wudiads_target_app_total_impression", $this->id,1);
-        $res1 = Redis::connection("feature")->hdel("wudiads_target_app_total_impression", $this->id);
+        $res1 = Redis::connection("restart")->hdel("wudiads_target_app_total_impression", $this->id);
         Log::info('channel restart'. $this->id);
         // Log::info($res);
         Log::info($res1);

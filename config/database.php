@@ -174,6 +174,12 @@ return [
             'port'     => env('FEATURE_REDIS_PORT', 6379),
             'database' => env('FEATURE_REDIS_CACHE_DB', 1),
         ],
+        'restart' => [
+            'host'     => env('FEATURE_REDIS_HOST', '127.0.0.1'),
+            'password' => env('FEATURE_REDIS_PASSWORD', null),
+            'port'     => env('FEATURE_REDIS_PORT', 6379),
+            'database' => 10,
+        ],
     ],
 
 ];

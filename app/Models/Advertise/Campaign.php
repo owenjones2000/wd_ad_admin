@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
 class Campaign extends Model
@@ -143,18 +144,10 @@ class Campaign extends Model
         foreach ($ads as $ad) {
             $ad->is_cold = 1;
             $ad->save();
-            Redis::connection("feature")->hdel("wudiads_ad_total_impression", $ad->id);
-            Redis::connection("feature")->hdel("wudiads_ad_total_installation", $ad->id);
+            Redis::connection("restart")->hdel("wudiads_ad_total_impression", $ad->id);
+            Redis::connection("restart")->hdel("wudiads_ad_total_installation", $ad->id);
         }
-        $table = 'z_sub_tasks_' . date('Ymd');
-        $subtasks = DB::table($table)->where('campaign_id', $this->id)
-        ->select("ad_id", "target_app_id")
-        ->distinct()
-        ->get();
-        foreach ($subtasks as $subtask) {
-            $unique_key = $subtask->ad_id . "_" . $subtask->target_app_id;
-            Redis::connection("feature")->del(["ad_install_" . $unique_key, "ad_impression_" . $unique_key]);
-        }
+        Log::info('camp restart' . $this->id);
     }
 
     /**
