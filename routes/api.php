@@ -185,6 +185,7 @@ Route::group(['middleware' => 'api'], function () {
 
         Route::group(['prefix' => 'audience', 'middleware' => 'permission:audience.manage'], function () {
             Route::post('upload', 'AudienceController@upload')->name('audience.uplolad');
+            Route::post('upload/app', 'AudienceController@uploadApp')->name('audience.uplolad.app');
             Route::get('upload/log', 'AudienceController@idfaLog')->name('audience.uplolad.log');
             Route::get('app', 'AudienceController@getApp')->name('audience.app');
             Route::get('taglist', 'AudienceController@taglist')->name('audience.taglist');

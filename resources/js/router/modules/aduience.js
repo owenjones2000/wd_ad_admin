@@ -19,6 +19,12 @@ const acquisitionRoutes = {
       meta: { title: 'Audience Upload', icon: 'tab', permissions: ['audience.manage'] },
     },
     {
+      path: 'upload/app',
+      component: () => import('@/views/audience/UploadApp'),
+      name: 'AudienceUploadApp',
+      meta: { title: 'Audience Upload App', icon: 'tab', permissions: ['audience.manage'] },
+    },
+    {
       path: 'tag',
       component: () => import('@/views/audience/Taglist'),
       name: 'AudienceTag',

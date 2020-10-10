@@ -53,51 +53,6 @@ class AudienceController extends Controller
         //
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Audience  $audience
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Audience $audience)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Audience  $audience
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Audience $audience)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Audience  $audience
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Audience $audience)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Audience  $audience
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Audience $audience)
-    {
-        //
-    }
-
     public function upload(Request $request)
     {
         ini_set('memory_limit', '1024M');
@@ -146,6 +101,50 @@ class AudienceController extends Controller
         return response()->json(['code' => 0, 'msg' => 'Successful']);
     }
 
+    public function uploadApp(Request $request)
+    {
+        $this->validate($request, [
+            'idfa_file' => 'required|file
+            ',
+            'apps' => 'required|string',
+        ]);
+        
+        $user = Auth::user();
+        $file = $request->file('idfa_file');
+        $realPath = $file->getRealPath();
+        $batchNo = $user->id . '-' . time();
+        $count = 0;
+        $idfas = [];
+        $appIds = explode(',', $request->input('apps'));
+        try {
+            if (($handle = fopen($realPath, "r")) !== FALSE) {
+                while (($data = fgetcsv($handle, 100, ",")) !== FALSE) {
+                    if ($data[0] == '00000000-0000-0000-0000-000000000000' || $data[0] == 'IDFA') {
+                        continue;
+                    }
+
+                    $idfas[] = $data[0];
+                    $num = count($idfas);
+                    if ($num >= 10000) {
+                        $count += $this->insertIntoRedis($idfas,  $appIds);
+                        $idfas = [];
+                    }
+                }
+                fclose($handle);
+            }
+            $count += $this->insertIntoRedis($idfas, $appIds);
+            // DB::table('a_idfa_log')->insert([
+            //     'batch_no' => $batchNo, 'tag' => $tagName, 'count' => $count,
+            //     'created_at' => Carbon::now(),
+            // ]);
+        } catch (\Exception $e) {
+            Log::error($e);
+            return response()->json(['code' => 1000, 'msg' => 'Fail']);
+        }
+        return response()->json(['code' => 0, 'msg' => 'Successful']);
+        
+    }
+
     public function insertInto($idfas, $batchNo, $tagId)
     {
         $idfas = array_unique($idfas);
@@ -163,6 +162,17 @@ class AudienceController extends Controller
 
         Log::info('dbres  ' . $dbRes);
         // Log::info('redisres  ' . $redisRes);
+        return count($idfas);
+    }
+
+    public function insertIntoRedis($idfas, $appIds)
+    {
+        $idfas = array_unique($idfas);
+        Log::info('count ' . count($idfas));
+        foreach ($appIds as $key => $appid) {
+            $redisRes = Redis::connection('feature')->sadd('app_audience_blocklist_' . $appid, ...$idfas);
+            Log::info('redisres  ' . $redisRes. 'appid  '. $appid);
+        }
         return count($idfas);
     }
     /**
