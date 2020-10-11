@@ -37,10 +37,10 @@
     <div style="height: 10px; background: #f6993f;" ></div>
     <div>
         <h3 style="font-size: 1.38125em; color: #666666;">
-            Essentials Tech Limited
+            GOOD LUCK STUDIO LIMITED
         </h3>
         <p style=" font-size: 0.8125em; color: #666666;">
-            FLAT/RM A5, 9/F SILVERCORP INT*L TOWER 707-713 NATHAN RD, MONGKOK KLN, HONG KONG
+            Mandar House, 3rd Floor P.O.Box 2196,Johnson’s Ghut Tortola,British Virgin Islands
         </p>
         @if($billAdr)
         <h3 style="font-size: 1.38125em; color: #666666;">
@@ -73,7 +73,7 @@
                 {{ $bill['account']['realname'] }}
             </td>
             <td>
-                <p>Essentials Tech Limited</p>
+                <p>GOOD LUCK STUDIO LIMITED</p>
             </td>
             <td>
                 <p>{{ $bill['invoice_id'] }}</p>
@@ -140,37 +140,43 @@
     
     {{-- <p style="color: #E01B84;text-align: right"><strong>Dues Subtotal: ${{ !$prePay->isEmpty()?number_format($bill['fee_amount'] - $prePay->sum('amount'), 2):number_format($bill['fee_amount'], 2) }}</strong></p> --}}
     <p style="color: #E01B84;text-align: right"><strong>Dues Subtotal: ${{ number_format($bill['fee_amount']-$prePay->sum('amount'), 2) }}</strong></p>
-    <hr />
-    <table class="bank_info" style="width: 50%">
+    <hr />                             
+
+
+
+
+
+
+
+
+
+
+
+ 
+    <table class="bank_info" style="width: 100%">
         <tr>
             <th style="">Payment Info:</th>
         </tr>
         <tr class="odd-row">
-            <td>012 BANK OF CHINA (HONG KONG) LIMITED</td>
+            <td>ACCOUNT NAME: GOOD LUCK STUDIO LIMITED </td>
         </tr>
         <tr class="odd-row">
-            <td>Name: ESSENTIALS TECH LIMITED</td>
+            <td>ACCOUNT NUMBER :716-113721-8 (USD)</td>
         </tr>
         <tr class="">
-            <td>Account (HKD): 80510752405 (HKD)</td>
+            <td>BANK NAME:   OCBC BANK (M) BERHAD</td>
         </tr>
         <tr class="odd-row">
-            <td>Account (USD): 80592389638 (USD)</td>
+            <td>OCBC BANK SWIFT CODE: OCBCMYKL</td>
         </tr>
         <tr class="">
-            <td>swift code: BKCHHKHH</td>
+            <td>OCBC BRANCH CODE: First 3 digits of your account number</td>
         </tr>
         <tr class="odd-row">
-            <td>Address: Shop 2103, Level 2, Ma On Shan Plaza Sai Sha Road, Ma On Shan, New Territories, Hong Kong</td>
+            <td>Bank address:MENARA OCBC FLOOR 11 18 JALAN TUN PERAK KUALA LUMPUR 50500</td>
         </tr>
         <tr class="">
-            <td>Bank Name: Bank of China (Hong Kong) Ltd</td>
-        </tr>
-        <tr class="odd-row">
-            <td>Bank Country: Hong Kong</td>
-        </tr>
-        <tr class="">
-            <td>Clearing Code: 012 / 805</td>
+            <td>Recipient's address:Mandar House, 3rd Floor P.O.Box 2196,Johnson’s Ghut Tortola,British Virgin Islands</td>
         </tr>
     </table>
     <p>
