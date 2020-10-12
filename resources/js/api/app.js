@@ -20,6 +20,20 @@ class AppResource extends Resource {
       params: query,
     });
   }
+  appTagList(query){
+    return request({
+      url: '/' + this.uri + '/apptaglist',
+      method: 'get',
+      params: query,
+    });
+  }
+  tagAll(query) {
+    return request({
+      url: '/' + this.uri + '/tagall',
+      method: 'get',
+      params: query,
+    });
+  }
   tagList(query){
     return request({
       url: '/' + this.uri + '/taglist',

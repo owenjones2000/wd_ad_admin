@@ -40,7 +40,6 @@ class StatisController extends Controller
             $channelIds
         ) {
             $query
-            ->where('impressions', '>', 0)
             ->whereBetween('date', [$start_date, $end_date])
                 ->select([
                     'date', 'requests', 'impressions', 'clicks', 'installations', 'spend',

@@ -44,13 +44,19 @@ const acquisitionRoutes = {
       path: 'app/review',
       component: () => import('@/views/app/Review'),
       name: 'AppReviewList',
-      meta: { title: 'App  Review', icon: 'component', permissions: ['advertise.app.edit'] },
+      meta: { title: 'App Review', icon: 'component', permissions: ['advertise.app.edit'] },
+    },
+    {
+      path: 'app/tag',
+      component: () => import('@/views/app/AppTag'),
+      name: 'AppTagList',
+      meta: { title: 'App Tag', icon: 'component', permissions: ['advertise.ad.tag'] },
     },
     {
       path: 'app/:app_id(\\d+)/ios/info',
       component: () => import('@/views/app/Ios'),
       name: 'AppIosInfo',
-      meta: { title: 'App  IOS Review', icon: 'component', permissions: ['advertise.app.edit'] },
+      meta: { title: 'App IOS Review', icon: 'component', permissions: ['advertise.app.edit'] },
       hidden: true,
     },
     {

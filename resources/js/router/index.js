@@ -16,7 +16,7 @@ import Layout from '@/layout';
 import systemRoutes from './modules/system';
 import basicRoutes from './modules/basic';
 import acquisitionRoutes from './modules/acquisition';
-import adtypeRoutes from './modules/adtype';
+// import adtypeRoutes from './modules/adtype';
 import aduienceRoutes from './modules/aduience';
 import statisRoutes from './modules/statis';
 
@@ -120,7 +120,7 @@ export const asyncRoutes = [
   systemRoutes,
   basicRoutes,
   acquisitionRoutes,
-  adtypeRoutes,
+  // adtypeRoutes,
   aduienceRoutes,
   statisRoutes,
   { path: '*', redirect: '/404', hidden: true },

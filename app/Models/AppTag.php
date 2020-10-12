@@ -12,6 +12,7 @@ class AppTag extends Model
     protected $fillable = [
         'name',
         'status', 
+        'group'
     ];
 
     public static function Make($params)
@@ -33,4 +34,8 @@ class AppTag extends Model
         return $apps;
     }
 
+    public function children()
+    {
+        return $this->hasMany(AppTag::class, 'group', 'id')->with('children');
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helper\Helper;
 use App\Models\Advertise\AdvertiseKpi;
 use App\Models\Advertise\App;
 use App\Models\Advertise\Channel;
@@ -125,7 +126,21 @@ class AppController extends Controller
             $app_base_query->where('is_admin_disable', $is_admin_disable);
         }
 
-        $apps = $app_base_query->with('advertiser')->orderBy('is_admin_disable', 'desc')->orderBy('id', 'desc')->paginate($request->get('limit', 30));
+        $apps = $app_base_query->with(['advertiser'])->orderBy('is_admin_disable', 'desc')->orderBy('id', 'desc')->paginate($request->get('limit', 30));
+        return JsonResource::collection($apps);
+    }
+    public function appTagList(Request $request)
+    {
+        $app_base_query = App::query();
+        if (!empty($request->get('keyword'))) {
+            $like_keyword = '%' . $request->get('keyword') . '%';
+            $app_base_query->where('name', 'like', $like_keyword);
+            $app_base_query->orWhereHas('advertiser', function ($query) use ($like_keyword) {
+                $query->where('realname', 'like', $like_keyword);
+            });
+        }
+
+        $apps = $app_base_query->with(['advertiser', 'tags'])->where('status', 1)->orderBy('id', 'desc')->paginate($request->get('limit', 30));
         return JsonResource::collection($apps);
     }
 
@@ -374,8 +389,21 @@ class AppController extends Controller
             $query->where('name', 'like', '%' . $keyword . '%');
         })
             ->where('status', 1)
-            ->paginate($request->get('limit', 30));;
-
+            ->where('group', 0)->with('children')
+            ->get()->toArray();
+        // $tree  = [];
+        // $tree = Helper::ListToTree($appTag, 'id', 'group', 'children', 0, $tree);
+        // dd($tree);
+        return JsonResource::collection($appTag);
+    }
+    public function tagAll(Request $request)
+    {
+        $appTag = AppTag::where('status', 1)
+            // ->where('group', 0)->with('children')
+            ->get()->toArray();
+        // $tree  = [];
+        // $tree = Helper::ListToTree($appTag, 'id', 'group', 'children', 0, $tree);
+        // dd($tree);
         return JsonResource::collection($appTag);
     }
 
