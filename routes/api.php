@@ -110,7 +110,8 @@ Route::group(['middleware' => 'api'], function () {
             Route::get('taglist', 'AppController@tagList')->name('app.tag.list')->middleware('permission:advertise.ad.tag');
             Route::get('tagall', 'AppController@tagAll')->name('app.tag.all')->middleware('permission:advertise.ad.tag');
             Route::post('tag/{id?}', 'AppController@tagSave')->name('app.tag.save')->middleware('permission:advertise.ad.tag');
-            
+            Route::post('/bindtag', 'AppController@bindTag')->name('app.tag.bind')->middleware('permission:advertise.ad.tag');
+
             // 卖量Channel数据
             Route::get('{app_id}/channel', 'AppController@channel')->name('campaign.app.channel')->middleware('permission:advertise.app');
             Route::get('{app_id}/campaign', 'AppController@campaign')->name('campaign.app.campaign')->middleware('permission:advertise.app');

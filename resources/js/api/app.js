@@ -34,6 +34,13 @@ class AppResource extends Resource {
       params: query,
     });
   }
+  addtgss(resource) {
+    return request({
+      url: '/' + this.uri + '/bindtag',
+      method: 'post',
+      data: resource,
+    });
+  }
   tagList(query){
     return request({
       url: '/' + this.uri + '/taglist',

@@ -422,6 +422,30 @@ class AppController extends Controller
             return response()->json(['code' => 100, 'msg' => $ex->getMessage()]);
         }
     }
+
+    public function bindTag(Request $request)
+    {
+        $this->validate($request, [
+            'apps' => 'bail|required|array',
+            'tags' => 'required|array',
+        ]);
+        $apps =  $request->input('apps', []);
+        $tags = $request->input('tags', []);
+        Log::info($apps, $tags);
+        try {
+            foreach ($apps as $key => $appid) {
+                $app = App::findOrFail($appid);
+                if ($tags) {
+                    $app->tags()->sync($tags);
+                }
+            }
+        } catch (Exception $e) {
+            Log::error($e);
+            return response()->json(['code' => 100, 'msg' => 'Failed']);
+        }
+
+        return response()->json(['code' => 0, 'msg' => 'Successful']);
+    }
     /**
      * Display the specified resource.
      *

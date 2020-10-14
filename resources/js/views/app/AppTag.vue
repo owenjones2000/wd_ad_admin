@@ -44,7 +44,6 @@
       fit
       highlight-current-row
       style="width: 100%"
-      @expand-change="handleExpandChange"
       @sort-change="handleSort"
     >
       <el-table-column prop="id" align="center" label="ID" />
@@ -131,6 +130,34 @@
       :limit.sync="query.limit"
       @pagination="getList"
     />
+    <el-dialog :title="'Tag'" :visible.sync="dialogFormVisible" width="50%">
+      <h3>ALL</h3>
+      <div style="display:flex;flex-wrap:wrap">
+        <div v-for="(item,key) of tagalldata" :key="key">
+          <el-tag
+            style="margin:5px;cursor:pointer"
+            size="medium"
+            @click="selecttags(item)"
+          >{{ item.name }}</el-tag>
+        </div>
+      </div>
+      <h3>chosen</h3>
+      <div>
+        <el-tag
+          v-for="(item,key) of selecttagalldata"
+          :key="key"
+          style="margin:5px;cursor:pointer"
+          type="success"
+          closable
+          size="medium"
+          @close="handleClose(item.name)"
+        >{{ item.name }}</el-tag>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="settags(2)">{{ $t('table.confirm') }}</el-button>
+      </span>
+
+    </el-dialog>
   </div>
 </template>
 
@@ -166,6 +193,8 @@ export default {
         { value: '0', label: 'Yes' },
         { value: '1', label: 'No' },
       ],
+      tagalldata: [],
+      selecttagalldata: [],
       query: {
         page: 1,
         limit: 15,
@@ -184,7 +213,6 @@ export default {
         tokens: [],
       },
       countrys: [],
-      currentAppTokens: [],
       rules: {
         name: [
           { required: true, message: 'Name is required', trigger: 'blur' },
@@ -215,6 +243,22 @@ export default {
   },
   methods: {
     checkPermission,
+    selecttags(val) {
+      this.selecttagalldata.push(val);
+      // console.log(this.se
+      var result = [];
+      var obj = {};
+      for (var i = 0; i < this.selecttagalldata.length; i++) {
+        if (!obj[this.selecttagalldata[i].id]) {
+          result.push(this.selecttagalldata[i]);
+          obj[this.selecttagalldata[i].id] = true;
+        }
+      }
+      this.selecttagalldata = result;
+    },
+    handleClose(tag) {
+      this.selecttagalldata.splice(this.selecttagalldata.indexOf(tag), 1);
+    },
     async gettagall() {
       const { data } = await appResource.tagAll();
       this.tagalldata = data;
@@ -257,132 +301,50 @@ export default {
       this.query.page = 1;
       this.getList();
     },
+    settags(type) {
+      const obj = {
+        apps: [],
+        tags: [],
+      };
+      console.log(type, this.currentApp.id);
+      if (type === 2) {
+        obj.apps.push(this.currentApp.id);
+      } else if (type === 1) {
+        for (const y of this.multipleSelection) {
+          obj.apps.push(y.id);
+        }
+      }
+      for (const t of this.selecttagalldata) {
+        obj.tags.push(t.id);
+      }
+      if (obj.apps.length === 0 || obj.tags.length === 0) {
+        return false;
+      }
+      appResource.addtgss(obj).then((res) => {
+        console.log(res);
+        if (res.code === 0) {
+          this.$message({
+            message: 'Set successfully',
+            type: 'success',
+          });
+          this.dialogFormVisible = false;
+          this.getList();
+        } else {
+          this.$message({
+            message: 'Setup failed',
+            type: 'warning',
+          });
+        }
+      });
+    },
     dateFormat(row, column, cellValue, index) {
       var date = row[column.property];
       return date.substr(0, 10);
     },
-    handleDelete(id, name) {
-      this.$confirm(
-        'This will permanently delete app ' + name + '. Continue?',
-        'Warning',
-        {
-          confirmButtonText: 'OK',
-          cancelButtonText: 'Cancel',
-          type: 'warning',
-        }
-      )
-        .then(() => {
-          appResource
-            .destroy(id)
-            .then((response) => {
-              this.$message({
-                type: 'success',
-                message: 'Delete completed',
-              });
-              this.handleFilter();
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        })
-        .catch(() => {
-          this.$message({
-            type: 'info',
-            message: 'Delete canceled',
-          });
-        });
-    },
-    handleStatus(app) {
-      this.$confirm(
-        'This will ' +
-          (app.is_admin_disable ? 'release control for' : 'disable') +
-          ' app ' +
-          app.name +
-          '. Continue?',
-        'Warning',
-        {
-          confirmButtonText: 'OK',
-          cancelButtonText: 'Cancel',
-          type: 'warning',
-        }
-      )
-        .then(() => {
-          if (app.is_admin_disable) {
-            appResource
-              .enable(app.id)
-              .then((response) => {
-                this.$message({
-                  type: 'success',
-                  message: 'App ' + app.name + ' released',
-                });
-                this.getList();
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-          } else {
-            appResource
-              .disable(app.id)
-              .then((response) => {
-                this.$message({
-                  type: 'success',
-                  message: 'App ' + app.name + ' disabled',
-                });
-                this.getList();
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-    handleAudience(campaign) {
-      this.$confirm(
-        'This will change app display audience ' +
-          campaign.name +
-          '. Continue?',
-        'Warning',
-        {
-          confirmButtonText: 'OK',
-          cancelButtonText: 'Cancel',
-          type: 'warning',
-        }
-      )
-        .then(() => {
-          if (campaign.is_audience) {
-            appResource
-              .disableAudi(campaign.id)
-              .then((response) => {
-                this.$message({
-                  type: 'success',
-                  message: 'Campaign ' + campaign.name + ' released',
-                });
-                this.getList();
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-          } else {
-            appResource
-              .enableAudi(campaign.id)
-              .then((response) => {
-                this.$message({
-                  type: 'success',
-                  message: 'Campaign ' + campaign.name + ' disabled',
-                });
-                this.getList();
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    handleTag(app) {
+      this.currentApp = app;
+      this.selecttagalldata = app.tags;
+      this.dialogFormVisible = true;
     },
     handleDownload() {
       this.downloading = true;
