@@ -177,7 +177,7 @@ class Account extends Model
             ->whereBetween('date', [$date_begin, $date_end])
             ->whereIn('app_id', $this->apps()->select('id')->getQuery());
         $fee_amount = $fee_amount_query->sum('spend');
-        $billInfo = $fee_amount_query->with(['campaign:id,name'])
+        $billInfo = $fee_amount_query->with(['campaign:id,name', 'app:id,name'])
         ->select([
             'campaign_id',
             'app_id',
@@ -211,6 +211,7 @@ class Account extends Model
                         'campaign_id' => $value['campaign_id'],
                     ],[
                         'campagin_name' => $value['campaign']['name']??'',
+                        'app_name' => $value['app']['name']??'',
                         'spend' => $value['spend']??0,
                         'installations' => $value['installations']??0,
                     ]);

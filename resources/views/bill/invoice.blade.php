@@ -99,12 +99,14 @@
     <hr />
     <table class="detail" style="width: 100%">
         <tr>
+            <th >App</th>
             <th >Campaign</th>
             <th >Install</th>
             <th >Spend</th>
         </tr>
         @foreach ($billInfo as $item)
         <tr class="odd-row">
+        <td>{{$item['app_name']}}</td>
         <td>{{$item['campagin_name']}}</td>
         <td>{{$item['installations']}}</td>
         <td>${{$item['spend']}}</td>

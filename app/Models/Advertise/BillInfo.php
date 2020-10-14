@@ -13,6 +13,7 @@ class BillInfo extends Model
         'bill_id',
         'campaign_id',
         'campagin_name',
+        'app_name',
         'spend',
         'installations',
         // 'extra_data'
