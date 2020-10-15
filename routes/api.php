@@ -98,6 +98,13 @@ Route::group(['middleware' => 'api'], function () {
             Route::get('{channel_id}/app', 'ChannelController@app')->name('campaign.channel.app')->middleware('permission:advertise.channel');
             Route::post('{channel_id}/app/{app_id}/joinblack', 'ChannelController@joinBlack')->name('channel.app.joinblack')->middleware('permission:advertise.channel.edit');;
             Route::post('{channel_id}/app/{app_id}/removeblack', 'ChannelController@removeBlack')->name('channel.app.removeblack')->middleware('permission:advertise.channel.edit');;
+            //tag
+
+            Route::get('apptaglist', 'ChannelController@appTagList')->name('channel.list.tag')->middleware('permission:advertise.ad.tag');
+            Route::get('taglist', 'ChannelController@tagList')->name('channel.tag.list')->middleware('permission:advertise.ad.tag');
+            // Route::get('tagall', 'ChannelController@tagAll')->name('channel.tag.all')->middleware('permission:advertise.ad.tag');
+            Route::post('tag/save/{id?}', 'ChannelController@tagSave')->name('channel.tag.save')->middleware('permission:advertise.ad.tag');
+            Route::post('/bind/tag', 'ChannelController@bindTag')->name('channel.tag.bind')->middleware('permission:advertise.ad.tag');
         });
 
         // 应用管理
@@ -109,8 +116,8 @@ Route::group(['middleware' => 'api'], function () {
             Route::get('apptaglist', 'AppController@appTagList')->name('app.list.tag')->middleware('permission:advertise.ad.tag');
             Route::get('taglist', 'AppController@tagList')->name('app.tag.list')->middleware('permission:advertise.ad.tag');
             Route::get('tagall', 'AppController@tagAll')->name('app.tag.all')->middleware('permission:advertise.ad.tag');
-            Route::post('tag/{id?}', 'AppController@tagSave')->name('app.tag.save')->middleware('permission:advertise.ad.tag');
-            Route::post('/bindtag', 'AppController@bindTag')->name('app.tag.bind')->middleware('permission:advertise.ad.tag');
+            Route::post('tag/save/{id?}', 'AppController@tagSave')->name('app.tag.save')->middleware('permission:advertise.ad.tag');
+            Route::post('/bind/tag', 'AppController@bindTag')->name('app.tag.bind')->middleware('permission:advertise.ad.tag');
 
             // 卖量Channel数据
             Route::get('{app_id}/channel', 'AppController@channel')->name('campaign.app.channel')->middleware('permission:advertise.app');

@@ -1,6 +1,7 @@
 <?php
 namespace App\Models\Advertise;
 
+use App\Models\AppTag;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
@@ -42,5 +43,10 @@ class Channel extends Model
         Log::info('channel restart'. $this->id);
         // Log::info($res);
         Log::info($res1);
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(AppTag::class, 'a_target_app_tags', 'app_id', 'tag_id', 'id', 'id');
     }
 }

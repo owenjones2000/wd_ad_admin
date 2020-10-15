@@ -21,13 +21,16 @@ use App\Models\Advertise\Impression;
 use App\Models\Advertise\Install;
 use App\Models\Advertise\Region;
 use App\Models\ChannelCpm;
+use App\Models\ChannelTag;
 use App\Rules\AdvertiseName;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -723,5 +726,75 @@ class ChannelController extends Controller
             'put_mode' => 'required|integer|in:1,2',
             'rate' => 'required|numeric|min:0|max:100',
         ];
+    }
+
+    public function tagList(Request $request)
+    {
+        $keyword = $request->input('keyword', '');
+        $channelTag = ChannelTag::when($keyword, function ($query) use ($keyword) {
+            $query->where('name', 'like', '%' . $keyword . '%');
+        })
+            ->where('status', 1)
+            ->where('group', 0)->with('children')
+            ->get()->toArray();
+        // $tree  = [];
+        // $tree = Helper::ListToTree($appTag, 'id', 'group', 'children', 0, $tree);
+        // dd($tree);
+        return JsonResource::collection($channelTag);
+    }
+
+    public function tagSave(Request $request, $id = null)
+    {
+        $this->validate($request, [
+            'name'  => 'required|string|unique:a_target_app_tag,name,' . $id . ',id',
+        ]);
+        try {
+            $params = $request->all();
+            $params['id'] = $id;
+            ChannelTag::Make($params);
+            return response()->json(['code' => 0, 'msg' => 'Successful']);
+        } catch (Exception $ex) {
+            Log::error($ex);
+            return response()->json(['code' => 100, 'msg' => $ex->getMessage()]);
+        }
+    }
+
+    public function appTagList(Request $request)
+    {
+        $app_base_query = Channel::query();
+        if (!empty($request->get('keyword'))) {
+            $like_keyword = '%' . $request->get('keyword') . '%';
+            $app_base_query->where('name', 'like', $like_keyword);
+            $app_base_query->orWhereHas('advertiser', function ($query) use ($like_keyword) {
+                $query->where('realname', 'like', $like_keyword);
+            });
+        }
+
+        $apps = $app_base_query->with(['tags'])->where('status', 1)->orderBy('id', 'desc')->paginate($request->get('limit', 30));
+        return JsonResource::collection($apps);
+    }
+
+    public function bindTag(Request $request)
+    {
+        $this->validate($request, [
+            'apps' => 'bail|required|array',
+            'tags' => 'required|array',
+        ]);
+        $apps =  $request->input('apps', []);
+        $tags = $request->input('tags', []);
+        Log::info($apps, $tags);
+        try {
+            foreach ($apps as $key => $appid) {
+                $app = Channel::findOrFail($appid);
+                if ($tags) {
+                    $app->tags()->sync($tags);
+                }
+            }
+        } catch (Exception $e) {
+            Log::error($e);
+            return response()->json(['code' => 100, 'msg' => 'Failed']);
+        }
+
+        return response()->json(['code' => 0, 'msg' => 'Successful']);
     }
 }

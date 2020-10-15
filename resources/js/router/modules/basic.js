@@ -25,6 +25,12 @@ const basicRoutes = {
       name: 'AdTag',
       meta: { title: 'Ad Tag', icon: 'component', permissions: ['basic.manage'] },
     },
+    // {
+    //   path: 'channel/tag',
+    //   component: () => import('@/views/channel/Tag'),
+    //   name: 'ChannelTag',
+    //   meta: { title: 'Channel Tag', icon: 'component', permissions: ['basic.manage'] },
+    // },
     {
       path: 'log',
       component: () => import('@/views/users/Oplog'),

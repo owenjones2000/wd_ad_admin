@@ -116,6 +116,12 @@ const acquisitionRoutes = {
       meta: { title: 'Channel', icon: 'tree', permissions: ['advertise.channel'] },
     },
     {
+      path: 'channel/tag',
+      component: () => import('@/views/channel/ChannelTag'),
+      name: 'ChannelTagList',
+      meta: { title: 'Channel Tag', icon: 'component', permissions: ['advertise.ad.tag'] },
+    },
+    {
       path: 'channel/:channel_id(\\d+)/app',
       component: () => import('@/views/channel/app/List'),
       name: 'ChannelAppList',

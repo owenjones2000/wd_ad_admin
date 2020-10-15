@@ -36,7 +36,7 @@ class AppResource extends Resource {
   }
   addtgss(resource) {
     return request({
-      url: '/' + this.uri + '/bindtag',
+      url: '/' + this.uri + '/bind/tag',
       method: 'post',
       data: resource,
     });
@@ -49,9 +49,9 @@ class AppResource extends Resource {
     });
   }
   saveTag(resource) {
-    var url = '/' + this.uri + '/tag';
+    var url = '/' + this.uri + '/tag/save';
     if (resource.id) {
-      url = '/' + this.uri + '/tag/' + resource.id;
+      url = '/' + this.uri + '/tag/save/' + resource.id;
     }
     return request({
       url: url,

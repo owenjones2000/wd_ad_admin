@@ -58,6 +58,40 @@ class ChannelResource extends Resource {
       params: query,
     });
   }
+
+  tagList(query) {
+    return request({
+      url: '/' + this.uri + '/taglist',
+      method: 'get',
+      params: query,
+    });
+  }
+  saveTag(resource) {
+    var url = '/' + this.uri + '/tag/save';
+    if (resource.id) {
+      url = '/' + this.uri + '/tag/save/' + resource.id;
+    }
+    return request({
+      url: url,
+      method: 'post',
+      data: resource,
+    });
+  }
+  appTagList(query) {
+    return request({
+      url: '/' + this.uri + '/apptaglist',
+      method: 'get',
+      params: query,
+    });
+  }
+
+  addtgss(resource) {
+    return request({
+      url: '/' + this.uri + '/bind/tag',
+      method: 'post',
+      data: resource,
+    });
+  }
 }
 
 export { ChannelResource as default };
