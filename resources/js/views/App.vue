@@ -10,5 +10,7 @@ export default {
 };
 </script>
 <style  scoped>
-
+  .el-checkbox__inner{
+    border: none !important;
+  }
 </style>

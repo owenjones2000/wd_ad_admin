@@ -230,6 +230,7 @@ export default {
         expired_at: null,
       },
       pickerOptions: defaultDatePickerOptions,
+      kk: '',
     };
   },
   computed: {},
@@ -341,11 +342,8 @@ export default {
         tags: [],
       };
       obj.apps.push(this.currentApp.id);
-      const datas = this.$refs.tree.getCheckedNodes();
-      console.log(datas);
-      for (const t of datas) {
-        obj.tags.push(t.id);
-      }
+      const datas = this.$refs.tree.getCheckedKeys();
+      obj.tags = datas;
       appResource.addtgss(obj).then((res) => {
         console.log(res);
         if (res.code === 0) {
