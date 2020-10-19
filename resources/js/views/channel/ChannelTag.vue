@@ -251,6 +251,7 @@ export default {
       for (const y of this.dataoption) {
         y.value = y.id;
         y.label = y.name;
+        y.disabled = true;
       }
 
       this.findfunction(this.dataoption);
@@ -275,7 +276,6 @@ export default {
           for (const y of item.children) {
             y.value = y.id;
             y.label = y.name;
-            y.disabled = true;
           }
           this.findfunction(item.children); // 递归调用
         }
