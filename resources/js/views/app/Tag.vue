@@ -345,8 +345,9 @@ export default {
     },
     save() {
       console.log(this.currentAccount);
-      if (this.currentAccount.group){
-        this.currentAccount.group = this.currentAccount.group[length];
+      const num = this.currentAccount.group.length;
+      if (this.currentAccount.group) {
+        this.currentAccount.group = this.currentAccount.group[num - 1];
       }
       this.$refs['accountForm'].validate((valid) => {
         if (valid) {
