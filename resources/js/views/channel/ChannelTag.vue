@@ -136,28 +136,16 @@
       @pagination="getList"
     />
     <el-dialog :title="'Tag'" :visible.sync="dialogFormVisible" width="50%">
-      <h3>ALL</h3>
-      <div style="display: flex; flex-wrap: wrap">
-        <div v-for="(item, key) of tagalldata" :key="key">
-          <el-tag
-            style="margin: 5px; cursor: pointer"
-            size="medium"
-            @click="selecttags(item)"
-          >{{ item.name }}</el-tag>
-        </div>
-      </div>
-      <h3>chosen</h3>
-      <div>
-        <el-tag
-          v-for="(item, key) of selecttagalldata"
-          :key="key"
-          style="margin: 5px; cursor: pointer"
-          type="success"
-          closable
-          size="medium"
-          @close="handleClose(item.name)"
-        >{{ item.name }}</el-tag>
-      </div>
+      <el-tree
+        ref="tree"
+        v-model="treedata"
+        :data="dataoption"
+        show-checkbox
+        default-expand-all
+        node-key="id"
+        highlight-current
+        :props="defaultProps"
+      />
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="settags(2)">{{
           $t('table.confirm')
@@ -212,6 +200,10 @@ export default {
         daterange: [new Date(), new Date()],
       },
       newApp: {},
+      defaultProps: {
+        children: 'children',
+        label: 'label',
+      },
       dialogFormVisible: false,
       currentAppId: 0,
       currentApp: {
@@ -219,6 +211,7 @@ export default {
         tokens: [],
       },
       countrys: [],
+      dataoption: [],
       rules: {
         name: [
           { required: true, message: 'Name is required', trigger: 'blur' },
@@ -378,6 +371,14 @@ export default {
       return date.substr(0, 10);
     },
     handleTag(app) {
+      const tagsarr = [];
+      for (const i of app.tags) {
+        tagsarr.push(i.id);
+      }
+
+      setTimeout(() => {
+        this.$refs.tree.setCheckedKeys(tagsarr);
+      }, 500);
       this.currentApp = app;
       this.selecttagalldata = app.tags;
       this.dialogFormVisible = true;
