@@ -440,7 +440,7 @@ class AppController extends Controller
             get()->keyBy('id')->toArray();
         try {
             foreach ($tags as $key => $tagId) {
-                $isOk = $this->isParaentSel($tagId, $appTag, $tags);
+                $isOk = Helper::isParaentSel($tagId, $appTag, $tags);
             }
         
         // Log::info($apps, $tags);
@@ -459,36 +459,7 @@ class AppController extends Controller
         return response()->json(['code' => 0, 'msg' => 'Successful']);
     }
 
-    public function isParaentSel($tagId, $appTag, $tags)
-    {
-        $tagData =  $appTag[$tagId];
-        $paraData = $appTag[$tagData['group']];
-        // dump($tagData);
-        // dump($paraData);
-        // dump($tags);
-        if ($paraData['group'] != 0 ) {
-            // dump($paraData['id']);
-            if (!in_array($paraData['id'], $tags)){
-                throw new \Exception('标签选择错误');
-            } else {
-                return true;
-            }
-        }else {
-            
-            return true;
-        }
-        // if ($paraData['group'] != 0 ) {
-        //     if (!in_array($paraData['id'], $tags)){
-        //         // dump($tagData);
-        //         return false;
-        //     }else {
-        //         return $this->isParaentSel($paraData['id'], $appTag, $tags);
-        //     }
-        // }else {
-        //     // dump($tagData);
-        //     return true;
-        // }
-    }
+    
     /**
      * Display the specified resource.
      *

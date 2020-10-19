@@ -10,6 +10,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ChannelResource;
 use App\Laravue\Models\User;
@@ -20,6 +21,7 @@ use App\Models\Advertise\Channel;
 use App\Models\Advertise\Impression;
 use App\Models\Advertise\Install;
 use App\Models\Advertise\Region;
+use App\Models\AppTag;
 use App\Models\ChannelCpm;
 use App\Models\ChannelTag;
 use App\Rules\AdvertiseName;
@@ -782,8 +784,13 @@ class ChannelController extends Controller
         ]);
         $apps =  $request->input('apps', []);
         $tags = $request->input('tags', []);
-        Log::info($apps, $tags);
+        $appTag = AppTag::
+            // ->where('group', 0)->with('children')
+            get()->keyBy('id')->toArray();
         try {
+            foreach ($tags as $key => $tagId) {
+                $isOk = Helper::isParaentSel($tagId, $appTag, $tags);
+            }
             foreach ($apps as $key => $appid) {
                 $app = Channel::findOrFail($appid);
                 if ($tags) {
