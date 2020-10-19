@@ -39,7 +39,7 @@
       default-expand-all
       border
       fit
-      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+      :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
       highlight-current-row
       style="width: 100%"
     >
@@ -76,18 +76,13 @@
             <el-input v-model="currentAccount.name" />
           </el-form-item>
           <el-form-item label="Group" prop="group">
-            <el-select
+            <el-cascader
               v-model="currentAccount.group"
+              :options="list"
+              check-strictly
+              :props="{ checkStrictly: true }"
               clearable
-              placeholder="Group"
-            >
-              <el-option
-                v-for="item in groups"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              />
-            </el-select>
+            />
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -163,6 +158,7 @@ export default {
         expired_at: null,
       },
       currentUserTokens: [],
+      options: [],
       dialogPermission: {
         title: 'Permissions',
         loading: false,
@@ -197,21 +193,45 @@ export default {
     this.getList();
   },
   methods: {
+    // 获取树形结构
     checkPermission,
     getTopTag() {},
     async getList() {
       this.loading = true;
       const { data } = await appResource.tagList(this.query);
       this.list = data;
+      for (const y of this.list) {
+        y.value = y.id;
+        y.label = y.name;
+      }
+
+      this.findfunction(this.list);
       this.groups = [];
       this.list.forEach((element, index) => {
-        console.log(index, element);
         if (element.group === 0) {
           this.groups.push(element);
         }
       });
       this.loading = false;
-      console.log(this.groups);
+      console.log(this.list);
+    },
+    // 递归去除空数组
+    findfunction(arr) {
+      arr.forEach((item) => {
+        // 利用foreach循环遍历
+        if (item.children.length === 0) {
+          // 判断递归结束条件
+          delete item.children;
+          return false;
+        } else if (item.children.length > 0) {
+          // 判断chlidren是否有数据
+          for (const y of item.children) {
+            y.value = y.id;
+            y.label = y.name;
+          }
+          this.findfunction(item.children); // 递归调用
+        }
+      });
     },
     clipboardSuccess() {
       this.$message({
@@ -324,6 +344,8 @@ export default {
         });
     },
     save() {
+      console.log(this.currentAccount);
+      this.currentAccount.group = this.currentAccount.group[length];
       this.$refs['accountForm'].validate((valid) => {
         if (valid) {
           this.accountCreating = true;

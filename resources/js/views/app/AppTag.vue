@@ -4,24 +4,10 @@
       <el-input
         v-model="query.keyword"
         :placeholder="$t('table.keyword')"
-        style="width: 150px;"
+        style="width: 150px"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
-      <!-- <el-select
-        v-model="query.is_admin_disable"
-        clearable
-        placeholder="Review Status"
-        style="width: 150px;"
-        class="filter-item"
-      >
-        <el-option
-          v-for="item in reviews"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
-      </el-select> -->
       <el-button
         v-waves
         class="filter-item"
@@ -52,11 +38,15 @@
       <el-table-column prop="os" align="center" label="Platform" />
       <el-table-column prop="track.name" align="center" label="TrackPlatform" />
 
-      <el-table-column prop="advertiser.realname" align="center" label="Advertiser" />
+      <el-table-column
+        prop="advertiser.realname"
+        align="center"
+        label="Advertiser"
+      />
       <el-table-column align="center" label="Status">
         <template slot-scope="scope">
           <el-icon
-            :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}"
+            :style="{ color: scope.row.status ? '#67C23A' : '#F56C6C' }"
             size="medium"
             :name="scope.row.status ? 'video-play' : 'video-pause'"
           />
@@ -65,8 +55,12 @@
       <el-table-column align="center" label="IsTag">
         <template slot-scope="scope">
           <i
-            :style="{color: scope.row.tags.length>0 ? '#67C23A' : '#F56C6C'}"
-            :class="scope.row.tags.length>0 ? 'el-icon-check' : 'el-icon-close'"
+            :style="{
+              color: scope.row.tags.length > 0 ? '#67C23A' : '#F56C6C',
+            }"
+            :class="
+              scope.row.tags.length > 0 ? 'el-icon-check' : 'el-icon-close'
+            "
           />
         </template>
       </el-table-column>
@@ -93,26 +87,32 @@
             @click="handleTag(scope.row)"
           >Edit Tag</el-button>
 
-          <router-link class="link-type" :to="'/acquisition/app/'+scope.row.id+'/ios/info'">
+          <router-link
+            class="link-type"
+            :to="'/acquisition/app/' + scope.row.id + '/ios/info'"
+          >
             <el-button
-              v-if="scope.row.os=='ios'"
+              v-if="scope.row.os == 'ios'"
               size="small"
               type="primary"
-              style="margin:0 10px"
+              style="margin: 0 10px"
               icon="el-icon-view"
             >Ios</el-button>
           </router-link>
 
           <el-link
             class="link-type"
-            :href="'https://play.google.com/store/apps/details?id='+scope.row.bundle_id"
+            :href="
+              'https://play.google.com/store/apps/details?id=' +
+                scope.row.bundle_id
+            "
             target="_blank"
           >
             <el-button
-              v-if="scope.row.os =='android'"
+              v-if="scope.row.os == 'android'"
               size="small"
               type="primary"
-              style="margin:0 10px"
+              style="margin: 0 10px"
               icon="el-icon-view"
             >android</el-button>
           </el-link>
@@ -124,39 +124,28 @@
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="query.page"
       :limit.sync="query.limit"
       @pagination="getList"
     />
-    <el-dialog :title="'Tag'" :visible.sync="dialogFormVisible" width="50%">
-      <h3>ALL</h3>
-      <div style="display:flex;flex-wrap:wrap">
-        <div v-for="(item,key) of tagalldata" :key="key">
-          <el-tag
-            style="margin:5px;cursor:pointer"
-            size="medium"
-            @click="selecttags(item)"
-          >{{ item.name }}</el-tag>
-        </div>
-      </div>
-      <h3>chosen</h3>
-      <div>
-        <el-tag
-          v-for="(item,key) of selecttagalldata"
-          :key="key"
-          style="margin:5px;cursor:pointer"
-          type="success"
-          closable
-          size="medium"
-          @close="handleClose(item.name)"
-        >{{ item.name }}</el-tag>
-      </div>
+    <el-dialog title="Tag" :visible.sync="dialogFormVisible" width="50%">
+      <el-tree
+        ref="tree"
+        v-model="treedata"
+        :data="dataoption"
+        show-checkbox
+        default-expand-all
+        node-key="id"
+        highlight-current
+        :props="defaultProps"
+      />
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="settags(2)">{{ $t('table.confirm') }}</el-button>
+        <el-button type="primary" @click="settags(2)">{{
+          $t('table.confirm')
+        }}</el-button>
       </span>
-
     </el-dialog>
   </div>
 </template>
@@ -180,8 +169,14 @@ export default {
   data() {
     return {
       list: null,
+      defaultProps: {
+        children: 'children',
+        label: 'label',
+      },
       total: 0,
+      dataoption: [],
       loading: true,
+      treedata: [],
       rowLoading: false,
       downloading: false,
       appCreating: false,
@@ -239,9 +234,46 @@ export default {
   computed: {},
   created() {
     this.getList();
+    this.getLists();
     this.gettagall();
   },
   methods: {
+    async getLists() {
+      this.loading = true;
+      const { data } = await appResource.tagList(this.query);
+      this.dataoption = data;
+      for (const y of this.dataoption) {
+        y.value = y.id;
+        y.label = y.name;
+      }
+
+      this.findfunction(this.dataoption);
+      this.groups = [];
+      this.dataoption.forEach((element, index) => {
+        if (element.group === 0) {
+          this.groups.push(element);
+        }
+      });
+      this.loading = false;
+      console.log(this.dataoption);
+    },
+    findfunction(arr) {
+      arr.forEach((item) => {
+        // 利用foreach循环遍历
+        if (item.children.length === 0) {
+          // 判断递归结束条件
+          delete item.children;
+          return false;
+        } else if (item.children.length > 0) {
+          // 判断chlidren是否有数据
+          for (const y of item.children) {
+            y.value = y.id;
+            y.label = y.name;
+          }
+          this.findfunction(item.children); // 递归调用
+        }
+      });
+    },
     checkPermission,
     selecttags(val) {
       this.selecttagalldata.push(val);
@@ -306,19 +338,10 @@ export default {
         apps: [],
         tags: [],
       };
-      console.log(type, this.currentApp.id);
-      if (type === 2) {
-        obj.apps.push(this.currentApp.id);
-      } else if (type === 1) {
-        for (const y of this.multipleSelection) {
-          obj.apps.push(y.id);
-        }
-      }
-      for (const t of this.selecttagalldata) {
+      obj.apps.push(this.currentApp.id);
+      const datas = this.$refs.tree.getCheckedNodes();
+      for (const t of datas) {
         obj.tags.push(t.id);
-      }
-      if (obj.apps.length === 0 || obj.tags.length === 0) {
-        return false;
       }
       appResource.addtgss(obj).then((res) => {
         console.log(res);
