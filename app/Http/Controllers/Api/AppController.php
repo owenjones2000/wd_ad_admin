@@ -392,7 +392,7 @@ class AppController extends Controller
             ->where('group', 0)->with('children')
             ->get()->toArray();
         // $tree  = [];
-        // $tree = Helper::ListToTree($appTag, 'id', 'group', 'children', 0, $tree);
+        // $appTag = Helper::ListToTree($appTag, 'id', 'group', 'children', 0, $tree);
         // dd($tree);
         return JsonResource::collection($appTag);
     }
