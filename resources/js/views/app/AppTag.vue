@@ -136,6 +136,7 @@
         v-model="treedata"
         :data="dataoption"
         show-checkbox
+        check-strictly
         default-expand-all
         node-key="id"
         highlight-current
@@ -245,6 +246,7 @@ export default {
       for (const y of this.dataoption) {
         y.value = y.id;
         y.label = y.name;
+        y.disabled = true;
       }
 
       this.findfunction(this.dataoption);
@@ -340,6 +342,7 @@ export default {
       };
       obj.apps.push(this.currentApp.id);
       const datas = this.$refs.tree.getCheckedNodes();
+      console.log(datas);
       for (const t of datas) {
         obj.tags.push(t.id);
       }
