@@ -357,7 +357,7 @@ export default {
           this.getList();
         } else {
           this.$message({
-            message: 'Setup failed',
+            message: res.msg,
             type: 'warning',
           });
         }
