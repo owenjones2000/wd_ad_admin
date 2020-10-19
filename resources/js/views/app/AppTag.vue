@@ -365,6 +365,21 @@ export default {
       return date.substr(0, 10);
     },
     handleTag(app) {
+      const tagsarr = [];
+      for (const i of app.tags) {
+        // i.label = i.name;
+        tagsarr.push(i.id);
+      }
+      /*  this.$refs.tree.setCheckedNodes([{
+          id: 5,
+          label: '二级 2-1'
+        }, {
+          id: 9,
+          label: '三级 1-1-1'
+        }]); */
+      setTimeout(() => {
+        this.$refs.tree.setCheckedKeys(tagsarr);
+      }, 1000);
       this.currentApp = app;
       this.selecttagalldata = app.tags;
       this.dialogFormVisible = true;
