@@ -345,7 +345,9 @@ export default {
     },
     save() {
       console.log(this.currentAccount);
-      this.currentAccount.group = this.currentAccount.group[length];
+      if (this.currentAccount.group){
+        this.currentAccount.group = this.currentAccount.group[length];
+      }
       this.$refs['accountForm'].validate((valid) => {
         if (valid) {
           this.accountCreating = true;
