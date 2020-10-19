@@ -18,7 +18,7 @@
         {{ $t('table.search') }}
       </el-button>
       <el-button
-        v-permission="['advertise.app.edit']"
+        v-permission="['advertise.ad.tag']"
         class="filter-item"
         style="margin-left: 10px"
         type="primary"
