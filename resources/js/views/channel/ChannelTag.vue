@@ -143,6 +143,7 @@
         show-checkbox
         default-expand-all
         node-key="id"
+        check-strictly
         highlight-current
         :props="defaultProps"
       />
@@ -274,6 +275,7 @@ export default {
           for (const y of item.children) {
             y.value = y.id;
             y.label = y.name;
+            y.disabled = true;
           }
           this.findfunction(item.children); // 递归调用
         }

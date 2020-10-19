@@ -77,6 +77,7 @@
           </el-form-item>
           <el-form-item label="Group" prop="group">
             <el-cascader
+
               v-model="currentAccount.group"
               :options="list"
               check-strictly
