@@ -354,6 +354,8 @@ export default {
           appResource
             .saveTag(this.currentAccount)
             .then((response) => {
+              this.currentAccount.group = [];
+              this.currentAccount.name = '';
               this.$message({
                 message:
                   'Tag ' +
