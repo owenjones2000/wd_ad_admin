@@ -772,7 +772,9 @@ class ChannelController extends Controller
             });
         }
 
-        $apps = $app_base_query->with(['tags'])->where('status', 1)->orderBy('id', 'desc')->paginate($request->get('limit', 30));
+        $apps = $app_base_query->with(['tags'])
+            // ->where('status', 1)
+            ->orderBy('id', 'desc')->paginate($request->get('limit', 30));
         return JsonResource::collection($apps);
     }
 

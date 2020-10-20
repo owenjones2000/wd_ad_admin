@@ -55,7 +55,7 @@ class AppController extends Controller
             $country
         ) {
             $query
-            ->whereBetween('date', [$start_date, $end_date])
+                ->whereBetween('date', [$start_date, $end_date])
                 ->whereIn('app_id', $app_id_query)
                 ->when($country, function ($query) use ($country) {
                     $query->whereIn('country', $country);
@@ -140,7 +140,10 @@ class AppController extends Controller
             });
         }
 
-        $apps = $app_base_query->with(['advertiser', 'tags'])->where('status', 1)->orderBy('id', 'desc')->paginate($request->get('limit', 30));
+        $apps = $app_base_query->with(['advertiser', 'tags'])
+            // ->where('status', 1)
+            ->orderBy('id', 'desc')
+            ->paginate($request->get('limit', 30));
         return JsonResource::collection($apps);
     }
 
@@ -442,9 +445,9 @@ class AppController extends Controller
             foreach ($tags as $key => $tagId) {
                 $isOk = Helper::isParaentSel($tagId, $appTag, $tags);
             }
-        
-        // Log::info($apps, $tags);
-        
+
+            // Log::info($apps, $tags);
+
             foreach ($apps as $key => $appid) {
                 $app = App::findOrFail($appid);
                 if ($tags) {
@@ -459,7 +462,7 @@ class AppController extends Controller
         return response()->json(['code' => 0, 'msg' => 'Successful']);
     }
 
-    
+
     /**
      * Display the specified resource.
      *
