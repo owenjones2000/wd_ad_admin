@@ -37,7 +37,10 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
-        parent::report($exception);
+        $code = $exception->getCode();
+        if ($code < 1000) {
+            parent::report($exception);
+        }
     }
 
     /**

@@ -649,7 +649,7 @@ class Helper
         if ($paraData['group'] != 0) {
             // dump($paraData['id']);
             if (!in_array($paraData['id'], $tags)) {
-                throw new \Exception('标签选择错误');
+                throw new \Exception('标签选择错误', 1000);
             } else {
                 return true;
             }
