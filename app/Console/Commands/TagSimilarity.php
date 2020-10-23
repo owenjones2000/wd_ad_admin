@@ -48,10 +48,10 @@ class TagSimilarity extends Command
             ->get();
         $channels = Channel::query()->with(['tags'])->get();
         try {
-            foreach ($apps as $key => $app) {
+            foreach ($channels as $key => $app) {
                 $keyRedis = 'similarity_' . $app->id;
                 $redisData  = [];
-                foreach ($channels as $key => $channel) {
+                foreach ($apps as $key => $channel) {
                     if (!$app->tags->isEmpty() && !$channel->tags->isEmpty()) {
                         // dd($app->toArray(), $channel->toArray());
                         $intersect = $app->tags->intersect($channel->tags);
@@ -74,7 +74,7 @@ class TagSimilarity extends Command
                     });
                     dump($app->id .'---->'.count($redisData));
                 }
-                Redis::connection('feature')->del($keyRedis);
+                // Redis::connection('feature')->del($keyRedis);
             }
             Log::info('finish' . __METHOD__);
         } catch (\Exception $e) {
