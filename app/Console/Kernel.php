@@ -8,6 +8,7 @@ use App\Console\Commands\AppTag;
 use App\Console\Commands\ChannelCpmTj;
 use App\Console\Commands\DateStatis;
 use App\Console\Commands\SubTaskMonthSum;
+use App\Console\Commands\TagSimilarity;
 use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -42,6 +43,7 @@ class Kernel extends ConsoleKernel
         $schedule->command(AppDetect::class)->runInBackground()->withoutOverlapping()->everyTenMinutes();
         $schedule->command(DateStatis::class)->runInBackground()->hourly();
         $schedule->command(AppTag::class)->runInBackground()->everyThirtyMinutes();
+        $schedule->command(TagSimilarity::class)->runInBackground()->everyFiveMinutes();
     }
 
     /**

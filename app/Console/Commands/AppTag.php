@@ -29,7 +29,7 @@ class AppTag extends Command
      *
      * @var string
      */
-    protected $description = '应用标签';
+    protected $description = '应用标签同步';
 
     /**
      * Create a new command instance.

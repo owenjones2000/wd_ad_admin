@@ -795,9 +795,11 @@ class ChannelController extends Controller
             }
             foreach ($apps as $key => $appid) {
                 $app = Channel::findOrFail($appid);
-                if ($tags) {
+                $oldTags = $app->tags->pluck('id')->toArray();
+                if (array_diff($tags, $oldTags)) {
                     $app->tags()->sync($tags);
                 }
+
             }
         } catch (Exception $e) {
             Log::error($e);

@@ -450,7 +450,8 @@ class AppController extends Controller
 
             foreach ($apps as $key => $appid) {
                 $app = App::findOrFail($appid);
-                if ($tags) {
+                $oldTags = $app->tags->pluck('id')->toArray();
+                if (array_diff($tags, $oldTags)) {
                     $app->tags()->sync($tags);
                 }
             }
