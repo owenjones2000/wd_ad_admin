@@ -74,6 +74,7 @@ class TagSimilarity extends Command
                     });
                     dump($app->id .'---->'.count($redisData));
                 }
+                Redis::connection('feature')->del($keyRedis);
             }
             Log::info('finish' . __METHOD__);
         } catch (\Exception $e) {
