@@ -44,8 +44,8 @@ class Kernel extends ConsoleKernel
         $schedule->command(AppDetect::class)->runInBackground()->withoutOverlapping()->everyTenMinutes();
         $schedule->command(DateStatis::class)->runInBackground()->hourly();
         $schedule->command(SubTaskBackup::class)->runInBackground()->dailyAt('8:00');
-        $schedule->command(AppTag::class)->runInBackground()->everyThirtyMinutes();
-        $schedule->command(TagSimilarity::class)->runInBackground()->everyFiveMinutes();
+        $schedule->command(AppTag::class)->runInBackground()->hourly();
+        $schedule->command(TagSimilarity::class)->runInBackground()->hourly();
     }
 
     /**
