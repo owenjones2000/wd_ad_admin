@@ -57,10 +57,11 @@ class SubTaskBackup extends Command
             $storeName = 'z_sub_tasks_' . $i.'_bak';
             if (Schema::connection('mysql')->hasTable($storeName) == false) {
                 DB::connection()->statement("create table $storeName like $templateName");
+                DB::connection()->statement("INSERT INTO $storeName SELECT * FROM $tableName");
+                DB::table($tableName)->where('requests', '=', 0)->delete();
+                DB::statement("optimize table $tableName");
             }
-            DB::connection()->statement("INSERT INTO $storeName SELECT * FROM $tableName");
-            DB::table($tableName)->where('requests', '=', 0)->delete();
-            DB::statement("optimize table $tableName");
+            
             $bar->advance();
         }
         $bar->finish();
