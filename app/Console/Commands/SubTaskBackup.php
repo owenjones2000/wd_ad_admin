@@ -16,7 +16,7 @@ class SubTaskBackup extends Command
      *
      * @var string
      */
-    protected $signature = 'admin:subtask-backup {start_date} {end_date}';
+    protected $signature = 'admin:subtask-backup {start_date?} {end_date?}';
 
     /**
      * The console command description.
@@ -45,10 +45,9 @@ class SubTaskBackup extends Command
         Log::info('start' . __METHOD__);
         $start_date = $this->argument('start_date');
         $end_date = $this->argument('end_date');
-        $start = Carbon::parse($start_date)->format('Ymd');
-        $end = Carbon::parse($end_date)->format('Ymd');
+        $start = Carbon::parse($start_date?? '-8 day')->format('Ymd');
+        $end = Carbon::parse($end_date ?? '-8 day')->format('Ymd');
         $bar = $this->output->createProgressBar($end- $start);
-
         $bar->start();
         $storeName = 'y_sub_tasks_' . Carbon::now()->subMonth()->format('Ym');
         $templateName = 'zz_sub_tasks';
