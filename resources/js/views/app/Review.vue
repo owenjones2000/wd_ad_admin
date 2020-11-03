@@ -498,10 +498,15 @@ export default {
             appResource
               .enable(app.id)
               .then((response) => {
-                this.$message({
-                  type: 'success',
-                  message: 'App ' + app.name + ' released',
-                });
+                if (response.code === 0) {
+                  this.$message({
+                    type: 'success',
+                    message: 'App ' + app.name + ' released',
+                  });
+                } else {
+                  this.$message.error(response.msg);
+                }
+
                 this.getList();
               })
               .catch((error) => {
