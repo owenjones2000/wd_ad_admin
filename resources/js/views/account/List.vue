@@ -91,7 +91,9 @@
           <el-button v-permission="['advertise.account.edit']" type="warning" size="small" icon="el-icon-edit" @click="handleEditPermissions(scope.row, scope.row);">
             Permissions
           </el-button>
-
+          <el-button v-permission="['advertise.account.cash']" type="normal" size="small" icon="el-icon-plus" @click="handleCash(scope.row)">
+            Add Cash
+          </el-button>
           <!--<el-button v-permission="['advertise.account.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">-->
           <!--  Delete-->
           <!--</el-button>-->
