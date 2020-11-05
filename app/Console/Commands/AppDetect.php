@@ -120,6 +120,8 @@ class AppDetect extends Command
                                 $app->save();
                                 Redis::del($key);
                             }
+                        }else {
+                            Redis::del($key);
                         }
                         break;
                     default:
