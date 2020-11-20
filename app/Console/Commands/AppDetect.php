@@ -61,35 +61,35 @@ class AppDetect extends Command
                 $key = 'app_removal'.$app->id;
                 switch ($app->os) {
                     case 'android':
-                        
-                        // $res = $client->get("https://itunes.apple.com/lookup?id=1524898135");
-                        $res = $client->get("https://play.google.com/store/apps/details", [
-                            'http_errors' => false,
-                            'query' => [
-                                'id' => $app->bundle_id
-                            ]
-                        ]);
-                        $code = $res->getStatusCode();
-                        if ($code == 404){
-                            $client->request("POST", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=5ad32553-514f-4fb7-8552-849a0b52fe7f", [
-                                "json" => [
-                                    "msgtype" => "text",  
-                                    "text" => [
-                                        "content" => "app  Android $app->id name $app->name account {$app->advertiser->realname} removal",
-                                        "mentioned_list" => ["@all"],
-                                    ]
+                        if ($app->type == 0) {
+                            // $res = $client->get("https://itunes.apple.com/lookup?id=1524898135");
+                            $res = $client->get("https://play.google.com/store/apps/details", [
+                                'http_errors' => false,
+                                'query' => [
+                                    'id' => $app->bundle_id
                                 ]
                             ]);
-                            $count = Redis::incr($key);
-                            if ($count >= 3){
-                                Log::error("app  Android $app->id name $app->name account {$app->advertiser->realname} removal");
-                                $app->status =0;
-                                $app->is_admin_disable =1;
-                                $app->is_remove =1;
-                                $app->save();
-                                Redis::del($key);
+                            $code = $res->getStatusCode();
+                            if ($code == 404) {
+                                $client->request("POST", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=5ad32553-514f-4fb7-8552-849a0b52fe7f", [
+                                    "json" => [
+                                        "msgtype" => "text",
+                                        "text" => [
+                                            "content" => "app  Android $app->id name $app->name account {$app->advertiser->realname} removal",
+                                            "mentioned_list" => ["@all"],
+                                        ]
+                                    ]
+                                ]);
+                                $count = Redis::incr($key);
+                                if ($count >= 3) {
+                                    Log::error("app  Android $app->id name $app->name account {$app->advertiser->realname} removal");
+                                    $app->status = 0;
+                                    $app->is_admin_disable = 1;
+                                    $app->is_remove = 1;
+                                    $app->save();
+                                    Redis::del($key);
+                                }
                             }
-                            
                         }
                         break;
                     case 'ios':
