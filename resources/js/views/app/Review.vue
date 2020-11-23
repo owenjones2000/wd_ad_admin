@@ -100,6 +100,14 @@
           />
         </template>
       </el-table-column>
+      <el-table-column align="center" label="IsShop">
+        <template slot-scope="scope">
+          <i
+            :style="{color: scope.row.type==0 ? '#67C23A' : '#F56C6C'}"
+            :class="scope.row.type==0 ? 'el-icon-check' : 'el-icon-close'"
+          />
+        </template>
+      </el-table-column>
       <el-table-column
         prop="created_at"
         :formatter="dateFormat"
