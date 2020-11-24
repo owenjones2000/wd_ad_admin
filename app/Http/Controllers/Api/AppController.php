@@ -485,7 +485,18 @@ class AppController extends Controller
     public function save(Request $request, $id = null)
     {
         $this->validate($request, [
-            'name'  => 'required|string|unique:a_app,name,' . $id . ',id',
+            // 'name'  => 'required|string|unique:a_app,name,' . $id . ',id',
+            'name'  => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) use ($request, $id) {
+                    $taken = App::where('name', $value)->where('os', $request->input('os'))
+                        ->where('id', '<>', $id??0)->first();
+                    if ($taken) {
+                        $fail($attribute . ' has been taken.');
+                    }
+                },
+            ],
             'bundle_id'  => 'required|unique:a_app,bundle_id,' . $id . ',id',
         ]);
         try {
