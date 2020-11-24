@@ -497,7 +497,7 @@ class AppController extends Controller
                     }
                 },
             ],
-            'bundle_id'  => 'required|unique:a_app,bundle_id,' . $id . ',id',
+            'bundle_id'  => 'required|string',
         ]);
         try {
             $params = $request->all();
