@@ -17,12 +17,19 @@ class App extends Model
     protected $appends = ['track'];
 
     protected $fillable = [
-        'name',
-        'bundle_id', 'os', 'track_platform_id', 'track_code',
-        'status', 'is_credit_disable', 'track_url',
-        'app_id'
+        'name', 'description',
+        'icon_url', 'bundle_id',
+        'os',
+        'track_platform_id', 'track_code', 'track_url',
+        'status',
+        'app_id',
+        'type',
+        'extra_data'
     ];
 
+    protected $casts =  [
+        'extra_data' => 'array',
+    ];
     /**
      * 构造Campaign
      * @param User $user
