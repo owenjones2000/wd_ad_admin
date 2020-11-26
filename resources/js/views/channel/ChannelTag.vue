@@ -244,6 +244,51 @@ export default {
     this.gettagall();
   },
   methods: {
+    getKeys() {
+      console.log();
+      var aKey = this.getCheckedKeys(
+        this.dataoption,
+        this.$refs.tree.getCheckedKeys(),
+        'id'
+      );
+      console.log(aKey);
+    },
+    getCheckedKeys(data, keys, key) {
+      var res = [];
+      recursion(data, false);
+      return res;
+
+      // arr -&gt; 树形总数据
+      // keys -&gt; getCheckedKeys获取到的选中key值
+      // isChild -&gt; 用来判断是否是子节点
+      function recursion(arr, isChild) {
+        var aCheck = [];
+        for (var i = 0; i < arr.length; i++) {
+          var obj = arr[i];
+          aCheck[i] = false;
+
+          if (obj.children) {
+            aCheck[i] = recursion(obj.children, true) ? true : aCheck[i];
+            if (aCheck[i]) {
+              res.push(obj[key]);
+            }
+          }
+
+          for (var j = 0; j < keys.length; j++) {
+            if (obj[key] === keys[j]) {
+              aCheck[i] = true;
+              if (res.indexOf(obj[key]) === -1) {
+                res.push(obj[key]);
+              }
+              break;
+            }
+          }
+        }
+        if (isChild) {
+          return aCheck.indexOf(true) !== -1;
+        }
+      }
+    },
     async getLists() {
       this.loading = true;
       const { data } = await appResource.tagList(this.query);
@@ -341,6 +386,7 @@ export default {
       this.getList();
     },
     settags(type) {
+      this.getKeys();
       const obj = {
         apps: [],
         tags: [],
