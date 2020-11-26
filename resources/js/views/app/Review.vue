@@ -4,7 +4,7 @@
       <el-input
         v-model="query.keyword"
         :placeholder="$t('table.keyword')"
-        style="width: 150px;"
+        style="width: 150px"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
@@ -12,7 +12,7 @@
         v-model="query.is_admin_disable"
         clearable
         placeholder="Review Status"
-        style="width: 150px;"
+        style="width: 150px"
         class="filter-item"
       >
         <el-option
@@ -82,11 +82,15 @@
       <el-table-column prop="track.name" align="center" label="TrackPlatform" />
       <el-table-column prop="track_code" align="center" label="TrackCode" />
 
-      <el-table-column prop="advertiser.realname" align="center" label="Advertiser" />
+      <el-table-column
+        prop="advertiser.realname"
+        align="center"
+        label="Advertiser"
+      />
       <el-table-column align="center" label="Status">
         <template slot-scope="scope">
           <el-icon
-            :style="{color: scope.row.status ? '#67C23A' : '#F56C6C'}"
+            :style="{ color: scope.row.status ? '#67C23A' : '#F56C6C' }"
             size="medium"
             :name="scope.row.status ? 'video-play' : 'video-pause'"
           />
@@ -95,7 +99,7 @@
       <el-table-column align="center" label="IsRemove">
         <template slot-scope="scope">
           <i
-            :style="{color: scope.row.is_remove ? '#67C23A' : '#F56C6C'}"
+            :style="{ color: scope.row.is_remove ? '#67C23A' : '#F56C6C' }"
             :class="scope.row.is_remove ? 'el-icon-check' : 'el-icon-close'"
           />
         </template>
@@ -103,8 +107,8 @@
       <el-table-column align="center" label="IsShop">
         <template slot-scope="scope">
           <i
-            :style="{color: scope.row.type==0 ? '#67C23A' : '#F56C6C'}"
-            :class="scope.row.type==0 ? 'el-icon-check' : 'el-icon-close'"
+            :style="{ color: scope.row.type == 0 ? '#67C23A' : '#F56C6C' }"
+            :class="scope.row.type == 0 ? 'el-icon-check' : 'el-icon-close'"
           />
         </template>
       </el-table-column>
@@ -131,26 +135,32 @@
             @click="handleEdit(scope.row)"
           >Edit</el-button>
 
-          <router-link class="link-type" :to="'/acquisition/app/'+scope.row.id+'/ios/info'">
+          <router-link
+            class="link-type"
+            :to="'/acquisition/app/' + scope.row.id + '/ios/info'"
+          >
             <el-button
-              v-if="scope.row.os=='ios'"
+              v-if="scope.row.os == 'ios'"
               size="small"
               type="primary"
-              style="margin:0 10px"
+              style="margin: 0 10px"
               icon="el-icon-view"
             >Ios</el-button>
           </router-link>
 
           <el-link
             class="link-type"
-            :href="'https://play.google.com/store/apps/details?id='+scope.row.bundle_id"
+            :href="
+              'https://play.google.com/store/apps/details?id=' +
+                scope.row.bundle_id
+            "
             target="_blank"
           >
             <el-button
-              v-if="scope.row.os =='android'"
+              v-if="scope.row.os == 'android'"
               size="small"
               type="primary"
-              style="margin:0 10px"
+              style="margin: 0 10px"
               icon="el-icon-view"
             >android</el-button>
           </el-link>
@@ -171,7 +181,7 @@
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="query.page"
       :limit.sync="query.limit"
@@ -186,7 +196,7 @@
           :model="currentApp"
           label-position="left"
           label-width="150px"
-          style="max-width: 500px;"
+          style=""
         >
           <el-form-item :label="$t('name')" prop="name">
             <el-input v-model="currentApp.name" />
@@ -194,12 +204,36 @@
           <el-form-item :label="$t('app.bundle_id')" prop="bundle_id">
             <el-input v-model="currentApp.bundle_id" />
           </el-form-item>
+
           <el-form-item :label="$t('platform.name')" prop="platform">
-            <el-select v-model="currentApp.os" placeholder="please select platform">
+            <el-select
+              v-model="currentApp.os"
+              placeholder="please select platform"
+            >
               <el-option label="iOS" value="ios" />
               <el-option label="Android" value="android" />
             </el-select>
           </el-form-item>
+
+          <el-form-item label="Type" prop="type">
+            <el-select
+              v-model="currentApp.type"
+              placeholder="please select type"
+            >
+              <el-option label="Store" value="0" />
+              <el-option label="APK" value="1" />
+              <el-option label="Samsung" value="2" />
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="Landing Page" prop="land_page">
+            <el-input v-model="currentApp.land_page" style="width:100%" @input="changesdata" />
+          </el-form-item>
+
+          <el-form-item label="Apk Url" prop="apk_page">
+            <el-input v-model="currentApp.apk_page" @input="changesdata" />
+          </el-form-item>
+
           <el-form-item :label="$t('app.icon')" prop="icon_url">
             <el-avatar shape="square" :size="50" :src="currentApp.icon_url" />
           </el-form-item>
@@ -209,7 +243,10 @@
           <el-form-item label="App_id" prop="app_id">
             <el-input v-model="currentApp.app_id" />
           </el-form-item>
-          <el-form-item :label="$t('app.track_platform')" prop="track_platform_id">
+          <el-form-item
+            :label="$t('app.track_platform')"
+            prop="track_platform_id"
+          >
             <el-select
               v-model="currentApp.track_platform_id"
               placeholder="please select track platform"
@@ -227,13 +264,20 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
-          <el-button type="primary" @click="saveApp()">{{ $t('table.confirm') }}</el-button>
+          <el-button @click="dialogFormVisible = false">{{
+            $t('table.cancel')
+          }}</el-button>
+          <el-button type="primary" @click="saveApp()">{{
+            $t('table.confirm')
+          }}</el-button>
         </div>
       </div>
     </el-dialog>
 
-    <el-dialog :title="dialogTokenFormName" :visible.sync="dialogTokenFormVisible">
+    <el-dialog
+      :title="dialogTokenFormName"
+      :visible.sync="dialogTokenFormVisible"
+    >
       <div v-loading="appCreating" class="form-container">
         <el-form
           ref="tokenForm"
@@ -241,7 +285,7 @@
           :model="newToken"
           label-position="left"
           label-width="150px"
-          style="max-width: 500px;"
+          style="max-width: 500px"
         >
           <el-form-item :label="$t('token.expired_at')" prop="expired_at">
             <el-date-picker
@@ -250,7 +294,9 @@
               value-format="yyyy-MM-dd"
               placeholder="no limit"
             />
-            <el-button type="primary" @click="makeToken()">{{ $t('token.make') }}</el-button>
+            <el-button type="primary" @click="makeToken()">{{
+              $t('token.make')
+            }}</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -293,7 +339,7 @@
               v-permission="['basic.auth.token.destroy']"
               type="danger"
               icon="el-icon-delete"
-              @click="handleTokenDelete(scope.row);"
+              @click="handleTokenDelete(scope.row)"
             />
           </template>
         </el-table-column>
@@ -384,7 +430,9 @@ export default {
   },
   methods: {
     checkPermission,
-
+    changesdata() {
+      this.$forceUpdate();
+    },
     async getList() {
       const { limit, page } = this.query;
       this.loading = true;
@@ -447,6 +495,11 @@ export default {
     },
     handleEdit(app) {
       this.currentApp = app;
+      this.currentApp.type = String(this.currentApp.type);
+      this.currentApp.land_page = this.currentApp.extra_data.land_page;
+      this.currentApp.apk_page = this.currentApp.extra_data.apk_page;
+
+      console.log(app);
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['appForm'].clearValidate();
@@ -588,6 +641,8 @@ export default {
       this.$refs['appForm'].validate((valid) => {
         if (valid) {
           this.appCreating = true;
+          this.currentApp.extra_data.land_page = this.currentApp.land_page;
+          this.currentApp.extra_data.apk_page = this.currentApp.apk_page;
           appResource
             .save(this.currentApp)
             .then((response) => {
