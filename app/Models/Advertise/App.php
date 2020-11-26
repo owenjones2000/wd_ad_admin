@@ -15,6 +15,9 @@ class App extends Model
 
     protected $table = 'a_app';
     protected $appends = ['track'];
+    const  App_Type_Shop = 0;
+    const  App_Type_Apk = 1;
+    const  App_Type_Samsung = 2;
 
     protected $fillable = [
         'name', 'description',
@@ -50,6 +53,12 @@ class App extends Model
                 $apps = self::query()->where([
                     'id' => $params['id'],
                 ])->firstOrFail();
+                
+                if (isset($params['type']) && $params['type']  == 1) {
+                    $params['extra_data'] = array_merge($apps->extra_data, $params['extra_data']);
+                } else {
+                    unset($params['extra_data']);
+                }
             }
 
             $apps->fill($params);
