@@ -52,7 +52,7 @@ class SubTaskBackup extends Command
         $end = Carbon::parse($end_date ?? '-8 day')->format('Ymd');
         $this->bar = $this->output->createProgressBar($end - $start);
         $this->bar->start();
-        $action = $this->argument('action', 'back');
+        $action = $this->argument('action')??'back';
         switch ($action) {
             case 'back':
                 $this->backUpSubtask($start, $end);
