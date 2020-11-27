@@ -116,6 +116,7 @@ class SubTaskBackup extends Command
         // ->toArray();
         $res = Excel::csv($back)->disk(Storage::disk('backup'))
             ->store("db-autobackup/$storeName.csv");
+        unset($back);
         return $res;
     }
 }
