@@ -43,7 +43,7 @@ class Kernel extends ConsoleKernel
         $schedule->command(AccountCredit::class)->runInBackground()->withoutOverlapping()->everyFiveMinutes();
         $schedule->command(AppDetect::class)->runInBackground()->withoutOverlapping()->everyTenMinutes();
         $schedule->command(DateStatis::class)->runInBackground()->hourly();
-        $schedule->command(SubTaskBackup::class)->runInBackground()->dailyAt('8:00');
+        $schedule->command(SubTaskBackup::class)->runInBackground()->dailyAt('7:00');
         $schedule->command(AppTag::class)->runInBackground()->hourly();
         $schedule->command(TagSimilarity::class)->runInBackground()->hourly();
     }
