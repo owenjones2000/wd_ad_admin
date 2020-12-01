@@ -133,7 +133,6 @@ Route::group(['middleware' => 'api'], function () {
             //删除
             //        Route::delete('destroy', 'AppController@destroy')->name('app.destroy')->middleware('permission:app.destroy');
         });
-
         // 活动管理
         Route::group(['prefix' => 'campaign'], function () {
             Route::get('', 'CampaignController@list')->name('advertise.campaign');
