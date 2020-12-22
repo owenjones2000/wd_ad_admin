@@ -17,9 +17,17 @@ class Account extends Model
 
     protected $table = 'a_users';
 
-    protected $hidden = ['name', 'password_hash', 'remember_token', 'username', 'pivot',
-                         'main_user_id', 'deleted_at'];
-    protected $fillable = ['username', 'email', 'realname'];
+    protected $hidden = [
+        'name', 'password_hash', 'remember_token', 'username', 'pivot',
+        'main_user_id', 'deleted_at'
+    ];
+    protected $fillable = [
+        'username',
+        'email', 
+        'realname',
+        'agency_name',
+        'is_agency ',
+    ];
 
     /**
      * 构造Campaign
@@ -165,27 +173,27 @@ class Account extends Model
         $due_date = date('Y-m-t');
         $date_begin = date('Ym01', $last_month_timestamp);
         $date_end = date('Ymt', $last_month_timestamp);
-//        $fee_amount_query = Install::multiTableQuery(function($query){
-//            return $query->select(['spend'])->whereIn('app_id', $this->apps()->select('id')->getQuery());
-//        }, $start_date, $end_date);
+        //        $fee_amount_query = Install::multiTableQuery(function($query){
+        //            return $query->select(['spend'])->whereIn('app_id', $this->apps()->select('id')->getQuery());
+        //        }, $start_date, $end_date);
         $table = 'y_sub_tasks_' . date('Ym', $last_month_timestamp);
         if (!Schema::hasTable($table)) {
             Log::error("monthly table is not exist!table:" . $table);
             return false;
-        }    
+        }
         $fee_amount_query = AdvertiseKpi::query()->from($table)
             ->whereBetween('date', [$date_begin, $date_end])
             ->whereIn('app_id', $this->apps()->select('id')->getQuery());
         $fee_amount = $fee_amount_query->sum('spend');
         $billInfo = $fee_amount_query->with(['campaign:id,name', 'app:id,name'])
-        ->select([
-            'campaign_id',
-            'app_id',
-            DB::raw('sum(spend) as spend'),
-            DB::raw('sum(installations) as installations'),
-        ])
-        ->groupBy('campaign_id')
-        ->get()->toArray();
+            ->select([
+                'campaign_id',
+                'app_id',
+                DB::raw('sum(spend) as spend'),
+                DB::raw('sum(installations) as installations'),
+            ])
+            ->groupBy('campaign_id')
+            ->get()->toArray();
         if ($fee_amount > 0) {
             DB::transaction(function () use ($start_date, $end_date, $fee_amount, $due_date, $billInfo, $last_month_timestamp) {
                 $bill = $this->bills()->firstOrNew(
@@ -209,11 +217,11 @@ class Account extends Model
                     BillInfo::firstOrCreate([
                         'bill_id' => $bill->id,
                         'campaign_id' => $value['campaign_id'],
-                    ],[
-                        'campagin_name' => $value['campaign']['name']??'',
-                        'app_name' => $value['app']['name']??'',
-                        'spend' => $value['spend']??0,
-                        'installations' => $value['installations']??0,
+                    ], [
+                        'campagin_name' => $value['campaign']['name'] ?? '',
+                        'app_name' => $value['app']['name'] ?? '',
+                        'spend' => $value['spend'] ?? 0,
+                        'installations' => $value['installations'] ?? 0,
                     ]);
                 }
             }, 3);
@@ -246,9 +254,13 @@ class Account extends Model
      */
     public function advertisers()
     {
-        return $this->belongsToMany(Account::class, 'a_users_advertiser',
-            'main_user_id', 'advertiser_user_id',
-            'id', 'id'
+        return $this->belongsToMany(
+            Account::class,
+            'a_users_advertiser',
+            'main_user_id',
+            'advertiser_user_id',
+            'id',
+            'id'
         );
     }
 
@@ -258,7 +270,8 @@ class Account extends Model
             UaPermission::class,
             'ua_model_has_permissions',
             'model_id',
-            'permission_id');
+            'permission_id'
+        );
         if ($main_user_id) {
             $query->wherePivot('main_user_id', $main_user_id);
         }

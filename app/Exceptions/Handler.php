@@ -7,6 +7,8 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Spatie\Permission\Exceptions\UnauthorizedException;
 
 class Handler extends ExceptionHandler
 {
@@ -55,6 +57,19 @@ class Handler extends ExceptionHandler
         Log::info($request->fullUrl());
         Log::info($request->method());
         Log::info($request->all());
+        if ($exception instanceof ValidationException) {
+            return response()->json([
+                'code' => 422,
+                'message' => 'Form data error',
+                'data' => $exception->errors()
+            ]);
+        }
+        if ($exception instanceof UnauthorizedException) {
+            return response()->json([
+                'code' => 403,
+                'message' => 'no permission',
+            ]);
+        }
         return parent::render($request, $exception);
     }
 

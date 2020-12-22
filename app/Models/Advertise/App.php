@@ -21,9 +21,13 @@ class App extends Model
 
     protected $fillable = [
         'name', 'description',
-        'icon_url', 'bundle_id',
+        'icon_url', 
+        'bundle_id',
         'os',
-        'track_platform_id', 'track_code', 'track_url',
+        'track_platform_id', 
+        'track_code', 
+        'track_url',
+        'impression_url',
         'status',
         'app_id',
         'type',
