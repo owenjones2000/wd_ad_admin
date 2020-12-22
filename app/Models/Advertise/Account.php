@@ -26,7 +26,7 @@ class Account extends Model
         'email', 
         'realname',
         'agency_name',
-        'is_agency ',
+        'is_agency',
     ];
 
     /**
