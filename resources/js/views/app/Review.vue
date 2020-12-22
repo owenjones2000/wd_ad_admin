@@ -262,6 +262,15 @@
           <el-form-item label="Track_url" prop="track_url">
             <el-input v-model="currentApp.track_url" />
           </el-form-item>
+          <el-form-item
+            label="Impression Url"
+          >
+            <el-input
+              v-model="currentApp.impression_url"
+              placeholder="impression Url"
+              autocomplete="off"
+            />
+          </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">{{

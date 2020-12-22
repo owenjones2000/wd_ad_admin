@@ -1,11 +1,30 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+      <el-input
+        v-model="query.keyword"
+        :placeholder="$t('table.keyword')"
+        style="width: 200px"
+        class="filter-item"
+        @keyup.enter.native="handleFilter"
+      />
+      <el-button
+        v-waves
+        class="filter-item"
+        type="primary"
+        icon="el-icon-search"
+        @click="handleFilter"
+      >
         {{ $t('table.search') }}
       </el-button>
-      <el-button v-permission="['advertise.account.edit']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">
+      <el-button
+        v-permission="['advertise.account.edit']"
+        class="filter-item"
+        style="margin-left: 10px"
+        type="primary"
+        icon="el-icon-plus"
+        @click="handleCreate"
+      >
         {{ $t('table.add') }}
       </el-button>
       <!-- <el-button v-waves :loading="downloading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
@@ -23,58 +42,126 @@
     >
       <el-table-column align="center" label="" width="80" type="expand">
         <template slot-scope="scope">
-          <el-button v-permission="['advertise.account.edit']" type="primary" size="small" icon="el-icon-plus" @click="handleAssign(scope.row)">
+          <el-button
+            v-permission="['advertise.account.edit']"
+            type="primary"
+            size="small"
+            icon="el-icon-plus"
+            @click="handleAssign(scope.row)"
+          >
             Assign
           </el-button>
           <el-divider />
-          <el-table v-loading="scope.row.loading" :data="scope.row.subAccounts" border fit highlight-current-row style="width: 100%">
+          <el-table
+            v-loading="scope.row.loading"
+            :data="scope.row.subAccounts"
+            border
+            fit
+            highlight-current-row
+            style="width: 100%"
+          >
             <el-table-column prop="email" align="left" label="Email" />
             <el-table-column prop="realname" align="center" label="Real Name" />
             <el-table-column prop="phone" align="center" label="Phone" />
 
             <el-table-column align="center" label="Actions" width="270">
               <template slot-scope="subScope">
-                <el-button v-permission="['advertise.account.edit']" type="warning" size="small" icon="el-icon-edit" @click="handleEditPermissions(subScope.row, scope.row);">
+                <el-button
+                  v-permission="['advertise.account.edit']"
+                  type="warning"
+                  size="small"
+                  icon="el-icon-edit"
+                  @click="handleEditPermissions(subScope.row, scope.row)"
+                >
                   Permissions
                 </el-button>
-                <el-button v-permission="['advertise.account.edit']" type="danger" size="small" icon="el-icon-delete" @click="handleRemoveSubAccount(subScope.row, scope.row);">
+                <el-button
+                  v-permission="['advertise.account.edit']"
+                  type="danger"
+                  size="small"
+                  icon="el-icon-delete"
+                  @click="handleRemoveSubAccount(subScope.row, scope.row)"
+                >
                   Remove
                 </el-button>
               </template>
             </el-table-column>
-
           </el-table>
         </template>
       </el-table-column>
       <el-table-column prop="email" align="left" label="Email" />
       <el-table-column prop="realname" align="center" label="Real Name" />
       <el-table-column prop="ava_credit" align="center" label="Credit" />
-      <el-table-column prop="expend_credit" align="center" label="Expanp Credit" />
+      <el-table-column
+        prop="expend_credit"
+        align="center"
+        label="Expanp Credit"
+      />
 
       <el-table-column align="center" label="Status">
         <template slot-scope="scope">
-          <el-link :type="scope.row.status ? 'success' : 'info'" size="small" icon="el-icon-s-custom" :underline="false" @click="handleStatus(scope.row)" />
+          <el-link
+            :type="scope.row.status ? 'success' : 'info'"
+            size="small"
+            icon="el-icon-s-custom"
+            :underline="false"
+            @click="handleStatus(scope.row)"
+          />
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="Advertising Status">
         <template slot-scope="scope">
-          <el-link :type="scope.row.isAdvertiseEnabled ? 'success' : 'info'" size="small" icon="el-icon-upload" :underline="false" @click="handleAdvertisingStatus(scope.row)" />
+          <el-link
+            :type="scope.row.isAdvertiseEnabled ? 'success' : 'info'"
+            size="small"
+            icon="el-icon-upload"
+            :underline="false"
+            @click="handleAdvertisingStatus(scope.row)"
+          />
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="Publishing Status">
         <template slot-scope="scope">
-          <el-link :type="scope.row.isPublishEnabled ? 'success' : 'info'" size="small" icon="el-icon-upload" :underline="false" @click="handlePublishingStatus(scope.row)" />
+          <el-link
+            :type="scope.row.isPublishEnabled ? 'success' : 'info'"
+            size="small"
+            icon="el-icon-upload"
+            :underline="false"
+            @click="handlePublishingStatus(scope.row)"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Is Agency">
+        <template slot-scope="scope">
+          <el-link
+            :type="scope.row.is_agency == 1 ? 'success' : 'info'"
+            size="small"
+            icon="el-icon-s-custom"
+            :underline="false"
+          />
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="Actions" width="360">
         <template slot-scope="scope">
-          <el-button v-permission="['advertise.account.edit']" type="primary" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">
+          <el-button
+            v-permission="['advertise.account.edit']"
+            type="primary"
+            size="small"
+            icon="el-icon-edit"
+            @click="handleEdit(scope.row)"
+          >
             Edit
           </el-button>
-          <el-button v-permission="['advertise.bill']" type="primary" size="small" icon="el-icon-date" @click="handleBillSet(scope.row)">
+          <el-button
+            v-permission="['advertise.bill']"
+            type="primary"
+            size="small"
+            icon="el-icon-date"
+            @click="handleBillSet(scope.row)"
+          >
             BillSet
           </el-button>
           <el-button
@@ -85,13 +172,32 @@
             @click="handleToken(scope.row)"
           >Token</el-button>
 
-          <el-button v-permission="['advertise.account.edit']" style="margin-top:10px" type="primary" size="small" icon="el-icon-plus" @click="handleCredit(scope.row)">
+          <el-button
+            v-permission="['advertise.account.edit']"
+            style="margin-top: 10px"
+            type="primary"
+            size="small"
+            icon="el-icon-plus"
+            @click="handleCredit(scope.row)"
+          >
             Add Credit
           </el-button>
-          <el-button v-permission="['advertise.account.edit']" type="warning" size="small" icon="el-icon-edit" @click="handleEditPermissions(scope.row, scope.row);">
+          <el-button
+            v-permission="['advertise.account.edit']"
+            type="warning"
+            size="small"
+            icon="el-icon-edit"
+            @click="handleEditPermissions(scope.row, scope.row)"
+          >
             Permissions
           </el-button>
-          <el-button v-permission="['advertise.account.cash']" type="normal" size="small" icon="el-icon-plus" @click="handleCash(scope.row)">
+          <el-button
+            v-permission="['advertise.account.cash']"
+            type="normal"
+            size="small"
+            icon="el-icon-plus"
+            @click="handleCash(scope.row)"
+          >
             Add Cash
           </el-button>
           <!--<el-button v-permission="['advertise.account.remove']" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">-->
@@ -101,11 +207,27 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="query.page" :limit.sync="query.limit" @pagination="getList" />
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="query.page"
+      :limit.sync="query.limit"
+      @pagination="getList"
+    />
 
-    <el-dialog :title="isNewAccount?'Add Main Account':'Edit Account'" :visible.sync="dialogFormVisible">
+    <el-dialog
+      :title="isNewAccount ? 'Add Main Account' : 'Edit Account'"
+      :visible.sync="dialogFormVisible"
+    >
       <div v-loading="accountCreating" class="form-container">
-        <el-form ref="accountForm" :rules="rules" :model="currentAccount" label-position="left" label-width="150px" style="max-width: 500px;">
+        <el-form
+          ref="accountForm"
+          :rules="rules"
+          :model="currentAccount"
+          label-position="left"
+          label-width="150px"
+          style="max-width: 500px"
+        >
           <el-form-item :label="$t('email')" prop="email">
             <el-input v-model="currentAccount.email" />
           </el-form-item>
@@ -115,8 +237,20 @@
           <el-form-item :label="$t('user.password')" prop="password">
             <el-input v-model="currentAccount.password" show-password />
           </el-form-item>
-          <el-form-item :label="$t('user.confirmPassword')" prop="confirmPassword">
+          <el-form-item
+            :label="$t('user.confirmPassword')"
+            prop="confirmPassword"
+          >
             <el-input v-model="currentAccount.confirmPassword" show-password />
+          </el-form-item>
+          <el-form-item label="Agency Name" prop="Agency Name">
+            <el-input v-model="currentAccount.agency_name" />
+          </el-form-item>
+          <el-form-item label="Is Agency" prop="Is Agency">
+            <el-radio-group v-model="currentAccount.is_agency">
+              <el-radio :label="1">YES</el-radio>
+              <el-radio :label="0">NO</el-radio>
+            </el-radio-group>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -132,11 +266,17 @@
 
     <el-dialog title="Add Credit" :visible.sync="dialogCreditVisible">
       <div v-loading="addCrediting" class="form-container">
-        <el-form ref="creditForm" :rules="creditrules" :model="currentAccount" label-position="left" label-width="150px" style="max-width: 500px;">
+        <el-form
+          ref="creditForm"
+          :rules="creditrules"
+          :model="currentAccount"
+          label-position="left"
+          label-width="150px"
+          style="max-width: 500px"
+        >
           <el-form-item label="Credit" prop="addcredit">
             <el-input v-model="currentAccount.addcredit" type="number" />
           </el-form-item>
-
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogCreditVisible = false">
@@ -151,7 +291,14 @@
 
     <el-dialog title="Add Cash" :visible.sync="dialogCashVisible">
       <div v-loading="addCrediting" class="form-container">
-        <el-form ref="cashForm" :rules="cashrules" :model="record" label-position="left" label-width="150px" style="max-width: 500px;">
+        <el-form
+          ref="cashForm"
+          :rules="cashrules"
+          :model="record"
+          label-position="left"
+          label-width="150px"
+          style="max-width: 500px"
+        >
           <el-form-item label="Amount" prop="amount">
             <el-input v-model="record.amount" type="number" />
           </el-form-item>
@@ -163,7 +310,6 @@
               placeholder="date"
             />
           </el-form-item>
-
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogCashVisible = false">
@@ -178,7 +324,14 @@
 
     <el-dialog title="Assign" :visible.sync="dialogAssign.visible">
       <div v-loading="dialogAssign.loading" class="form-container">
-        <el-form ref="assignForm" :rules="assignRules" :model="dialogAssign.form" label-position="left" label-width="150px" style="max-width: 500px;">
+        <el-form
+          ref="assignForm"
+          :rules="assignRules"
+          :model="dialogAssign.form"
+          label-position="left"
+          label-width="150px"
+          style="max-width: 500px"
+        >
           <el-form-item :label="$t('email')" prop="email">
             <el-input v-model="dialogAssign.form.email" />
           </el-form-item>
@@ -196,7 +349,14 @@
 
     <el-dialog :title="'Bill Set'" :visible.sync="billDialogFormVisible">
       <div v-loading="billSetting" class="form-container">
-        <el-form ref="billSetForm" :rules="billSetRules" :model="currentBillSet" label-position="left" label-width="150px" style="max-width: 500px;">
+        <el-form
+          ref="billSetForm"
+          :rules="billSetRules"
+          :model="currentBillSet"
+          label-position="left"
+          label-width="150px"
+          style="max-width: 500px"
+        >
           <el-form-item :label="$t('bill.address')" prop="address">
             <el-input v-model="currentBillSet.address" type="textarea" />
           </el-form-item>
@@ -217,7 +377,10 @@
         </div>
       </div>
     </el-dialog>
-    <el-dialog :title="dialogTokenFormName" :visible.sync="dialogTokenFormVisible">
+    <el-dialog
+      :title="dialogTokenFormName"
+      :visible.sync="dialogTokenFormVisible"
+    >
       <div v-loading="loading" class="form-container">
         <el-form
           ref="tokenForm"
@@ -225,7 +388,7 @@
           :model="newToken"
           label-position="left"
           label-width="150px"
-          style="max-width: 500px;"
+          style="max-width: 500px"
         >
           <el-form-item :label="$t('token.expired_at')" prop="expired_at">
             <el-date-picker
@@ -234,7 +397,9 @@
               value-format="yyyy-MM-dd"
               placeholder="no limit"
             />
-            <el-button type="primary" @click="makeToken()">{{ $t('token.make') }}</el-button>
+            <el-button type="primary" @click="makeToken()">{{
+              $t('token.make')
+            }}</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -271,19 +436,27 @@
           </template>
         </el-table-column>
 
-        <el-table-column align="center" label="Actions" width="100" fixed="right">
+        <el-table-column
+          align="center"
+          label="Actions"
+          width="100"
+          fixed="right"
+        >
           <template slot-scope="scope">
             <el-link
               v-permission="['advertise.account.edit']"
               type="danger"
               icon="el-icon-delete"
-              @click="handleTokenDelete(scope.row);"
+              @click="handleTokenDelete(scope.row)"
             />
           </template>
         </el-table-column>
       </el-table>
     </el-dialog>
-    <el-dialog :title="dialogPermission.title" :visible.sync="dialogPermission.visible">
+    <el-dialog
+      :title="dialogPermission.title"
+      :visible.sync="dialogPermission.visible"
+    >
       <div v-loading="dialogPermission.Loading" class="form-container">
         <el-tree
           ref="permissionTree"
@@ -292,12 +465,12 @@
           check-strictly
           node-key="name"
           default-expand-all
-          :props="{children: 'children', label: 'display_name'}"
+          :props="{ children: 'children', label: 'display_name' }"
           @check-change="handleTreeCheck"
         />
       </div>
-      <div style="text-align:right;">
-        <el-button type="danger" @click="dialogPermission.visible=false">
+      <div style="text-align: right">
+        <el-button type="danger" @click="dialogPermission.visible = false">
           {{ $t('permission.cancel') }}
         </el-button>
         <el-button type="primary" @click="confirmPermission">
@@ -305,7 +478,6 @@
         </el-button>
       </div>
     </el-dialog>
-
   </div>
 </template>
 
@@ -394,22 +566,42 @@ export default {
       return {
         email: [
           { required: true, message: 'Email is required', trigger: 'blur' },
-          { type: 'email', message: 'Please input correct email address', trigger: ['blur', 'change'] },
+          {
+            type: 'email',
+            message: 'Please input correct email address',
+            trigger: ['blur', 'change'],
+          },
         ],
-        realname: [{ required: true, message: 'Real name is required', trigger: 'blur' }],
-        password: [{ required: this.passwordRequired, message: 'Password is required', trigger: 'blur' }],
-        confirmPassword: [{ validator: validateConfirmPassword, trigger: 'blur' }],
+        realname: [
+          { required: true, message: 'Real name is required', trigger: 'blur' },
+        ],
+        password: [
+          {
+            required: this.passwordRequired,
+            message: 'Password is required',
+            trigger: 'blur',
+          },
+        ],
+        confirmPassword: [
+          { validator: validateConfirmPassword, trigger: 'blur' },
+        ],
       };
     },
     creditrules() {
       return {
-        addcredit: [{ required: true, message: 'credit is required', trigger: 'blur' }],
+        addcredit: [
+          { required: true, message: 'credit is required', trigger: 'blur' },
+        ],
       };
     },
     cashrules() {
       return {
-        amount: [{ required: true, message: 'cash is required', trigger: 'blur' }],
-        date: [{ required: true, message: 'date is required', trigger: 'blur' }],
+        amount: [
+          { required: true, message: 'cash is required', trigger: 'blur' },
+        ],
+        date: [
+          { required: true, message: 'date is required', trigger: 'blur' },
+        ],
       };
     },
     billSetRules() {
@@ -429,7 +621,11 @@ export default {
       return {
         email: [
           { required: true, message: 'Email is required', trigger: 'blur' },
-          { type: 'email', message: 'Please input correct email address', trigger: ['blur', 'change'] },
+          {
+            type: 'email',
+            message: 'Please input correct email address',
+            trigger: ['blur', 'change'],
+          },
         ],
       };
     },
@@ -462,7 +658,9 @@ export default {
     },
     async getTokenList() {
       this.currentUserTokens = [];
-      const { data } = await tokenResource.userTokenList(this.currentAccount.id);
+      const { data } = await tokenResource.userTokenList(
+        this.currentAccount.id
+      );
       this.currentUserTokens = data;
     },
     makeToken() {
@@ -481,14 +679,14 @@ export default {
           console.log(this.currentAccount);
           tokenResource
             .makeUserToken(this.currentAccount.id, this.newToken.expired_at)
-            .then(response => {
+            .then((response) => {
               this.$message({
                 type: 'success',
                 message: 'The new token : ' + response.api_token,
               });
               this.getTokenList();
             })
-            .catch(error => {
+            .catch((error) => {
               console.log(error);
             });
         })
@@ -521,14 +719,14 @@ export default {
         .then(() => {
           tokenResource
             .delUserToken(token.id)
-            .then(response => {
+            .then((response) => {
               this.$message({
                 type: 'success',
                 message: 'Delete token completed',
               });
               this.getTokenList();
             })
-            .catch(error => {
+            .catch((error) => {
               console.log(error);
             });
         })
@@ -549,15 +747,24 @@ export default {
         this.dialogPermission.allPermission = data;
       }
       if (account === main_account) {
-        this.dialogPermission.title = 'Grant 【' + account.realname + '】 permissions';
+        this.dialogPermission.title =
+          'Grant 【' + account.realname + '】 permissions';
       } else {
-        this.dialogPermission.title = 'Grant 【' + account.realname + '】 permissions to serve 【' + main_account.realname + '】';
+        this.dialogPermission.title =
+          'Grant 【' +
+          account.realname +
+          '】 permissions to serve 【' +
+          main_account.realname +
+          '】';
       }
       this.dialogPermission.account = account;
       this.dialogPermission.mainAccount = main_account;
       this.dialogPermission.loading = true;
       this.dialogPermission.visible = true;
-      const { data } = await accountResource.permissions(account.id, main_account.id);
+      const { data } = await accountResource.permissions(
+        account.id,
+        main_account.id
+      );
       this.$refs.permissionTree.setCheckedKeys([]);
       data.forEach((item, index, array) => {
         this.$refs.permissionTree.setChecked(item, true);
@@ -565,32 +772,47 @@ export default {
       this.dialogPermission.loading = false;
     },
     confirmPermission() {
-      const checkedPermissions = this.$refs.permissionTree.getCheckedKeys().concat(this.$refs.permissionTree.getHalfCheckedKeys());
+      const checkedPermissions = this.$refs.permissionTree
+        .getCheckedKeys()
+        .concat(this.$refs.permissionTree.getHalfCheckedKeys());
       this.dialogPermission.loading = true;
-      accountResource.updatePermission(
-        this.dialogPermission.account.id,
-        this.dialogPermission.mainAccount.id,
-        { permissions: checkedPermissions }).then(response => {
-        this.$message({
-          message: 'Permissions has been updated successfully',
-          type: 'success',
-          duration: 5 * 1000,
+      accountResource
+        .updatePermission(
+          this.dialogPermission.account.id,
+          this.dialogPermission.mainAccount.id,
+          { permissions: checkedPermissions }
+        )
+        .then((response) => {
+          this.$message({
+            message: 'Permissions has been updated successfully',
+            type: 'success',
+            duration: 5 * 1000,
+          });
+          this.dialogPermission.loading = false;
+          this.dialogPermission.visible = false;
         });
-        this.dialogPermission.loading = false;
-        this.dialogPermission.visible = false;
-      });
     },
     handleTreeCheck(node, checked) {
       var tree_node = this.$refs.permissionTree.getNode(node);
       this.recursionSelectTreeNode(tree_node, checked);
     },
-    recursionSelectTreeNode(node, checked, direction = ''){
+    recursionSelectTreeNode(node, checked, direction = '') {
       node.checked = checked;
-      if (direction !== 'down' && checked && node.parent && node.parent.id > 0) {
+      if (
+        direction !== 'down' &&
+        checked &&
+        node.parent &&
+        node.parent.id > 0
+      ) {
         this.recursionSelectTreeNode(node.parent, checked, 'up');
       }
-      if (direction !== 'up' && !checked && node.childNodes && node.childNodes.length > 0){
-        node.childNodes.forEach(function(item){
+      if (
+        direction !== 'up' &&
+        !checked &&
+        node.childNodes &&
+        node.childNodes.length > 0
+      ) {
+        node.childNodes.forEach(function(item) {
           this.recursionSelectTreeNode(item, checked, 'down');
         }, this);
       }
@@ -633,26 +855,35 @@ export default {
       });
     },
     handleDelete(id, name) {
-      this.$confirm('This will permanently delete account ' + name + '. Continue?', 'Warning', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-      }).then(() => {
-        accountResource.destroy(id).then(response => {
+      this.$confirm(
+        'This will permanently delete account ' + name + '. Continue?',
+        'Warning',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning',
+        }
+      )
+        .then(() => {
+          accountResource
+            .destroy(id)
+            .then((response) => {
+              this.$message({
+                type: 'success',
+                message: 'Delete completed',
+              });
+              this.handleFilter();
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch(() => {
           this.$message({
-            type: 'success',
-            message: 'Delete completed',
+            type: 'info',
+            message: 'Delete canceled',
           });
-          this.handleFilter();
-        }).catch(error => {
-          console.log(error);
         });
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: 'Delete canceled',
-        });
-      });
     },
     handleAssign(account) {
       this.dialogAssign.account = account;
@@ -663,44 +894,60 @@ export default {
     },
     assignAccount() {
       this.dialogAssign.loading = true;
-      accountResource.assign(
-        this.dialogAssign.account.id,
-        this.dialogAssign.form
-      ).then(response => {
-        this.$message({
-          message: this.dialogAssign.form.email + ' assigned to ' + this.dialogAssign.account.realname,
-          type: 'success',
-          duration: 5 * 1000,
-        });
-        this.handleFilter();
-        this.dialogAssign.loading = false;
-        this.dialogAssign.visible = false;
-      }).catch(error => {
-        this.dialogAssign.loading = false;
-        console.log(error);
-      });
-    },
-    handleRemoveSubAccount(account, main_account) {
-      this.$confirm('This will remove account ' + account.realname + ' from ' + main_account.realname + '. Continue?', 'Warning', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-      }).then(() => {
-        accountResource.detach(main_account.id, account.id).then(response => {
+      accountResource
+        .assign(this.dialogAssign.account.id, this.dialogAssign.form)
+        .then((response) => {
           this.$message({
+            message:
+              this.dialogAssign.form.email +
+              ' assigned to ' +
+              this.dialogAssign.account.realname,
             type: 'success',
-            message: 'Detach completed',
+            duration: 5 * 1000,
           });
           this.handleFilter();
-        }).catch(error => {
+          this.dialogAssign.loading = false;
+          this.dialogAssign.visible = false;
+        })
+        .catch((error) => {
+          this.dialogAssign.loading = false;
           console.log(error);
         });
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: 'Detach canceled',
+    },
+    handleRemoveSubAccount(account, main_account) {
+      this.$confirm(
+        'This will remove account ' +
+          account.realname +
+          ' from ' +
+          main_account.realname +
+          '. Continue?',
+        'Warning',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning',
+        }
+      )
+        .then(() => {
+          accountResource
+            .detach(main_account.id, account.id)
+            .then((response) => {
+              this.$message({
+                type: 'success',
+                message: 'Detach completed',
+              });
+              this.handleFilter();
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Detach canceled',
+          });
         });
-      });
     },
     handleStatus(account) {
       if (!checkPermission(['advertise.account.edit'])) {
@@ -711,35 +958,51 @@ export default {
         return;
       }
       var displayName = account.realname + '(' + account.email + ')';
-      this.$confirm('This will ' + (account.status ? 'disable' : 'enable') + ' account ' + displayName + '. Continue?', 'Warning', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-      }).then(() => {
-        if (account.status) {
-          accountResource.disable(account.id).then(response => {
-            this.$message({
-              type: 'success',
-              message: 'Account ' + displayName + ' disabled',
-            });
-            account.status = false;
-          }).catch(error => {
-            console.log(error);
-          });
-        } else {
-          accountResource.enable(account.id).then(response => {
-            this.$message({
-              type: 'success',
-              message: 'Account ' + displayName + ' enabled',
-            });
-            account.status = true;
-          }).catch(error => {
-            console.log(error);
-          });
+      this.$confirm(
+        'This will ' +
+          (account.status ? 'disable' : 'enable') +
+          ' account ' +
+          displayName +
+          '. Continue?',
+        'Warning',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning',
         }
-      }).catch(error => {
-        console.log(error);
-      });
+      )
+        .then(() => {
+          if (account.status) {
+            accountResource
+              .disable(account.id)
+              .then((response) => {
+                this.$message({
+                  type: 'success',
+                  message: 'Account ' + displayName + ' disabled',
+                });
+                account.status = false;
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          } else {
+            accountResource
+              .enable(account.id)
+              .then((response) => {
+                this.$message({
+                  type: 'success',
+                  message: 'Account ' + displayName + ' enabled',
+                });
+                account.status = true;
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     handleAdvertisingStatus(account) {
       if (!checkPermission(['advertise.account.edit'])) {
@@ -750,35 +1013,52 @@ export default {
         return;
       }
       var displayName = account.realname + '(' + account.email + ')';
-      this.$confirm('This will ' + (account.isAdvertiseEnabled ? 'disable' : 'enable') + ' advertising for account ' + displayName + '. Continue?', 'Warning', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-      }).then(() => {
-        if (account.isAdvertiseEnabled) {
-          accountResource.disableAdvertising(account.id).then(response => {
-            this.$message({
-              type: 'success',
-              message: 'Advertising of Account ' + displayName + ' disabled',
-            });
-            account.isAdvertiseEnabled = false;
-          }).catch(error => {
-            console.log(error);
-          });
-        } else {
-          accountResource.enableAdvertising(account.id).then(response => {
-            this.$message({
-              type: 'success',
-              message: 'Advertising of Account ' + displayName + ' enabled',
-            });
-            account.isAdvertiseEnabled = true;
-          }).catch(error => {
-            console.log(error);
-          });
+      this.$confirm(
+        'This will ' +
+          (account.isAdvertiseEnabled ? 'disable' : 'enable') +
+          ' advertising for account ' +
+          displayName +
+          '. Continue?',
+        'Warning',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning',
         }
-      }).catch(error => {
-        console.log(error);
-      });
+      )
+        .then(() => {
+          if (account.isAdvertiseEnabled) {
+            accountResource
+              .disableAdvertising(account.id)
+              .then((response) => {
+                this.$message({
+                  type: 'success',
+                  message:
+                    'Advertising of Account ' + displayName + ' disabled',
+                });
+                account.isAdvertiseEnabled = false;
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          } else {
+            accountResource
+              .enableAdvertising(account.id)
+              .then((response) => {
+                this.$message({
+                  type: 'success',
+                  message: 'Advertising of Account ' + displayName + ' enabled',
+                });
+                account.isAdvertiseEnabled = true;
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     handlePublishingStatus(account) {
       if (!checkPermission(['advertise.account.edit'])) {
@@ -789,35 +1069,51 @@ export default {
         return;
       }
       var displayName = account.realname + '(' + account.email + ')';
-      this.$confirm('This will ' + (account.isPublishEnabled ? 'disable' : 'enable') + ' publishing for account ' + displayName + '. Continue?', 'Warning', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-      }).then(() => {
-        if (account.isPublishEnabled) {
-          accountResource.disablePublishing(account.id).then(response => {
-            this.$message({
-              type: 'success',
-              message: 'Publishing of Account ' + displayName + ' disabled',
-            });
-            account.isPublishEnabled = false;
-          }).catch(error => {
-            console.log(error);
-          });
-        } else {
-          accountResource.enablePublishing(account.id).then(response => {
-            this.$message({
-              type: 'success',
-              message: 'Publishing of Account ' + displayName + ' enabled',
-            });
-            account.isPublishEnabled = true;
-          }).catch(error => {
-            console.log(error);
-          });
+      this.$confirm(
+        'This will ' +
+          (account.isPublishEnabled ? 'disable' : 'enable') +
+          ' publishing for account ' +
+          displayName +
+          '. Continue?',
+        'Warning',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning',
         }
-      }).catch(error => {
-        console.log(error);
-      });
+      )
+        .then(() => {
+          if (account.isPublishEnabled) {
+            accountResource
+              .disablePublishing(account.id)
+              .then((response) => {
+                this.$message({
+                  type: 'success',
+                  message: 'Publishing of Account ' + displayName + ' disabled',
+                });
+                account.isPublishEnabled = false;
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          } else {
+            accountResource
+              .enablePublishing(account.id)
+              .then((response) => {
+                this.$message({
+                  type: 'success',
+                  message: 'Publishing of Account ' + displayName + ' enabled',
+                });
+                account.isPublishEnabled = true;
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     saveAccount() {
       this.$refs['accountForm'].validate((valid) => {
@@ -825,9 +1121,12 @@ export default {
           this.accountCreating = true;
           accountResource
             .save(this.currentAccount)
-            .then(response => {
+            .then((response) => {
               this.$message({
-                message: 'Account ' + this.currentAccount.email + ' has been saved successfully.',
+                message:
+                  'Account ' +
+                  this.currentAccount.email +
+                  ' has been saved successfully.',
                 type: 'success',
                 duration: 5 * 1000,
               });
@@ -835,7 +1134,7 @@ export default {
               this.dialogFormVisible = false;
               this.handleFilter();
             })
-            .catch(error => {
+            .catch((error) => {
               console.log(error);
             })
             .finally(() => {
@@ -852,16 +1151,19 @@ export default {
         if (valid) {
           accountResource
             .addCredit(this.currentAccount)
-            .then(response => {
+            .then((response) => {
               this.$message({
-                message: 'Account ' + this.currentAccount.email + ' has been add credit successfully.',
+                message:
+                  'Account ' +
+                  this.currentAccount.email +
+                  ' has been add credit successfully.',
                 type: 'success',
                 duration: 5 * 1000,
               });
               this.dialogCreditVisible = false;
               this.handleFilter();
             })
-            .catch(error => {
+            .catch((error) => {
               console.log(error);
             })
             .finally(() => {
@@ -879,16 +1181,19 @@ export default {
           console.log(this.record);
           accountResource
             .addCash(this.currentAccount.id, this.record)
-            .then(response => {
+            .then((response) => {
               this.$message({
-                message: 'Account ' + this.currentAccount.email + ' has been add cash successfully.',
+                message:
+                  'Account ' +
+                  this.currentAccount.email +
+                  ' has been add cash successfully.',
                 type: 'success',
                 duration: 5 * 1000,
               });
               this.dialogCashVisible = false;
               this.handleFilter();
             })
-            .catch(error => {
+            .catch((error) => {
               console.log(error);
             })
             .finally(() => {
@@ -910,7 +1215,9 @@ export default {
     },
     handleBillSet(account) {
       this.currentAccount = account;
-      this.currentBillSet = account.bill ? account.bill : { address: '', phone: '' };
+      this.currentBillSet = account.bill
+        ? account.bill
+        : { address: '', phone: '' };
       this.currentBillSet.id = account.id;
       this.billDialogFormVisible = true;
       this.$nextTick(() => {
@@ -923,9 +1230,12 @@ export default {
           this.billSetting = true;
           accountResource
             .saveBillSet(this.currentBillSet)
-            .then(response => {
+            .then((response) => {
               this.$message({
-                message: 'The bill set of Account ' + this.currentAccount.email + ' has been saved successfully.',
+                message:
+                  'The bill set of Account ' +
+                  this.currentAccount.email +
+                  ' has been saved successfully.',
                 type: 'success',
                 duration: 5 * 1000,
               });
@@ -933,7 +1243,7 @@ export default {
               this.billDialogFormVisible = false;
               this.handleFilter();
             })
-            .catch(error => {
+            .catch((error) => {
               console.log(error);
             })
             .finally(() => {
@@ -947,7 +1257,7 @@ export default {
     },
     handleDownload() {
       this.downloading = true;
-      import('@/vendor/Export2Excel').then(excel => {
+      import('@/vendor/Export2Excel').then((excel) => {
         const tHeader = ['id', 'account_id', 'name'];
         const filterVal = ['index', 'id', 'name'];
         const data = this.formatJson(filterVal, this.list);
@@ -960,7 +1270,7 @@ export default {
       });
     },
     formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => v[j]));
+      return jsonData.map((v) => filterVal.map((j) => v[j]));
     },
   },
 };
