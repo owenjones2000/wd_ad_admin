@@ -78,9 +78,9 @@
         icon="el-icon-plus"
         @click="handleCreate"
       >{{ $t('table.add') }}</el-button>
-      <!--<el-button v-waves :loading="downloading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">-->
-      <!--  {{ $t('table.export') }}-->
-      <!--</el-button>-->
+      <el-button v-waves :loading="downloading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
+        {{ $t('table.export') }}
+      </el-button>
     </div>
 
     <el-table
@@ -712,8 +712,38 @@ export default {
     handleDownload() {
       this.downloading = true;
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['id', 'channel_id', 'name'];
-        const filterVal = ['index', 'id', 'name'];
+        const tHeader = [
+          'Name',
+          'Package',
+          'Platform',
+          'Publisher',
+          'Impressions',
+          'Clicks',
+          'Installs',
+          'CTR',
+          'CVR',
+          'IR',
+          'Cpi_revenue',
+          'Cpm_revenue',
+          'eCpi',
+          'eCpm',
+        ];
+        const filterVal = [
+          'name',
+          'bundle_id',
+          'platform',
+          'realname',
+          'impressions',
+          'clicks',
+          'installs',
+          'ctr',
+          'cvr',
+          'ir',
+          'spend',
+          'cpm',
+          'ecpi',
+          'ecpm',
+        ];
         const data = this.formatJson(filterVal, this.list);
         excel.export_json_to_excel({
           header: tHeader,
@@ -724,7 +754,18 @@ export default {
       });
     },
     formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => v[j]));
+      return jsonData.map(v => filterVal.map(j => {
+        // console.log(v);
+        console.log(j);
+        Object.assign(v, v['kpi']);
+        Object.assign(v, v['publisher']);
+        if (j === 'ctr' || j === 'cvr' || j === 'ir') {
+          return v[j] + '%';
+        } else {
+          return v[j];
+        }
+        // return v[j];
+      }));
     },
     clipboardSuccess() {
       this.$message({

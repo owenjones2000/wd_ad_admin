@@ -175,4 +175,17 @@ class TestCommand extends Command
         }
         Log::info('finish' . __METHOD__);
     }
+
+    public function test6()
+    {
+        $arr1 = array("banana", "orange");
+        $arr2 = array("pitaya", "tomato");
+        $con_arr = "banana apple orange banana grape";
+        $con_rep = str_replace($arr1, $arr2, $con_arr, $count);
+        dump($con_rep);
+
+        // $arr = array("blue", "red", "green", "yellow");
+        // $str1 = str_replace("red", "pink", $arr, $i);
+        // print_r($str1);
+    }
 }
