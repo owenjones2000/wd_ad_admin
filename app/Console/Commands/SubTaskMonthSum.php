@@ -49,6 +49,11 @@ class SubTaskMonthSum extends Command
         $storeName = 'y_sub_tasks_' . Carbon::now()->subMonth()->format('Ym');
         dump($firstmonthday, $lastmonthday, $storeName);
         $templateName = 'zz_sub_tasks';
+        if (Schema::connection('mysql')->hasTable($storeName) == false) {
+            DB::connection()->statement("create table $storeName like $templateName");
+        } else {
+            DB::connection()->statement("TRUNCATE table $storeName");
+        }
         for ($i= $firstmonthday; $i <= $lastmonthday; $i++) { 
             $tableName = 'z_sub_tasks_'.$i;
             $res = DB::connection()->select("SHOW COLUMNS FROM $templateName");
@@ -56,11 +61,7 @@ class SubTaskMonthSum extends Command
             unset($columns[0]);
             $columns = implode(',', $columns);
             // dd($columns = implode(',',$columns));
-            if (Schema::connection('mysql')->hasTable($storeName) == false) {
-                DB::connection()->statement("create table $storeName like $templateName");
-            }else{
-                DB::connection()->statement("TRUNCATE table $storeName");
-            }
+            
             dump($tableName);
             DB::connection()->statement("INSERT INTO $storeName($columns) SELECT $columns FROM $tableName where spend >0");
             $bar->advance();
