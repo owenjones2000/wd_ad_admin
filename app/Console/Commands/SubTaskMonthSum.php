@@ -44,9 +44,10 @@ class SubTaskMonthSum extends Command
         $lastmonthday = Carbon::now()->subMonth()->lastOfMonth()->format('Ymd');
         $firstmonthday = Carbon::now()->subMonth()->firstOfMonth()->format('Ymd');
         $bar = $this->output->createProgressBar($lastmonthday- $firstmonthday);
-        dump($firstmonthday,$lastmonthday);
+        
         $bar->start();
         $storeName = 'y_sub_tasks_' . Carbon::now()->subMonth()->format('Ym');
+        dump($firstmonthday, $lastmonthday, $storeName);
         $templateName = 'zz_sub_tasks';
         for ($i= $firstmonthday; $i <= $lastmonthday; $i++) { 
             $tableName = 'z_sub_tasks_'.$i;
@@ -60,6 +61,7 @@ class SubTaskMonthSum extends Command
             }else{
                 DB::connection()->statement("TRUNCATE table $storeName");
             }
+            dump($tableName);
             DB::connection()->statement("INSERT INTO $storeName($columns) SELECT $columns FROM $tableName where spend >0");
             $bar->advance();
         }
