@@ -44,7 +44,7 @@ class SubTaskMonthSum extends Command
         $lastmonthday = Carbon::now()->subMonth()->lastOfMonth()->format('Ymd');
         $firstmonthday = Carbon::now()->subMonth()->firstOfMonth()->format('Ymd');
         $bar = $this->output->createProgressBar($lastmonthday- $firstmonthday);
-
+        dump($firstmonthday,$lastmonthday);
         $bar->start();
         $storeName = 'y_sub_tasks_' . Carbon::now()->subMonth()->format('Ym');
         $templateName = 'zz_sub_tasks';
