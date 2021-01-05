@@ -160,6 +160,7 @@ export default {
   app: {
     bundle_id: 'Package',
     icon: 'Icon',
+    main_user_id: 'MainUserId',
     description: 'Description',
     track_platform: 'Track Platform',
     track_code: 'Track Code',

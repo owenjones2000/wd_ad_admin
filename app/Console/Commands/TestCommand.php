@@ -11,6 +11,7 @@ use App\Models\Campaign;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
@@ -187,5 +188,14 @@ class TestCommand extends Command
         // $arr = array("blue", "red", "green", "yellow");
         // $str1 = str_replace("red", "pink", $arr, $i);
         // print_r($str1);
+    }
+
+    public function test7()
+    {
+        // DB::table('y_sub_tasks_202008')->where('impressions', '<=', 0)->delete();
+        $res = strpos('https://app.appsflyer.com/id1533932791?c={campaign}&af_c_id={campaign_id}&af_adset={adset}&af_adset_id={adset_id}&af_ad={ad}&af_ad_id={ad_id}&af_siteid={publisher_id}&pid=wudiads_int&af_click_lookback=7d&clickid={clickid}&advertising_id={gaid}&android_id={android_id}&idfa={idfa}&af_ip={ip}&af_ua={ua}&af_lang={language}&redirect=false', 'https://app.appsflyer.com/id1533932791');
+        // https://app.appsflyer.com/id1533932791?c={campaign}&af_c_id={campaign_id}&af_adset={adset}&af_adset_id={adset_id}&af_ad={ad}&af_ad_id={ad_id}&af_siteid={publisher_id}&pid=wudiads_int&af_click_lookback=7d&clickid={clickid}&advertising_id={gaid}&android_id={android_id}&idfa={idfa}&af_ip={ip}&af_ua={ua}&af_lang={language}&redirect=false
+        // https://app.appsflyer.com/id1533771239?c={campaign}&af_c_id={campaign_id}&af_adset={adset}&af_adset_id={adset_id}&af_ad={ad}&af_ad_id={ad_id}&af_siteid={publisher_id}&pid=wudiads_int&af_click_lookback=7d&clickid={clickid}&advertising_id={gaid}&android_id={android_id}&idfa={idfa}&af_ip={ip}&af_ua={ua}&af_lang={language}&redirect=false
+        dd($res);
     }
 }

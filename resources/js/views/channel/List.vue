@@ -287,6 +287,9 @@
           <el-form-item :label="$t('app.bundle_id')" prop="bundle_id">
             <el-input v-model="currentChannel.bundle_id" />
           </el-form-item>
+          <el-form-item :label="$t('app.main_user_id')" prop="main_user_id">
+            <el-input v-model="currentChannel.main_user_id" />
+          </el-form-item>
           <el-form-item label="access_key" prop="access_key">
             <el-input v-model="currentChannel.access_key" :disabled="true" />
           </el-form-item>

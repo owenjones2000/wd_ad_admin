@@ -10,7 +10,7 @@ class Channel extends Model
 {
     protected $table = 'a_target_apps';
 
-    protected $fillable = ['name', 'bundle_id', 'platform', 'put_mode', 'rate'];
+    protected $fillable = ['name', 'bundle_id', 'platform', 'put_mode', 'rate', 'main_user_id'];
 
     public function publisher(){
         return $this->belongsTo(Account::class, 'main_user_id', 'id');
