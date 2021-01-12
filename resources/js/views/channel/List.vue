@@ -308,6 +308,12 @@
               <el-option label="Backup" :value="2" />
             </el-select>
           </el-form-item>
+          <el-form-item label="Revenue Mode" prop="revenue_version">
+            <el-select v-model="currentChannel.revenue_version" placeholder="please select  mode">
+              <el-option label="Cpi" :value="0" />
+              <el-option label="Cpm" :value="1" />
+            </el-select>
+          </el-form-item>
           <el-form-item :label="$t('channel.rate') + '(%)'" prop="put_mode">
             <el-input-number
               v-model="currentChannel.rate"
