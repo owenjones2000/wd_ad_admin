@@ -3,11 +3,17 @@
 namespace App\Console\Commands;
 
 use App\Admin\Service\OceanengineService;
+use App\Helper\Helper;
 use App\Models\Advertise\Account;
 use App\Models\Advertise\Ad;
 use App\Models\Advertise\App;
+use App\Models\Advertise\Bill;
+use App\Models\Advertise\BillInfo;
+use App\Models\Advertise\BillSet;
 use App\Models\Advertiser;
 use App\Models\Campaign;
+use App\Models\Record;
+use Barryvdh\Snappy\Facades\SnappyImage;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
@@ -15,6 +21,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Storage;
 
 class TestCommand extends Command
 {
@@ -197,5 +204,45 @@ class TestCommand extends Command
         // https://app.appsflyer.com/id1533932791?c={campaign}&af_c_id={campaign_id}&af_adset={adset}&af_adset_id={adset_id}&af_ad={ad}&af_ad_id={ad_id}&af_siteid={publisher_id}&pid=wudiads_int&af_click_lookback=7d&clickid={clickid}&advertising_id={gaid}&android_id={android_id}&idfa={idfa}&af_ip={ip}&af_ua={ua}&af_lang={language}&redirect=false
         // https://app.appsflyer.com/id1533771239?c={campaign}&af_c_id={campaign_id}&af_adset={adset}&af_adset_id={adset_id}&af_ad={ad}&af_ad_id={ad_id}&af_siteid={publisher_id}&pid=wudiads_int&af_click_lookback=7d&clickid={clickid}&advertising_id={gaid}&android_id={android_id}&idfa={idfa}&af_ip={ip}&af_ua={ua}&af_lang={language}&redirect=false
         dd($res);
+    }
+
+    
+
+    public function test8()
+    {
+        // $img = getimagesize(Storage::disk('local')->path('20201222172733.jpg'), $imageinfo);
+        // $img = getimagesize(Storage::disk('local')->path('2021011216104360025ffd4da2784b6.png'), $imageinfo);
+        // $img = getimagesize(Storage::disk('local')->path('2021011216104534595ffd91d36645a.gif'), $imageinfo);
+        // dd($img, $imageinfo);
+        // $filePath = Storage::disk('local')->path('2021011216104360025ffd4da2784b6.png');
+        // $base64 = Helper::imgToBase64($filePath);
+        // $base64 = base64_encode(Storage::disk('local')->get('2021011216104360025ffd4da2784b6.png'));
+        // dd($base64);
+        // Log::info($base64);
+        $bill = Bill::query()->where('id', 105)->with('account')->firstOrFail();
+        $billInfo = BillInfo::query()->where('bill_id', 105)->get();
+        $prePay = Record::whereBetween('date', [$bill->start_date, $bill->end_date])
+        ->where('main_user_id', $bill->main_user_id)->get();
+        $billAdr = BillSet::where('id',
+            $bill->account->id
+        )->first();
+        $jpg = SnappyImage::loadView('bill.invoice', ['bill' => $bill, 'billInfo' => $billInfo, 'prePay' => $prePay, 'billAdr' => $billAdr]);
+        $invoice_name = 'Invoice_' . $bill['start_date'] . '~' . $bill['end_date'] . '.jpg';
+        $filePath = Storage::disk('local')->path($invoice_name);
+        $jpg->save($filePath);
+        $base64 = base64_encode(Storage::disk('local')->get($invoice_name));
+
+        // $client = new Client();
+        // $rep = $client->request("POST", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=39ab2517-8650-45d9-84e9-8ff2418817d0", [
+        //     "json" => [
+        //         "msgtype" => "image",
+        //         "image" => [
+        //             "base64" => $base64,
+        //             "md5" => md5_file($filePath),
+        //         ]
+        //     ]
+        // ]);
+
+        // dd($rep->getBody()->getContents());
     }
 }
