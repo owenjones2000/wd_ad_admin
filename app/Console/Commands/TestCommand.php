@@ -229,20 +229,48 @@ class TestCommand extends Command
         $jpg = SnappyImage::loadView('bill.invoice', ['bill' => $bill, 'billInfo' => $billInfo, 'prePay' => $prePay, 'billAdr' => $billAdr]);
         $invoice_name = 'Invoice_' . $bill['start_date'] . '~' . $bill['end_date'] . '.jpg';
         $filePath = Storage::disk('local')->path($invoice_name);
-        $jpg->save($filePath);
+        $jpg->save($filePath, true);
         $base64 = base64_encode(Storage::disk('local')->get($invoice_name));
 
-        // $client = new Client();
-        // $rep = $client->request("POST", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=39ab2517-8650-45d9-84e9-8ff2418817d0", [
-        //     "json" => [
-        //         "msgtype" => "image",
-        //         "image" => [
-        //             "base64" => $base64,
-        //             "md5" => md5_file($filePath),
-        //         ]
-        //     ]
-        // ]);
+        $client = new Client();
+        $rep = $client->request("POST", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=39ab2517-8650-45d9-84e9-8ff2418817d0", [
+            "json" => [
+                "msgtype" => "image",
+                "image" => [
+                    "base64" => $base64,
+                    "md5" => md5_file($filePath),
+                ]
+            ]
+        ]);
 
-        // dd($rep->getBody()->getContents());
+        dd($rep->getBody()->getContents());
+    }
+
+    public function test9()
+    {
+        $client = new Client();
+        //
+        $repUp = $client->request("POST", "https://qyapi.weixin.qq.com/cgi-bin/webhook/upload_media?key=39ab2517-8650-45d9-84e9-8ff2418817d0&type=file", [
+            'multipart' => [
+                [
+                    'name'     => 'something',
+                    // 'contents' => Storage::disk('local')->get('2021010716100076015ff6c431d9675.mp4'),
+                    'contents' => Storage::disk('local')->get('2021011216104360025ffd4da2784b6.png'),
+                    'filename' => '122.png',
+                ],
+            ]
+        ]);
+        $result = $repUp->getBody()->getContents();
+        $resArray = json_decode($result, 1);
+        dump($resArray);
+        $repSend = $client->request("POST", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=39ab2517-8650-45d9-84e9-8ff2418817d0", [
+            "json" => [
+                "msgtype" => "file",
+                "file" => [
+                    "media_id" => $resArray['media_id'],
+                ]
+            ]
+        ]);
+        dump($repSend->getBody()->getContents());
     }
 }
