@@ -170,7 +170,8 @@
             size="small"
             icon="el-icon-key "
             @click="handleToken(scope.row)"
-          >Token</el-button>
+            >Token</el-button
+          >
 
           <el-button
             v-permission="['advertise.account.edit']"
@@ -812,7 +813,7 @@ export default {
         node.childNodes &&
         node.childNodes.length > 0
       ) {
-        node.childNodes.forEach(function(item) {
+        node.childNodes.forEach(function (item) {
           this.recursionSelectTreeNode(item, checked, 'down');
         }, this);
       }
@@ -1122,16 +1123,27 @@ export default {
           accountResource
             .save(this.currentAccount)
             .then((response) => {
-              this.$message({
-                message:
-                  'Account ' +
-                  this.currentAccount.email +
-                  ' has been saved successfully.',
-                type: 'success',
-                duration: 5 * 1000,
-              });
+              console.log(response);
+              if (response.code !== 0) {
+                this.$message({
+                  message: response.message,
+                  type: 'error',
+                  duration: 5 * 1000,
+                });
+              } else {
+                this.$message({
+                  message:
+                    'Account ' +
+                    this.currentAccount.email +
+                    ' has been saved successfully.',
+                  type: 'success',
+                  duration: 5 * 1000,
+                });
+                this.dialogFormVisible = false;
+              }
+
               this.resetNewAccount();
-              this.dialogFormVisible = false;
+
               this.handleFilter();
             })
             .catch((error) => {
@@ -1231,16 +1243,26 @@ export default {
           accountResource
             .saveBillSet(this.currentBillSet)
             .then((response) => {
-              this.$message({
-                message:
-                  'The bill set of Account ' +
-                  this.currentAccount.email +
-                  ' has been saved successfully.',
-                type: 'success',
-                duration: 5 * 1000,
-              });
+              if (response.code !== 0) {
+                this.$message({
+                  message: response.message,
+                  type: 'error',
+                  duration: 5 * 1000,
+                });
+              } else {
+                this.$message({
+                  message:
+                    'The bill set of Account ' +
+                    this.currentAccount.email +
+                    ' has been saved successfully.',
+                  type: 'success',
+                  duration: 5 * 1000,
+                });
+                this.billDialogFormVisible = false;
+              }
+
               this.resetNewAccount();
-              this.billDialogFormVisible = false;
+
               this.handleFilter();
             })
             .catch((error) => {

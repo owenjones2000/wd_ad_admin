@@ -283,7 +283,7 @@ class Account extends Model
         return [
             'email'    => 'required|email|unique:a_users,email,' . ($request_params['id'] ?? ''),
             'password' => empty($request_params['id']) ?
-                'required|min:2|max:14' : 'min:2|max:14'
+                'required|min:6|max:32' : 'min:6|max:32'
         ];
     }
 }
