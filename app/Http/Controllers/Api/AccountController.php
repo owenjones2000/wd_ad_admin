@@ -215,7 +215,7 @@ class AccountController extends Controller
         $params = $request->all();
         $params['id'] = $id;
         $account = Account::Make($params);
-        return new AccountResource($account);
+        return response()->json(['code' => 0, 'msg' => 'save success', 'data' => $account]);
     }
 
     public function addCredit(Request $request, $id)
