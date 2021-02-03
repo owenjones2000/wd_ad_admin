@@ -34,9 +34,9 @@ class App extends Model
         'extra_data'
     ];
 
-    protected $casts =  [
-        'extra_data' => 'array',
-    ];
+    // protected $casts =  [
+    //     'extra_data' => 'array',
+    // ];
     /**
      * 构造Campaign
      * @param User $user
@@ -71,6 +71,11 @@ class App extends Model
             return $apps;
         }, 3);
         return $apps;
+    }
+
+    public function getExtraDataAttribute($value)
+    {
+        return $value ?json_decode($value, 1): [];
     }
 
     /**

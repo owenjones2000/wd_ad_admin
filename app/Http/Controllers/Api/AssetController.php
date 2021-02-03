@@ -38,7 +38,10 @@ class AssetController extends Controller
                 'url' => Storage::url($path),
                 'file_path' => $path,
                 'type_id' => $file_info['type'],
-                'spec' => $file_info
+                'spec' => $file_info,
+                'width' => $file_info['width'] ?? 0,
+                'height' => $file_info['height'] ?? 0,
+                'duration' => $file_info['duration'] ?? 0,
             ]);
             $asset['type'] = AssetType::get($asset['type_id']);
 
