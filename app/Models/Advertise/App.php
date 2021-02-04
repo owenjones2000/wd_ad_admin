@@ -21,11 +21,11 @@ class App extends Model
 
     protected $fillable = [
         'name', 'description',
-        'icon_url', 
+        'icon_url',
         'bundle_id',
         'os',
-        'track_platform_id', 
-        'track_code', 
+        'track_platform_id',
+        'track_code',
         'track_url',
         'impression_url',
         'status',
@@ -57,7 +57,7 @@ class App extends Model
                 $apps = self::query()->where([
                     'id' => $params['id'],
                 ])->firstOrFail();
-                
+
                 if (isset($params['type']) && $params['type']  == 1) {
                     $params['extra_data'] = array_merge($apps->extra_data, $params['extra_data']);
                 } else {
@@ -75,7 +75,7 @@ class App extends Model
 
     public function getExtraDataAttribute($value)
     {
-        return $value ?json_decode($value, 1): [];
+        return $value ? json_decode($value, 1) : [];
     }
 
     /**
