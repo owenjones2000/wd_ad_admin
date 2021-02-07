@@ -273,4 +273,13 @@ class TestCommand extends Command
         ]);
         dump($repSend->getBody()->getContents());
     }
+
+    public function test10()
+    {
+        $time = Carbon::now('Asia/Shanghai');
+        $time1 = Carbon::now('GMT+8');
+        $time2 = Carbon::now('GMT-8');
+
+        dump($time, $time1, $time2);
+    }
 }
