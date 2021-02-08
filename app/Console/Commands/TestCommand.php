@@ -277,6 +277,7 @@ class TestCommand extends Command
     public function test10()
     {
         $time = Carbon::now('Asia/Shanghai');
+        $time = Carbon::now('GMT');
         $time1 = Carbon::now('GMT+8');
         $time2 = Carbon::now('GMT-8');
 
