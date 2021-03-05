@@ -280,6 +280,7 @@ class TestCommand extends Command
         $time = Carbon::now('GMT');
         $time1 = Carbon::now('GMT+8');
         $time2 = Carbon::now('GMT-8');
+        $time2 = Carbon::now('GMT-10');
 
         dump($time, $time1, $time2);
     }
