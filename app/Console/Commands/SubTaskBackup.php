@@ -82,7 +82,7 @@ class SubTaskBackup extends Command
                 $res = $this->backToAws($tableName, $tableName);
                 if ($res) {
                     DB::table($tableName)->where('requests', '=', 0)->delete();
-                    DB::statement("optimize table $tableName");
+                    DB::statement("alter table $tableName engine=InnoDB");
                 }
             }
 
