@@ -2,18 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Laravue\Models\User;
-use App\Models\Advertise\Account;
 use App\Models\Advertise\App;
 use App\Models\Advertise\Channel;
-use App\Models\Advertise\Click;
-use App\Models\CallbackInstallation;
-use App\Models\Credit;
-use GuzzleHttp\Client;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Redis;
 
 class AppTag extends Command
 {

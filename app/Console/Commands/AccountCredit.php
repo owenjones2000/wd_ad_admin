@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Laravue\Models\User;
 use App\Models\Advertise\Account;
 use App\Models\Advertise\App;
 use App\Models\Advertise\Click;

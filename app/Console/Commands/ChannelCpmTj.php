@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Advertise\Asset;
 use App\Models\Advertise\Impression;
 use App\Models\ChannelCpm;
 use Illuminate\Console\Command;
