@@ -18,6 +18,7 @@ use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\App;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 /**
@@ -47,7 +48,7 @@ class AuthController extends Controller
         $user = User::query()->where('phone', $phone)->first();
         $cacheCode = Redis::get($key);
         // dd($user, $code, $cacheCode);
-        if ($user && $code == $cacheCode){
+        if ($this->checkLogin($user, $code, $cacheCode)){
             $token = JWTAuth::fromUser($user);
             Redis::del($key);
             return response()->json(new UserResource($user), Response::HTTP_OK)->header('Authorization', $token);
@@ -144,5 +145,15 @@ class AuthController extends Controller
     private function guard()
     {
         return Auth::guard();
+    }
+
+    private function checkLogin($user, $code, $cacheCode)
+    {
+        if ($user && App::environment('local')){
+            return true;
+        }
+        if ($user && $code == $cacheCode){
+            return true;
+        }
     }
 }
