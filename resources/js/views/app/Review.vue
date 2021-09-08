@@ -167,11 +167,11 @@
           <!--<el-button v-permission="['advertise.auth.token']" type="normal" size="small" icon="el-icon-key " @click="handleToken(scope.row)" />-->
           <el-button
             v-permission="['advertise.app.edit']"
-            :type="scope.row.is_admin_disable ? 'danger' : 'info'"
+            :type="scope.row.is_admin_disable ? 'success' : 'danger'"
             size="small"
             icon="el-icon-remove"
             @click="handleStatus(scope.row)"
-          >Disable</el-button>
+          > {{ scope.row.is_admin_disable ? 'Relase':'Disable' }} </el-button>
 
           <!--  <el-link v-if="scope.row.os=='android'" icon="el-icon-view" type="primary" :href="'https://play.google.com/store/apps/details?id='+scope.row.bundle_id" target="_blank">android</el-link> -->
 
