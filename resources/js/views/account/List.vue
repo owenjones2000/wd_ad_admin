@@ -170,8 +170,7 @@
             size="small"
             icon="el-icon-key "
             @click="handleToken(scope.row)"
-            >Token</el-button
-          >
+          >Token</el-button>
 
           <el-button
             v-permission="['advertise.account.edit']"
@@ -813,7 +812,7 @@ export default {
         node.childNodes &&
         node.childNodes.length > 0
       ) {
-        node.childNodes.forEach(function (item) {
+        node.childNodes.forEach(function(item) {
           this.recursionSelectTreeNode(item, checked, 'down');
         }, this);
       }
